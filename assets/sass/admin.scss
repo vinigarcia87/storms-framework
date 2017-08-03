@@ -1,0 +1,113 @@
+/*!
+ * Storms Framework (http://storms.com.br/)
+ *
+ * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
+ * @copyright (c) Copyright 2012-2017, Storms Websolutions
+ * @license   Licensed under MIT
+ * @package   Storms
+ * @version   3.0.0
+ *
+ * Admin Area Style
+ */
+
+@charset "UTF-8";
+
+// ==========================================================================
+// Style used to style the Admin Area
+// ==========================================================================
+
+html {
+  background: {
+    image: url(../img/storms/logo/TheStormsBlue.png);
+    position: right bottom;
+    attachment: fixed;
+    repeat: no-repeat;
+  }
+}
+
+#profile-page {
+  // Hide user-rich-editing and user-comment-shortcuts options
+  // on user profile page. Those are not really useful...
+  .user-rich-editing-wrap,
+  .user-comment-shortcuts-wrap {
+    display: none;
+  }
+}
+
+// User Card Widget - displayed in admin menu
+a[href*="user-onine"] .wp-menu-image {
+  display: none;
+}
+.user-card {
+  margin: 0 auto 10px;
+  text-align: center;
+  font-size: 7px;
+  display: table;
+
+  .user-avatar,
+  .user-info {
+    display:table-row;
+    vertical-align:middle;
+    padding-right: 10px;
+  }
+
+  .user-avatar img {
+    width: 120px;
+    height: 120px;
+    border-radius: 60px;
+  }
+}
+
+// Mobile adjustments
+.auto-fold #adminmenu {
+	li {
+		&.toplevel_page_user-onine,
+		&.toplevel_page_developed-by {
+			a.menu-top {
+				height: auto;
+			}
+			.wp-menu-name {
+				margin-left: 0;
+			}
+		}
+	}
+}
+
+/* user-onine and developed-by menu when using mobile */
+ li.toplevel_page_user-onine a.menu-top,
+.auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
+    height: auto;
+}
+.auto-fold #adminmenu li.toplevel_page_user-onine .wp-menu-name,
+.auto-fold #adminmenu li.toplevel_page_developed-by .wp-menu-name {
+    margin-left: 0;
+}
+
+
+// Developed By Widget - displayed in admin menu
+a[href*="developed-by"] .wp-menu-image {
+  display: none;
+}
+#developed-by {
+  text-align: center;
+
+  & > img {
+    border-top: 1px solid #fff;
+    margin-top: 20px;
+    padding-top: 20px;
+  }
+}
+
+.user-info {
+  h1, h2, h3 {
+    color: #fff;
+  }
+}
+
+#wpfooter {
+  border-top: 1px solid #efefef;
+
+  p#footer {
+    float: left;
+  }
+}

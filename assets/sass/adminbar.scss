@@ -1,0 +1,117 @@
+/*!
+ * Storms Framework (http://storms.com.br/)
+ *
+ * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
+ * @copyright (c) Copyright 2012-2017, Storms Websolutions
+ * @license   Licensed under MIT
+ * @package   Storms
+ * @version   3.0.0
+ *
+ * Admin Bar Style
+ */
+
+@charset "UTF-8";
+
+// ==========================================================================
+// Style used to style the Admin Bar
+// ==========================================================================
+
+#wpadminbar {
+    background: none repeat scroll 0 0 #52accc;
+    color: #fff;
+
+    .ab-item,
+    a.ab-item,
+    & > #wp-toolbar span.ab-label,
+    & > #wp-toolbar span.noticon {
+        color: #fff;
+    }
+    .ab-icon,
+    .ab-icon::before,
+    .ab-item::after,
+    .ab-item::before {
+        color: #e5f8ff;
+    }
+    .ab-top-menu > li.hover > .ab-item,
+    .ab-top-menu > li.menupop.hover > .ab-item,
+    .ab-top-menu > li:hover > .ab-item,
+    .ab-top-menu > li > .ab-item:focus,
+    &-nojs .ab-top-menu > li.menupop:hover > .ab-item,
+    &.nojq .quicklinks .ab-top-menu > li > .ab-item:focus {
+        background: none repeat scroll 0 0 #4796b3;
+        color: #fff;
+    }
+    li:hover #adminbarsearch::before,
+    li:hover .ab-icon::before,
+    li:hover .ab-item::after,
+    li:hover .ab-item::before,
+    & > #wp-toolbar a:focus span.ab-label,
+    & > #wp-toolbar li.hover span.ab-label,
+    & > #wp-toolbar li:hover span.ab-label {
+        color: #fff;
+    }
+    .menupop .ab-sub-wrapper {
+        background: none repeat scroll 0 0 #4796b3;
+    }
+    .quicklinks .menupop ul.ab-sub-secondary,
+    .quicklinks .menupop ul.ab-sub-secondary .ab-submenu {
+        background: none repeat scroll 0 0 #74b6ce;
+    }
+    .ab-submenu .ab-item,
+    .quicklinks .menupop ul li a,
+    .quicklinks .menupop.hover ul li a,
+    &-nojs .quicklinks .menupop:hover ul li a {
+        color: #e2ecf1;
+    }
+    .menupop .menupop > .ab-item::before,
+    .quicklinks li .blavatar {
+        color: #e5f8ff;
+    }
+    .menupop .menupop > .ab-item:hover::before,
+    .quicklinks .menupop ul li a:focus,
+    .quicklinks .menupop ul li a:focus strong,
+    .quicklinks .menupop ul li a:hover,
+    .quicklinks .menupop ul li a:hover strong,
+    .quicklinks .menupop.hover ul li a:focus,
+    .quicklinks .menupop.hover ul li a:hover,
+    .quicklinks li a:hover .blavatar,
+    li .ab-item:focus::before,
+    li a:focus .ab-icon::before,
+    li.hover .ab-icon::before,
+    li.hover .ab-item::after,
+    li.hover .ab-item::before,
+    li:hover #adminbarsearch::before,
+    li:hover .ab-icon::before,
+    li:hover .ab-item::after,
+    li:hover .ab-item::before,
+    &.nojs .quicklinks .menupop:hover ul li a:focus,
+    &.nojs .quicklinks .menupop:hover ul li a:hover {
+        color: #fff;
+    }
+    #adminbarsearch::before {
+        color: #e5f8ff;
+    }
+    & > #wp-toolbar > #wp-admin-bar-top-secondary > #wp-admin-bar-search #adminbarsearch input.adminbar-input:focus {
+        background: none repeat scroll 0 0 #6eb9d4;
+        color: #fff;
+    }
+    #adminbarsearch .adminbar-input:-moz-placeholder {
+        color: #fff;
+        opacity: 0.7;
+    }
+    #adminbarsearch .adminbar-input::-moz-placeholder {
+        color: #fff;
+        opacity: 0.7;
+    }
+    .quicklinks li#wp-admin-bar-my-account.with-avatar > a img {
+        background-color: #6eb9d4;
+        border-color: #6eb9d4;
+    }
+    #wp-admin-bar-user-info .display-name,
+    #wp-admin-bar-user-info a:hover .display-name {
+        color: #fff;
+    }
+    #wp-admin-bar-user-info .username {
+        color: #e2ecf1;
+    }
+}

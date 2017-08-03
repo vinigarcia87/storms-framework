@@ -1,0 +1,83 @@
+
+html {
+  background-image: url(../img/storms/logo/TheStormsBlue.png);
+  background-position: right bottom;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+#profile-page .user-rich-editing-wrap,
+#profile-page .user-comment-shortcuts-wrap {
+  display: none;
+}
+
+a[href*="user-onine"] .wp-menu-image {
+  display: none;
+}
+
+.user-card {
+  margin: 0 auto 10px;
+  text-align: center;
+  font-size: 7px;
+  display: table;
+}
+
+.user-card .user-avatar,
+.user-card .user-info {
+  display: table-row;
+  vertical-align: middle;
+  padding-right: 10px;
+}
+
+.user-card .user-avatar img {
+  width: 120px;
+  height: 120px;
+  border-radius: 60px;
+}
+
+.auto-fold #adminmenu li.toplevel_page_user-onine a.menu-top, .auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
+  height: auto;
+}
+
+.auto-fold #adminmenu li.toplevel_page_user-onine .wp-menu-name, .auto-fold #adminmenu li.toplevel_page_developed-by .wp-menu-name {
+  margin-left: 0;
+}
+
+
+li.toplevel_page_user-onine a.menu-top,
+.auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
+  height: auto;
+}
+
+.auto-fold #adminmenu li.toplevel_page_user-onine .wp-menu-name,
+.auto-fold #adminmenu li.toplevel_page_developed-by .wp-menu-name {
+  margin-left: 0;
+}
+
+a[href*="developed-by"] .wp-menu-image {
+  display: none;
+}
+
+#developed-by {
+  text-align: center;
+}
+
+#developed-by > img {
+  border-top: 1px solid #fff;
+  margin-top: 20px;
+  padding-top: 20px;
+}
+
+.user-info h1, .user-info h2, .user-info h3 {
+  color: #fff;
+}
+
+#wpfooter {
+  border-top: 1px solid #efefef;
+}
+
+#wpfooter p#footer {
+  float: left;
+}
+
+/*# sourceMappingURL=maps/admin.css.map */

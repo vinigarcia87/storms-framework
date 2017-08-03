@@ -1,0 +1,70 @@
+/*!
+ * Storms Framework (http://storms.com.br/)
+ *
+ * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
+ * @copyright (c) Copyright 2012-2017, Storms Websolutions
+ * @license   Licensed under MIT
+ * @package   Storms
+ * @version   3.0.0
+ * 
+ * Login Area Style
+ */
+
+@charset "UTF-8";
+
+// ==========================================================================
+// Style used to style the Login page
+// ==========================================================================
+
+// Imagem de fundo
+html {
+	background: url(../img/storms/wallpaper/fundo.jpg) no-repeat center center fixed;
+	background-size: cover;
+}
+
+.login {
+	background: none;
+	
+	// Modificando a logo central
+	h1 a {
+		background: url(../img/storms/logo/storms/logo-storms-branca.png) 0 0 no-repeat !important;
+		height: 56px !important;
+		width: 217px !important;
+	}
+
+	// Modificacao dos links de lost password e back to website
+	#nav {
+		float: left;
+		margin: 15px 0;
+		padding: 0;
+	}
+	#backtoblog {
+		float: right;
+		margin: 15px 0;
+		padding: 0;
+	}
+	#nav a, #backtoblog a {
+		color: #FFFFFF;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.075);
+	}
+
+	// Deixa as labels sem negrito
+	label {
+		font-weight: 100 !important;	
+	}
+
+	// Sombra no fundo do form de login e no quadro de mensagens
+	form, .message {
+		box-shadow: 0 0 19px -3px #000000;
+	}
+
+	// Mensagem de rodape no form de login
+	#footer {
+		color: #fff;
+		font-size: 10px;
+		margin-top: 50px;
+		text-align: center;
+		width: 100%;
+		text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.075);
+	}
+}

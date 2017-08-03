@@ -1,0 +1,24 @@
+{
+	"name": "vinigarcia87/StormsFramework3",
+	"description": "An Wordpress framework to make your themes safer and cleaner",
+	"keywords": ["storms","framework","wordpress"],
+	"homepage": "http://github.com/vinigarcia87/StormsFramework3",
+	"type": "library",
+	"license": "GPLv2",
+	"authors": [
+	{
+		"name": "Vinicius Garcia",
+		"email": "vinicius.garcia@storms.com.br",
+		"homepage": "http://storms.com.br"
+	}
+	],
+	"require": {
+		"php": ">=5.5.0"
+	},
+	
+	"autoload": {
+        "psr-4": {
+			"StormsFramework\\": "./StormsFramework/"
+		}
+    }
+}
