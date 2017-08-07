@@ -24,7 +24,11 @@ html {
 
 .login {
 	background: none;
-	
+
+	#login {
+		width: 350px;
+	}
+
 	// Modificando a logo central
 	h1 a {
 		background: url(../img/storms/logo/storms/logo-storms-branca.png) 0 0 no-repeat !important;
