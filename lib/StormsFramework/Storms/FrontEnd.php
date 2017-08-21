@@ -656,7 +656,7 @@ class FrontEnd extends Base\Runner
         $output_css .= '            font-size: 5em; ';
         $output_css .= '            position: absolute; ';
         $output_css .= '            bottom: 0; ';
-        $output_css .= '            color: #fec000; ';
+        $output_css .= '            color: #52accc; ';
         $output_css .= '        } ';
         $output_css .= '        .storms-gallery .cycle-prev { ';
         $output_css .= '            float: left; ';
@@ -682,7 +682,8 @@ class FrontEnd extends Base\Runner
         $output_css .= '            height: auto; ';
         $output_css .= '        } ';
         $output_css .= '        .cycle-2 .cycle-slide-active img { ';
-        $output_css .= '            filter: sepia(1) saturate(5); ';
+        $output_css .= '            -webkit-filter: drop-shadow(1px 1px 5px #52accc); ';
+        $output_css .= '            filter: drop-shadow(1px 1px 5px #52accc); ';
         $output_css .= '        } ';
         $output_css .= '    </style> ';
         /* ============================================================ */

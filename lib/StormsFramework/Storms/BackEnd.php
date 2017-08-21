@@ -49,6 +49,7 @@ class BackEnd extends Base\Runner
 
 			// Admin bar modifications
 			$this->loader
+                ->add_action( 'admin_bar_menu', 'toolbar_system_environment_alert', 9999 )
 				->add_action( 'wp_before_admin_bar_render', 'remove_adminbar_itens' )
 				->add_action( 'wp_enqueue_scripts', 'adminbar_color_scheme' )
 				->add_action( 'admin_bar_menu', 'add_adminbar_brand_link' );
@@ -220,6 +221,39 @@ class BackEnd extends Base\Runner
 	//</editor-fold>
 
 	//<editor-fold desc="Admin bar modifications">
+
+    /**
+     * Add an alert to admin bar to make clear what environment the user is conected to
+     * @param $wp_admin_bar
+     */
+    function toolbar_system_environment_alert( $wp_admin_bar ) {
+
+        switch( SF_ENV ) {
+            case 'PRD':
+                $env_class = 'production';
+                $env = strtoupper( __( 'production', 'storms' ) );
+                break;
+            case 'TST':
+                $env_class = 'testing';
+                $env = strtoupper( __( 'testing', 'storms' ) );
+                break;
+            case 'DEV':
+                $env_class = 'development';
+                $env = strtoupper( __( 'development', 'storms' ) );
+                break;
+            default:
+                $env_class = strtolower( SF_ENV );
+                $env = '<strong>' . SF_ENV . '</strong>';
+        }
+
+        $args = array(
+            'id'    => 'system_environment',
+            'title' => $env,
+            'href'  => '#',
+            'meta'  => array( 'class' => 'system-environment ' . $env_class )
+        );
+        $wp_admin_bar->add_node( $args );
+    }
 
 	/**
 	 * Remove menu items from admin bar

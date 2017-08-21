@@ -16,6 +16,9 @@
 // Style used to style the Admin Area
 // ==========================================================================
 
+@import "wp-admin-colorscheme";
+@import "../../../../../wp-admin/css/colors/_admin";
+
 html {
   background: {
     image: url(../img/storms/logo/TheStormsBlue.png);
@@ -23,6 +26,10 @@ html {
     attachment: fixed;
     repeat: no-repeat;
   }
+}
+
+body {
+  background: transparent !important;
 }
 
 #profile-page {
@@ -109,5 +116,41 @@ a[href*="developed-by"] .wp-menu-image {
 
   p#footer {
     float: left;
+  }
+}
+
+#wpadminbar {
+  /* System Environment Alert */
+  .system-environment {
+    position: absolute;
+    width: 200px;
+    text-align: center;
+    margin: 0 auto;
+    left: 45%;
+
+    font-weight: 900 !important;
+    color: #ffffff;
+    background-color: #084d84;
+
+    @-webkit-keyframes blink-bg {
+      0%, 49% { background-color: #ce0217; }
+      50%, 100% { background-color: #92000f; }
+    }
+    @-moz-keyframes blink-bg {
+      0%, 49% { background-color: #ce0217; }
+      50%, 100% { background-color: #92000f; }
+    }
+    @keyframes blink-bg {
+      0%, 49% { background-color: #ce0217; }
+      50%, 100% { background-color: #92000f; }
+    }
+
+    &.production {
+      color: #ffffff;
+      background-color: #92000f;
+      -webkit-animation: blink-bg 2.5s infinite;
+      -moz-animation:    blink-bg 2.5s infinite;
+      animation:         blink-bg 2.5s infinite;
+    }
   }
 }

@@ -43,13 +43,13 @@ class BrandInfo extends Base\Manager
         $env = '';
         switch( SF_ENV ) {
             case 'PRD':
-                $env = '<strong style="color: red;">' . __( 'PRODUCTION', 'storms' ) . '</strong>';
+                $env = '<strong style="color: #92000f;">' . strtoupper( __( 'production', 'storms' ) ) . '</strong>';
                 break;
             case 'TST':
-                $env = '<strong>' . __( 'TESTING', 'storms' ) . '</strong>';
+                $env = '<strong>' . strtoupper( __( 'testing', 'storms' ) ) . '</strong>';
                 break;
             case 'DEV':
-                $env = '<strong>' . __( 'DEVELOPMENT', 'storms' ) . '</strong>';
+                $env = '<strong>' . strtoupper( __( 'development', 'storms' ) ) . '</strong>';
                 break;
             default:
                 $env = '<strong>' . SF_ENV . '</strong>';
