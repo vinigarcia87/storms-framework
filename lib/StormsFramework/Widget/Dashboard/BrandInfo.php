@@ -39,7 +39,7 @@ class BrandInfo extends Base\Manager
 		$brand_name = 'Storms Websolutions';
 		$brand_email = 'storms@storms.com.br';
 		$brand_src = Storms\Helper::get_asset_url( '/img/storms/logo/brandinfo-logo.png' );
-		$brand_manual = get_option( 'storms_system_manual', '#' ); // @TODO Set default system manual link
+		$brand_manual = get_option( 'storms_system_manual', plugins_url( 'wp-manual/EasyWPGuide_WP4.8.pdf', STORMS_FRAMEWORK_PATH ) ); // @TODO Set default system manual link
         $env = '';
         switch( SF_ENV ) {
             case 'PRD':
@@ -66,7 +66,7 @@ class BrandInfo extends Base\Manager
 				   '	<ul style="display: table-cell;">' .
 				   '	<li>' . __( 'This website was developed by', 'storms' ) . ' ' . $brand_name . '</li>' .
 				   '	<li>' . __( 'Need help? Contact us at', 'storms' ) . ' <a href="' . $brand_email . '">' . $brand_email . '</a></li>' .
-				   '	<li>' . __( 'Have you read our system manual?', 'storms' ) . ' <a href="' . $brand_manual . '">' . __( 'Click here!', 'storms' ) . '</a></li>' .
+				   '	<li>' . __( 'Have you read our system manual?', 'storms' ) . ' <a href="' . $brand_manual . '" target="_blank">' . __( 'Click here!', 'storms' ) . '</a></li>' .
 				   '</ul>' .
 				   '<hr style="border-color: #fefefe -moz-use-text-color #fafafa;"/>' .
 				   

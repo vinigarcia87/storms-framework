@@ -1,8 +1,8 @@
-# Storms Framework v3.0
+# Storms Framework
 
 Storms Framework    | Descriptions
 ------------------: | :------------------
-**Theme:**          | [Storms Framework v3.0](Plugin URI: http://storms.com.br)
+**Theme:**          | [Storms Framework](Plugin URI: http://storms.com.br)
 **Description:**    | This framework was built to help developers to customize and optimize their themes. With Bootstrap 3 and a nice support to WooCommerce, this can be the plugin you need.
 **Version:**        | 3.0.0
 **Author:**         | [Storms Websolutions Team](http://storms.com.br)
@@ -11,7 +11,7 @@ Storms Framework    | Descriptions
 ## Product License
 
 ```
-© Copyright 2012-2016, Storms Websolutions | Storms Framework v3.0 - All rights reserved.
+© Copyright 2012-2017, Storms Websolutions | Storms Framework v3.0 - All rights reserved.
 The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and others, not including the PHP files is licensed with MIT or by the license specified inside the file.
 ```
 
@@ -31,3 +31,7 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 * [EditorConfig](http://editorconfig.org/) ready
 * [Aqua Resizer](https://github.com/syamilmj/Aqua-Resizer) modified class
 * [FitVids](http://fitvidsjs.com/)
+
+## WordPress Users Manual
+
+- https://easywpguide.com/wordpress-manual/
