@@ -626,6 +626,11 @@ a[href*="developed-by"] .wp-menu-image {
   }
 }
 
+#wpadminbar .system-environment.testing {
+  color: #ffffff;
+  background-color: #ded619;
+}
+
 #wpadminbar .system-environment.production {
   color: #ffffff;
   background-color: #92000f;

@@ -145,6 +145,11 @@ a[href*="developed-by"] .wp-menu-image {
       50%, 100% { background-color: #92000f; }
     }
 
+    &.testing {
+      color: #ffffff;
+      background-color: #ded619;
+    }
+
     &.production {
       color: #ffffff;
       background-color: #92000f;
