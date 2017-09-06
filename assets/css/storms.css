@@ -10958,51 +10958,51 @@ img#wpstats {
 }
 
 .widget_tag_cloud a:nth-child(1) {
-  font-size: 22px !important;
+  font-size: 26px !important;
 }
 
 .widget_tag_cloud a:nth-child(2) {
-  font-size: 22px !important;
+  font-size: 15px !important;
 }
 
 .widget_tag_cloud a:nth-child(3) {
-  font-size: 17px !important;
-}
-
-.widget_tag_cloud a:nth-child(4) {
-  font-size: 29px !important;
-}
-
-.widget_tag_cloud a:nth-child(5) {
-  font-size: 24px !important;
-}
-
-.widget_tag_cloud a:nth-child(6) {
-  font-size: 30px !important;
-}
-
-.widget_tag_cloud a:nth-child(7) {
-  font-size: 28px !important;
-}
-
-.widget_tag_cloud a:nth-child(8) {
-  font-size: 15px !important;
-}
-
-.widget_tag_cloud a:nth-child(9) {
   font-size: 13px !important;
 }
 
+.widget_tag_cloud a:nth-child(4) {
+  font-size: 14px !important;
+}
+
+.widget_tag_cloud a:nth-child(5) {
+  font-size: 23px !important;
+}
+
+.widget_tag_cloud a:nth-child(6) {
+  font-size: 22px !important;
+}
+
+.widget_tag_cloud a:nth-child(7) {
+  font-size: 30px !important;
+}
+
+.widget_tag_cloud a:nth-child(8) {
+  font-size: 28px !important;
+}
+
+.widget_tag_cloud a:nth-child(9) {
+  font-size: 16px !important;
+}
+
 .widget_tag_cloud a:nth-child(10) {
-  font-size: 25px !important;
+  font-size: 27px !important;
 }
 
 .widget_tag_cloud a:nth-child(11) {
-  font-size: 15px !important;
+  font-size: 32px !important;
 }
 
 .widget_tag_cloud a:nth-child(12) {
-  font-size: 24px !important;
+  font-size: 28px !important;
 }
 
 .wp-video-shortcode {
@@ -11186,10 +11186,6 @@ ul.page-numbers > li > span.current, ul.page-numbers > li > span.current:hover, 
 .hentry .odin-map img,
 .widget .odin-map img {
   max-width: none !important;
-}
-
-#header #main-navigation {
-  margin: 10px 0;
 }
 
 .post {
