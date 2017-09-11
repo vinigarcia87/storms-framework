@@ -143,16 +143,16 @@ class Layout extends Base\Runner
         // Main theme scripts
         if ( get_option( 'show_theme_scripts', true ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, false);
+                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             } else {
-                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, false);
+                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             }
             //wp_enqueue_script('main-script-theme'); // Attention! You have to enqueue on the pages you need!
         }
 
         // Cycle 2 jQuery slideshow plugin
         if ( get_option( 'load_cycle2', true ) ) {
-            wp_register_script('cycle2', Storms\Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, false);
+            wp_register_script('cycle2', Storms\Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             //wp_enqueue_script('cycle2'); // Attention! You have to enqueue on the pages you need!
 
             wp_enqueue_script('cycle2-carousel', Storms\Helper::get_asset_url('/js/cycle2/plugin/jquery.cycle2.carousel.min.js'), array('cycle2'), '1.0.0', true);
@@ -161,7 +161,7 @@ class Layout extends Base\Runner
 
         // Storms JS
         if ( get_option( 'load_stormsjs', false ) ) {
-            wp_register_script('storms-js', Storms\Helper::get_asset_url('/js/storms.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, false);
+            wp_register_script('storms-js', Storms\Helper::get_asset_url('/js/storms.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             //wp_enqueue_script('storms-js'); // Attention! You have to enqueue on the pages you need!
         }
 
