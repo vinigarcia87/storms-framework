@@ -121,7 +121,8 @@ class BackEnd extends Base\Runner
 	 */
 	public function set_default_favicon( $url, $size, $blog_id ) {
 		if( $url == '' ) {
-			return Storms\Helper::get_asset_url( '/img/storms/icons/storms_favicon.png' );
+		    $icon = get_option( 'website_favicon', '/img/storms/icons/storms_favicon.png' );
+			return Storms\Helper::get_asset_url( $icon );
 		}
 		return $url;
 	}
