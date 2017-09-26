@@ -68,12 +68,12 @@ class WooCommerce extends Base\Runner
 		 * Filters
 		 * @see  product_thumbnail_columns()
 		 * @see  products_per_page()
-		 * @see  number_of_columns()
+		 * @see  shop_loop_number_of_columns()
 		 */
 		$this->loader
 			->add_filter( 'woocommerce_product_thumbnails_columns', 'product_thumbnail_columns' )
 			->add_filter( 'loop_shop_per_page', 'products_per_page' )
-			->add_filter( 'loop_shop_columns', 'number_of_columns' );
+			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns', 5 );
 
 		$this->loader
 			->add_action( 'widgets_init', 'register_widgets_area' )
@@ -461,6 +461,7 @@ class WooCommerce extends Base\Runner
 			$layout = '2c-r';
 		}
 
+        echo '<div class="row">';
 		echo '<main id="content" class="main '. Layout::main_layout( $layout ) . '" role="main">';
 	}
 
@@ -495,6 +496,8 @@ class WooCommerce extends Base\Runner
 				get_sidebar('shop');
 			}
 		}
+
+        echo '</div>';
 	}
 
 	/**
@@ -515,9 +518,11 @@ class WooCommerce extends Base\Runner
 	 * Customization for bootstrap breadcrumbs
 	 */
 	public function woocommerce_breadcrumb(){
-		echo '<div class="col-xs-12">';
+        echo '<div class="row">';
+	    echo '<div class="col-xs-12">';
 		woocommerce_breadcrumb();
 		echo '</div>';
+        echo '</div>';
 	}
 
 	/**
@@ -551,7 +556,7 @@ class WooCommerce extends Base\Runner
 	 * @return integer number of products
 	 */
 	public function products_per_page() {
-		$numberColumns = get_option( 'number_of_columns', 4 );
+		$numberColumns = $this->shop_loop_number_of_columns();
 
 		if( $numberColumns == 3 ) {
 			$default = 9;
@@ -567,8 +572,8 @@ class WooCommerce extends Base\Runner
 	 * Default loop columns on product archives
 	 * @return integer products per row
 	 */
-	public function number_of_columns() {
-		return get_option( 'number_of_columns', 4 ); // Default is 4 products per row
+	public function shop_loop_number_of_columns() {
+		return get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
 	}
 
 	//</editor-fold>
@@ -681,7 +686,7 @@ class WooCommerce extends Base\Runner
 		if( is_shop() || $is_related ) {
 
 			// How many columns we want to show on shop loop?
-			$columns = get_option( 'shop_loop_columns', 4 );
+			$columns = $this->shop_loop_number_of_columns();
 
 			// We show different number of columns if is a related products loop
 			if( $is_related ) {
@@ -730,7 +735,7 @@ class WooCommerce extends Base\Runner
         }
 
 		// How many columns we want to show on shop loop?
-		$columns = get_option( 'shop_loop_columns', 4 );
+		$columns = $this->shop_loop_number_of_columns();
 
         // We show different number of columns if is a related products loop
         if( $is_related ) {
