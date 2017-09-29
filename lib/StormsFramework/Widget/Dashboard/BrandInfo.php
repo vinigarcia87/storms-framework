@@ -55,10 +55,10 @@ class BrandInfo extends Base\Manager
                 $env = '<strong>' . SF_ENV . '</strong>';
         }
         $env .= ( (defined( 'WP_DEBUG' ) && WP_DEBUG) ? '<i> - DEBUG está habilitado.</i>' : '' );
-		
-		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . '<br>' .
-                            '<!-- <small>Storms Framework v.' . STORMS_FRAMEWORK_VERSION . '</small><br> -->' .
-			                '' . __( 'System environment', 'storms' ) . ': ' . $env . '</p>';
+
+		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . ' ' .
+                            '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' .
+			                __( 'System environment', 'storms' ) . ': ' . $env . '</p>';
 
 		$content = '<div style="display: table-cell;vertical-align: middle;padding-right: 10px;">' .
 				   '	<img style="height: 70px;" alt="' . $brand_name . '" src="' . $brand_src . '">' .

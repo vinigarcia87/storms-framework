@@ -35,5 +35,9 @@ class Configuration extends Base\Manager
         // Define the System Version
         if ( !defined( 'STORMS_SYSTEM_VERSION' ) )
             define( 'STORMS_SYSTEM_VERSION', 'YYYY.MM.DD' );
+
+        // Define the System Commit ID
+        if ( !defined( 'STORMS_SYSTEM_COMMIT' ) )
+            define( 'STORMS_SYSTEM_COMMIT', '' );
 	}
 }

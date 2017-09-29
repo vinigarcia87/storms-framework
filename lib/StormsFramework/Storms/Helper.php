@@ -159,7 +159,6 @@ class Helper extends Base\Manager
 			<div id="developed-by" class="developed-by">
 				<img src="' . Helper::get_asset_url( '/img/storms/logo/bn_storms_white.png' ) . '">
 				<small>v.' . STORMS_SYSTEM_VERSION . '</small>
-				<!-- <small>Storms Framework v.' . STORMS_FRAMEWORK_VERSION . '</small> -->
 			</div>
 		';
 		return $html;
