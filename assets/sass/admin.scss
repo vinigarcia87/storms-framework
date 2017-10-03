@@ -63,6 +63,18 @@ a[href*="user-onine"] .wp-menu-image {
     height: 120px;
     border-radius: 60px;
   }
+
+  .user-info {
+    h1 {
+      color: #fff;
+      font-size: 2em;
+      margin: .67em 0;
+      text-align: center;
+      line-height: 18px;
+      font-weight: 600;
+      font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+    }
+  }
 }
 
 // Mobile adjustments
