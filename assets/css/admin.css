@@ -548,6 +548,16 @@ a[href*="user-onine"] .wp-menu-image {
   border-radius: 60px;
 }
 
+.user-card .user-info h1 {
+  color: #fff;
+  font-size: 2em;
+  margin: .67em 0;
+  text-align: center;
+  line-height: 18px;
+  font-weight: 600;
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+
 .auto-fold #adminmenu li.toplevel_page_user-onine a.menu-top, .auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
   height: auto;
 }
