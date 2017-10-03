@@ -282,6 +282,8 @@ class BackEnd extends Base\Runner
         $wp_admin_bar->remove_menu('revslider'); // Slider Revolution
         $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); // Visual Composer
 		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); // iThemes Security
+        $wp_admin_bar->remove_menu('autoptimize'); // Autoptimize
+        $wp_admin_bar->remove_menu('wphb'); // Hummingbird
 
 		// wp-admin-bar-top-secondary
 		$wp_admin_bar->remove_menu('search');
