@@ -299,13 +299,16 @@ html, body {
 	height: 100%;
 	margin: 0; padding: 0;  /* to avoid scrollbars */
 }
-body {
-	display: flex; /* use the flex model */
-	min-height: 100vh;
-	flex-direction: column; /* learn more: http://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
-}
-.wrap {
-	flex: 1;
+html:not(.ie):not(.edge) {
+	body {
+		display: flex; /* use the flex model */
+		min-height: 100vh;
+		flex-direction: column; /* learn more: http://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer/ */
+	}
+
+	.wrap {
+		flex: 1;
+	}
 }
 #footer {
 	width:100%;

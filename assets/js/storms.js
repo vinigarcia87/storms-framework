@@ -23,19 +23,42 @@ $(document).ready(function () {
     // Recupera a altura da tela do usuario
     //var window_height = $(window).height();
 
-    // Verifica se o acesso esta sendo feito por dispositivo mobile
-    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
-        $('body').addClass('mobile');
-    }
+    var $html = $('html');
 
-	// Define $.browser function
-	if (!$.browser) {
-		$.browser = {};
-		$.browser.mozilla = /mozilla/.test(navigator.userAgent.toLowerCase()) && !/webkit/.test(navigator.userAgent.toLowerCase());
-		$.browser.webkit = /webkit/.test(navigator.userAgent.toLowerCase());
-		$.browser.opera = /opera/.test(navigator.userAgent.toLowerCase());
-		$.browser.msie = /msie/.test(navigator.userAgent.toLowerCase());
-	}
+    // Define $.browser function
+    // @see https://github.com/lancedikson/bowser
+    if (!$.browser) {
+
+        // Verifica se o acesso esta sendo feito por dispositivo mobile
+        if (/android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent)) {
+            $html.addClass('mobile');
+
+            match = navigator.userAgent.match(/(ipod|iphone|ipad)/i);
+            iosdevice = ((match && match.length > 1 && match[1]) || '').toLowerCase();
+            if(iosdevice) {
+                $html.addClass(iosdevice);
+            }
+        }
+
+        $.browser = {};
+        $.browser.opera = /opera/i.test(navigator.userAgent);
+        $.browser.msie = /msie|trident/i.test(navigator.userAgent);
+        $.browser.msedge = /chrome.+? edge/i.test(navigator.userAgent);
+        $.browser.firefox = /firefox|iceweasel|fxios/i.test(navigator.userAgent);
+        $.browser.chrome = /chrome|crios|crmo/i.test(navigator.userAgent);
+        $.browser.safari = /safari|applewebkit/i.test(navigator.userAgent);
+    }
+    if( $.browser.msie ) {
+        match = navigator.userAgent.match(/(?:msie |rv:)(\d+(\.\d+)?)/i);
+        version = (match && match.length > 1 && match[1]) || '';
+        $html.addClass('ie');
+        $html.addClass('ie' + version);
+    } else if( $.browser.msie ) {
+        match = navigator.userAgent.match(/edge\/(\d+(\.\d+)?)/i);
+        version = (match && match.length > 1 && match[1]) || '';
+        $html.addClass('edge');
+        $html.addClass('edge' + version);
+    }
 });
 
 $(function () {
