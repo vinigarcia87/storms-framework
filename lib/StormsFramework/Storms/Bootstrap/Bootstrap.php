@@ -26,14 +26,19 @@ class Bootstrap extends Base\Runner
 	public function define_hooks() {
         $this->loader
 			->add_action( 'wp_enqueue_scripts', 'bootstrap_scripts' )
-			->add_action( 'wp_enqueue_scripts', 'bootstrap_styles', 5 )
+			->add_action( 'wp_enqueue_scripts', 'bootstrap_styles', 5 );
 
-			->add_filter( 'the_content', 'responsive_images', 10 )
-			->add_filter( 'post_thumbnail_html', 'responsive_images', 10 )
-			->add_filter( 'image_send_to_editor', 'responsive_images', 10 )
-			->add_action( 'woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 4 )
-			->add_filter( 'woocommerce_single_product_image_html', 'responsive_images', 10, 2 )
+        // Add CSS class to images on posts and pages
+        if( get_option( 'add_extra_classes_to_img', false ) ) {
+            $this->loader
+                ->add_filter('the_content', 'responsive_images', 10)
+                ->add_filter('post_thumbnail_html', 'responsive_images', 10)
+                ->add_filter('image_send_to_editor', 'responsive_images', 10)
+                ->add_action('woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 4)
+                ->add_filter('woocommerce_single_product_image_html', 'responsive_images', 10, 2);
+        }
 
+        $this->loader
             ->add_filter( 'get_search_form', 'get_search_form' )
 			->add_filter( 'the_password_form', 'password_form' );
 
@@ -110,28 +115,42 @@ class Bootstrap extends Base\Runner
 
 	//</editor-fold>
 
-	/**
-	 * Wordpress Bootstrap 3 responsive images
-	 * Add img-responsive class and remove dimensions
-	 * Source: https://gist.github.com/mkdizajn/7352469
-	 */
-	public function responsive_images( $html ) {
-		$classes = 'img-responsive'; // Separated by spaces, e.g. 'img image-link'
+    /**
+     * Wordpress Bootstrap 3 responsive images
+     * Add img-responsive class to images
+     * Source: https://gist.github.com/mkdizajn/7352469
+     * @see https://stackoverflow.com/a/20499803/1003020
+     */
+    public function responsive_images( $content ) {
+        $new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
 
-		// Check if there are already classes assigned to the anchor
-		if ( preg_match('/<img.*? class="/', $html) ) {
-			$html = preg_replace('/(<img.*? class=".*?)(".*?\/>)/', '$1 ' . $classes . ' $2', $html);
-		} else {
-			$html = preg_replace('/(<img.*?)(\/>)/', '$1 class="' . $classes . '" $2', $html);
-		}
+        $content = mb_convert_encoding( $content, 'HTML-ENTITIES', "UTF-8" );
+        $document = new \DOMDocument();
+        libxml_use_internal_errors( true );
+        $document->loadHTML( utf8_decode( $content ) );
+
+        $imgs = $document->getElementsByTagName( 'img' );
+        foreach( $imgs as $img ) {
+            $existing_class = $img->getAttribute('class');
+            $img_classes = array_unique( array_merge( $new_classes, explode( ' ', $existing_class ) ) );
+
+            $img->setAttribute( 'class', implode( ' ', $img_classes ) );
+        }
+
+        $html = $document->saveHTML();
+        return $html;
+
+        //if ( preg_match('/<img.*? class="/', $html) ) {
+        //    $html = preg_replace('/(<img.*? class=".*?)(".*?\/>)/', '$1 ' . $classes . ' $2', $html);
+        //} else {
+        //    $html = preg_replace('/(<img.*?)(\/>)/', '$1 class="' . $classes . '" $2', $html);
+        //}
 
         // remove dimensions from images
-		// @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
-		// @see https://github.com/woocommerce/woocommerce/issues/15376
-		//$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
-
-		return $html;
-	}
+        // @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
+        // @see https://github.com/woocommerce/woocommerce/issues/15376
+        //$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
+    }
 
 	/**
 	 * Bootstrap password form for posts
