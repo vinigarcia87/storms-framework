@@ -83,6 +83,7 @@ class WooCommerce extends Base\Runner
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
+			->add_action( 'product_cat_class', 'content_product_class' )
 			->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
 
         // @TODO Verificar a necessidade deste codigo
@@ -685,7 +686,7 @@ class WooCommerce extends Base\Runner
         }
 
 		// Returns true when on the product archive page (shop)
-		if( is_shop() || $is_related ) {
+		if( is_shop() || is_product_category() || is_product_tag() || $is_related ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
