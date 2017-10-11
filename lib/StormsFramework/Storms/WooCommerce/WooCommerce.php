@@ -73,7 +73,7 @@ class WooCommerce extends Base\Runner
 		$this->loader
 			->add_filter( 'woocommerce_product_thumbnails_columns', 'product_thumbnail_columns' )
 			->add_filter( 'loop_shop_per_page', 'products_per_page' )
-			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns', 5 );
+			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' );
 
 		$this->loader
 			->add_action( 'widgets_init', 'register_widgets_area' )
@@ -576,7 +576,8 @@ class WooCommerce extends Base\Runner
 	 * @return integer products per row
 	 */
 	public function shop_loop_number_of_columns() {
-		return get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+        $columns = get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+        return $columns;
 	}
 
 	//</editor-fold>
