@@ -38,9 +38,10 @@ class WooCommerce extends Base\Runner
 		$this->loader
             // @see https://gregrickaby.com/2013/05/remove-woocommerce-styles-and-scripts/
 			->add_filter( 'woocommerce_enqueue_styles', 'remove_woocommerce_style' )
-            ->add_action( 'wp_enqueue_scripts', 'manage_woocommerce_scripts', 99 )
+            ->add_action( 'wp_enqueue_scripts', 'manage_woocommerce_scripts', 99 );
 
-			->add_action( 'after_switch_theme', 'woocommerce_image_dimensions', 1 );
+			// @TODO Verificar a necessidade deste codigo
+			//->add_action( 'after_switch_theme', 'woocommerce_image_dimensions', 1 );
 
         $this->loader
             ->add_filter( 'woocommerce_page_title', 'shop_page_title' )
@@ -73,7 +74,8 @@ class WooCommerce extends Base\Runner
 		$this->loader
 			->add_filter( 'woocommerce_product_thumbnails_columns', 'product_thumbnail_columns' )
 			->add_filter( 'loop_shop_per_page', 'products_per_page' )
-			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' );
+			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' )
+			->add_filter( 'woocommerce_output_related_products_args', 'related_products_args' );
 
 		$this->loader
 			->add_action( 'widgets_init', 'register_widgets_area' )
@@ -87,7 +89,7 @@ class WooCommerce extends Base\Runner
 			->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
 
         // @TODO Verificar a necessidade deste codigo
-		add_shortcode( 'storms_featured_products', array( $this, 'featured_products' ) );
+		//add_shortcode( 'storms_featured_products', array( $this, 'featured_products' ) );
 	}
 
 	//<editor-fold desc="Styles and definitions">
@@ -576,7 +578,15 @@ class WooCommerce extends Base\Runner
 	 * @return integer products per row
 	 */
 	public function shop_loop_number_of_columns() {
-        $columns = get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+		global $woocommerce_loop;
+
+		$columns = get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+
+		// If the number of columns is already setted (like, on a shortcode's parameter), we preserve it here
+		if( isset( $woocommerce_loop['columns'] ) ) {
+			$columns = $woocommerce_loop['columns'];
+		}
+
         return $columns;
 	}
 
@@ -671,6 +681,16 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
+	 * Change number of related products on product page
+	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
+	 */
+	function related_products_args( $args ) {
+		$args['posts_per_page'] = 3; // 3 related products
+		$args['columns'] = apply_filters( 'woocommerce_related_products_columns', 3 ); // Default: arranged in 3 columns
+		return $args;
+	}
+
+	/**
 	 * Get the classes for each product on the shop list, accordingly to the columns number
 	 * @param array $classes Array of classes of the current post
 	 * @return array Array of classes of the current post modified
@@ -694,7 +714,7 @@ class WooCommerce extends Base\Runner
 
 			// We show different number of columns if is a related products loop
 			if( $is_related ) {
-                $columns = apply_filters( 'woocommerce_related_products_columns', 2 );
+                $columns = apply_filters( 'woocommerce_related_products_columns', 3 );
             }
 
 			switch ( $columns ) {
