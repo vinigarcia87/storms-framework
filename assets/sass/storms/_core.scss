@@ -93,6 +93,18 @@
     max-width: 100%;
 }
 
+// BootStrap 3 container inside container-fluid
+// @see https://stackoverflow.com/a/28635302
+// Large devices (large desktops, 1200px and up)
+@media (min-width: $screen-lg-min) {
+	.container-fluid {
+		.container {
+			padding-left: 0;
+			padding-right: 0;
+		}
+	}
+}
+
 // ==========================================================================
 // CSS useful classes
 // ==========================================================================
