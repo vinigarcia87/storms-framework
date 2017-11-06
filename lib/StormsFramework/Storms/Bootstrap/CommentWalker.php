@@ -57,6 +57,8 @@ class CommentWalker extends \Walker_Comment
 						<time datetime="<?php comment_time( 'c' ); ?>">
 							<?php printf( _x( '%1$s', '1: date' ), get_comment_date() ); ?>
 						</time>
+
+                        <?php do_action( 'woocommerce_review_before_comment_meta', $comment ); ?>
 					</div><!-- .comment-header -->
 
 					<?php if ( '0' == $comment->comment_approved ) : ?>
@@ -69,16 +71,19 @@ class CommentWalker extends \Walker_Comment
 
 					<ul class="list-inline">
 						<?php
-							comment_reply_link( array_merge( $args, array(
-								'add_below' => 'div-comment',
-								'depth'     => $depth,
-								'max_depth' => $args['max_depth'],
-								'before'    => '<li class="reply-link">',
-								'after'     => '</li>',
-								'reply_text'    => '<i class="fa fa-reply" aria-hidden="true"></i> ' . __( 'Reply' ),
-							) ) );
-						?>
-						<?php edit_comment_link( __( 'Edit' ), '<li class="edit-link">', '</li>' ); ?>
+                            $args['allow_reply'] = $args['allow_reply'] ?? true;
+                            if( $args['allow_reply'] ) {
+                                comment_reply_link(array_merge($args, array(
+                                    'add_below' => 'div-comment',
+                                    'depth' => $depth,
+                                    'max_depth' => $args['max_depth'],
+                                    'before' => '<li class="reply-link">',
+                                    'after' => '</li>',
+                                    'reply_text' => '<i class="fa fa-reply" aria-hidden="true"></i> ' . __('Reply'),
+                                )));
+                            }
+							edit_comment_link( __( 'Edit' ), '<li class="edit-link">', '</li>' );
+                        ?>
 					</ul>
 
 				</div>

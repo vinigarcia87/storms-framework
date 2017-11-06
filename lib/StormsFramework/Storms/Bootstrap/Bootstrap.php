@@ -420,8 +420,6 @@ class Bootstrap extends Base\Runner
 				'<input id="author" class="form-control" name="author" type="text" placeholder="Nome" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30"' . $aria_req . ' /></div>',
 			'email'  => '<div class="form-group comment-form-email"> '. //<label for="email">' . __( 'Email', 'storms' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' .
 				'<input id="email" class="form-control" name="email" ' . ( $html5 ? 'type="email"' : 'type="text"' ) . ' placeholder="E-mail" value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30"' . $aria_req . ' /></div>',
-			//'url'    => '<div class="form-group comment-form-url"><label for="url">' . __( 'Website', 'storms' ) . '</label> ' .
-			//	'<input id="url" class="form-control" name="url" ' . ( $html5 ? 'type="url"' : 'type="text"' ) . ' value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" /></div>',
 		);
 
 		$args = array(
@@ -444,7 +442,7 @@ class Bootstrap extends Base\Runner
 			'submit_field'         => '<p class="form-submit">%1$s %2$s</p>',
 		);
 
-		return $args;
+		return apply_filters( 'storms_wc_product_review_comment_form_args', $args );
 
 	}
 
