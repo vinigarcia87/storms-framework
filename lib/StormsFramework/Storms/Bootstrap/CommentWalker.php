@@ -53,7 +53,8 @@ class CommentWalker extends \Walker_Comment
 					<div class="comment-header">
 						<?php printf( '<span class="media-heading">%s</span>', get_comment_author_link() ); ?>
 
-						comentou no dia
+                        <?php _e( 'comentou em', 'storms' ) ?>
+
 						<time datetime="<?php comment_time( 'c' ); ?>">
 							<?php printf( _x( '%1$s', '1: date' ), get_comment_date() ); ?>
 						</time>
