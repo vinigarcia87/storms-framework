@@ -75,7 +75,9 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_product_thumbnails_columns', 'product_thumbnail_columns' )
 			->add_filter( 'loop_shop_per_page', 'products_per_page' )
 			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' )
-			->add_filter( 'woocommerce_output_related_products_args', 'related_products_args' );
+			->add_filter( 'woocommerce_output_related_products_args', 'related_products_args' )
+            ->add_filter( 'woocommerce_cross_sells_total', 'cross_sells_limit' )
+            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' );
 
 		$this->loader
 			->add_action( 'widgets_init', 'register_widgets_area' )
@@ -684,11 +686,29 @@ class WooCommerce extends Base\Runner
 	 * Change number of related products on product page
 	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
 	 */
-	function related_products_args( $args ) {
+    public function related_products_args( $args ) {
 		$args['posts_per_page'] = 3; // 3 related products
 		$args['columns'] = apply_filters( 'woocommerce_related_products_columns', 3 ); // Default: arranged in 3 columns
 		return $args;
 	}
+
+    /**
+     * Change the number of products to be shown on cross-sells loop
+     * @param $limit
+     * @return int
+     */
+    public function cross_sells_limit( $limit ) {
+        return 3; // @TODO Make this customizable
+    }
+
+    /**
+     * Change the number of columns to be shown on cross-sells loop
+     * @param $columns
+     * @return int
+     */
+    public function cross_sells_columns( $columns ) {
+        return 3; // @TODO Make this customizable
+    }
 
 	/**
 	 * Get the classes for each product on the shop list, accordingly to the columns number
@@ -706,8 +726,16 @@ class WooCommerce extends Base\Runner
             $classes[] = $woocommerce_loop['name'];
         }
 
+        // Verificamos se este eh um produto no loop de cross sells
+        $is_cross_sells = false;
+        if( isset( $woocommerce_loop['name'] ) &&
+            $woocommerce_loop['name'] == 'cross-sells' ) {
+            $is_cross_sells = true;
+            $classes[] = $woocommerce_loop['name'];
+        }
+
 		// Returns true when on the product archive page (shop)
-		if( is_shop() || is_product_category() || is_product_tag() || $is_related ) {
+		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
