@@ -338,9 +338,23 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * Remove version query string from all styles and scripts
+     * @see https://www.virendrachandak.com/techtalk/how-to-remove-wordpress-version-parameter-from-js-and-css-files/
+     * @see https://kellenmace.com/force-css-changes-to-go-live-immediately/
 	 */
 	public function remove_script_version( $src ) {
-		return $src ? esc_url( remove_query_arg( 'ver', $src ) ) : false;
+	    if( ! $src ) {
+	        return false;
+        }
+
+        // Remove the default version parameter from resources
+	    $src = esc_url( remove_query_arg( 'ver', $src ) );
+
+	    if( get_option( 'timestamp_assets', true ) ) {
+            $ver = filemtime( get_stylesheet_directory() . '/functions.php' );
+            $src = esc_url( add_query_arg( [ 'ver' => $ver ], $src ) );
+        }
+
+        return $src;
 	}
 
 	/**
