@@ -28,6 +28,8 @@ class Helper extends Base\Manager
 
 	/**
 	 * Debug variables
+     * @reminder (new \Exception())->getTraceAsString() to show call stack
+     * @see https://stackoverflow.com/a/7039409/1003020
 	 */
 	public static function debug( $variable, $title = '', $write_on_file = true ) {
 		$date = (new \DateTime())->format('Y-m-d H:i:s');
