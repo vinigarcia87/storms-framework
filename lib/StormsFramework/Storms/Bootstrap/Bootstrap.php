@@ -29,13 +29,13 @@ class Bootstrap extends Base\Runner
 			->add_action( 'wp_enqueue_scripts', 'bootstrap_styles', 5 );
 
         // Add CSS class to images on posts and pages
-        if( get_option( 'add_extra_classes_to_img', false ) ) {
+        if( get_option( 'add_extra_classes_to_img', true ) ) {
             $this->loader
                 ->add_filter('the_content', 'responsive_images', 10)
                 ->add_filter('post_thumbnail_html', 'responsive_images', 10)
                 ->add_filter('image_send_to_editor', 'responsive_images', 10)
-                ->add_action('woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 4)
-                ->add_filter('woocommerce_single_product_image_html', 'responsive_images', 10, 2);
+				->add_action('woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 2)
+				->add_filter('wp_get_attachment_image_attributes','add_class_post_thumbnail', 10);
         }
 
         $this->loader
@@ -46,7 +46,7 @@ class Bootstrap extends Base\Runner
 		add_shortcode( 'gallery', array( $this, 'shortcode_gallery' ) );
 
 		$this->loader
-			->add_filter( 'get_calendar', 'caledar_widget' )
+			->add_filter( 'get_calendar', 'calendar_widget' )
 			->add_filter( 'comment_reply_link', 'add_bootstrap_btn_class', 10, 4 )
 			->add_filter( 'get_avatar', 'avatar_img_circle_class', 10, 1 )
 			->add_filter( 'cleaner_gallery_image', 'cleaner_gallery_anchor_class', 99, 4 )
@@ -115,42 +115,51 @@ class Bootstrap extends Base\Runner
 
 	//</editor-fold>
 
-    /**
-     * Wordpress Bootstrap 3 responsive images
-     * Add img-responsive class to images
-     * Source: https://gist.github.com/mkdizajn/7352469
-     * @see https://stackoverflow.com/a/20499803/1003020
-     */
-    public function responsive_images( $content ) {
-        $new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
+	/**
+	 * Wordpress Bootstrap 3 responsive images
+	 * Add img-responsive class to images
+	 * Source: https://gist.github.com/mkdizajn/7352469
+	 * @see https://stackoverflow.com/a/20499803/1003020
+	 */
+	public function responsive_images( $content ) {
+		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
 
-        $content = mb_convert_encoding( $content, 'HTML-ENTITIES', "UTF-8" );
-        $document = new \DOMDocument();
-        libxml_use_internal_errors( true );
-        $document->loadHTML( utf8_decode( $content ) );
+		$content = mb_convert_encoding( $content, 'HTML-ENTITIES', "UTF-8" );
+		$document = new \DOMDocument();
+		libxml_use_internal_errors( true );
+		$document->loadHTML( utf8_decode( $content ) );
 
-        $imgs = $document->getElementsByTagName( 'img' );
-        foreach( $imgs as $img ) {
-            $existing_class = $img->getAttribute('class');
-            $img_classes = array_unique( array_merge( $new_classes, explode( ' ', $existing_class ) ) );
+		$imgs = $document->getElementsByTagName( 'img' );
+		foreach( $imgs as $img ) {
+			$existing_class = $img->getAttribute('class');
+			$img_classes = array_unique( array_merge( $new_classes, explode( ' ', $existing_class ) ) );
 
-            $img->setAttribute( 'class', implode( ' ', $img_classes ) );
-        }
+			$img->setAttribute( 'class', implode( ' ', $img_classes ) );
+		}
 
-        $html = $document->saveHTML();
-        return $html;
+		$html = $document->saveHTML();
 
-        //if ( preg_match('/<img.*? class="/', $html) ) {
-        //    $html = preg_replace('/(<img.*? class=".*?)(".*?\/>)/', '$1 ' . $classes . ' $2', $html);
-        //} else {
-        //    $html = preg_replace('/(<img.*?)(\/>)/', '$1 class="' . $classes . '" $2', $html);
-        //}
+		// remove dimensions from images
+		// @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
+		// @see https://github.com/woocommerce/woocommerce/issues/15376
+		//$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
 
-        // remove dimensions from images
-        // @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
-        // @see https://github.com/woocommerce/woocommerce/issues/15376
-        //$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
-    }
+		return $html;
+	}
+
+	/**
+	 *
+	 * @param $attr
+	 * @return mixed
+	 */
+	function add_class_post_thumbnail($attr) {
+		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
+
+		foreach( $new_classes as $class ) {
+			$attr['class'] .= ' ' . $class;
+		}
+		return $attr;
+	}
 
 	/**
 	 * Bootstrap password form for posts
@@ -306,7 +315,7 @@ class Bootstrap extends Base\Runner
 	/**
 	 * Modify the calendar widget styling to work better for bootstrap styling
 	 */
-	public function caledar_widget( $html ) {
+	public function calendar_widget( $html ) {
 		if ( ! $html )
 			return;
 
@@ -483,13 +492,13 @@ class Bootstrap extends Base\Runner
 	 * @param  int    $depth   Comment depth.
 	 *
 	 * @return void
-	 * 
+	 *
 	 * @deprecated Esta função não está mais disponivel. Use o Bootstrap\CommentWalker no lugar.
 	 */
 	public static function comments_loop( $comment, $args, $depth ) {
 
 		throw new Exception( 'Deprecated function called' );
-		
+
 		$GLOBALS['comment'] = $comment;
 		switch ( $comment->comment_type ) {
 			case 'pingback' :
