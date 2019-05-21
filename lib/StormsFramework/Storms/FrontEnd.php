@@ -326,7 +326,7 @@ class FrontEnd extends Base\Runner
 	 */
 	public function clean_script_tag( $input ) {
 		$input = str_replace( "type='text/javascript' ", '', $input );
-		return str_replace( "'", '"', $input );
+		return $input;
 	}
 
 	/**

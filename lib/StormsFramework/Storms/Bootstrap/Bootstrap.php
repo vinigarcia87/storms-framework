@@ -145,8 +145,6 @@ class Bootstrap extends Base\Runner
 			// @see https://github.com/woocommerce/woocommerce/issues/15376
 			//$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
 
-			\StormsFramework\Storms\Helper::debug($html);
-
 			return $html;
 		}
 	}

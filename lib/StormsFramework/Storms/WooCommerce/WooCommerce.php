@@ -716,7 +716,15 @@ class WooCommerce extends Base\Runner
 	 * @return array Array of classes of the current post modified
 	 */
 	public function content_product_class( $classes ) {
-        global $woocommerce_loop;
+		global $woocommerce_loop;
+
+		// Verificamos se este eh um produto no loop de products
+		$is_products = false;
+		if( isset( $woocommerce_loop['name'] ) &&
+			$woocommerce_loop['name'] == 'products' ) {
+			$is_products = true;
+			$classes[] = $woocommerce_loop['name'];
+		}
 
         // Verificamos se este eh um produto no loop de related products
         $is_related = false;
@@ -735,7 +743,7 @@ class WooCommerce extends Base\Runner
         }
 
 		// Returns true when on the product archive page (shop)
-		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells ) {
+		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells || $is_products ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();

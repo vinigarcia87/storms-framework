@@ -396,7 +396,7 @@ class Layout extends Base\Runner
 				$layout = 'default';
 			}
 		}
-		
+
 		if( $layout == 'default' ) {
 			$layout = is_page() ? '1c' : is_rtl() ? '2c-r' : '2c-l';
 		}
@@ -424,7 +424,7 @@ class Layout extends Base\Runner
 		if ( current_theme_supports( 'theme-layouts' ) && ! is_admin() ) {
 
 			$layout = get_theme_mod( 'theme_layout' );
-			
+
 			if( $layout == 'default' ) {
 				$layout = is_page() ? '1c' : is_rtl() ? '2c-r' : '2c-l';
 			}
