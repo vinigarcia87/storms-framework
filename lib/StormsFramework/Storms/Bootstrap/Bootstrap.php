@@ -122,29 +122,33 @@ class Bootstrap extends Base\Runner
 	 * @see https://stackoverflow.com/a/20499803/1003020
 	 */
 	public function responsive_images( $content ) {
-		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
+		if($content !== '') {
+			$new_classes = apply_filters('add_classes_to_images', array('img-responsive')); // Array of classes
 
-		$content = mb_convert_encoding( $content, 'HTML-ENTITIES', "UTF-8" );
-		$document = new \DOMDocument();
-		libxml_use_internal_errors( true );
-		$document->loadHTML( utf8_decode( $content ) );
+			$content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
+			$document = new \DOMDocument();
+			libxml_use_internal_errors(true);
+			$document->loadHTML(utf8_decode($content));
 
-		$imgs = $document->getElementsByTagName( 'img' );
-		foreach( $imgs as $img ) {
-			$existing_class = $img->getAttribute('class');
-			$img_classes = array_unique( array_merge( $new_classes, explode( ' ', $existing_class ) ) );
+			$imgs = $document->getElementsByTagName('img');
+			foreach ($imgs as $img) {
+				$existing_class = $img->getAttribute('class');
+				$img_classes = array_unique(array_merge($new_classes, explode(' ', $existing_class)));
 
-			$img->setAttribute( 'class', implode( ' ', $img_classes ) );
+				$img->setAttribute('class', implode(' ', $img_classes));
+			}
+
+			$html = $document->saveHTML();
+
+			// remove dimensions from images
+			// @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
+			// @see https://github.com/woocommerce/woocommerce/issues/15376
+			//$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
+
+			\StormsFramework\Storms\Helper::debug($html);
+
+			return $html;
 		}
-
-		$html = $document->saveHTML();
-
-		// remove dimensions from images
-		// @WARNING If we remove the width/height properties from images, the WooCommerce PhotoSwipe will not work!
-		// @see https://github.com/woocommerce/woocommerce/issues/15376
-		//$html = preg_replace( '/(width|height)=\"\d*\"\s/', "", $html );
-
-		return $html;
 	}
 
 	/**
