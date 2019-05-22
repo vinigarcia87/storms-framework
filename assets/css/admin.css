@@ -58,7 +58,7 @@ input[type=radio]:checked:before {
           box-shadow: inset 0 1px 0 #d39323, 0 0 2px 1px #33b3db;
 }
 
-.wp-core-ui .button-primary:active {
+.wp-core-ui .button-primary:active, .wp-core-ui .button-primary.active, .wp-core-ui .button-primary.active:focus, .wp-core-ui .button-primary.active:hover {
   background: #d39323;
   border-color: #bd831f;
   -webkit-box-shadow: inset 0 2px 0 #bd831f;
@@ -115,9 +115,7 @@ input[type=radio]:checked:before {
 
 
 .wrap .add-new-h2:hover,
-.wrap .page-title-action:hover,
-.tablenav .tablenav-pages a:hover,
-.tablenav .tablenav-pages a:focus {
+.wrap .page-title-action:hover {
   color: #fff;
   background-color: #52accc;
 }
@@ -159,7 +157,7 @@ input[type=radio]:checked:before {
 }
 
 
-.about-wrap h2 .nav-tab-active,
+.about-wrap .nav-tab-active,
 .nav-tab-active,
 .nav-tab-active:hover {
   background-color: #f1f1f1;
@@ -374,6 +372,25 @@ ul#adminmenu > li.current > a.current:after {
 #wpadminbar > #wp-toolbar > #wp-admin-bar-top-secondary > #wp-admin-bar-search #adminbarsearch input.adminbar-input:focus {
   color: #fff;
   background: #6eb9d4;
+}
+
+
+#wpadminbar #wp-admin-bar-recovery-mode {
+  color: #fff;
+  background-color: #e1a948;
+}
+
+#wpadminbar #wp-admin-bar-recovery-mode .ab-item,
+#wpadminbar #wp-admin-bar-recovery-mode a.ab-item {
+  color: #fff;
+}
+
+#wpadminbar .ab-top-menu > #wp-admin-bar-recovery-mode.hover > .ab-item,
+#wpadminbar.nojq .quicklinks .ab-top-menu > #wp-admin-bar-recovery-mode > .ab-item:focus,
+#wpadminbar:not(.mobile) .ab-top-menu > #wp-admin-bar-recovery-mode:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > #wp-admin-bar-recovery-mode > .ab-item:focus {
+  color: #fff;
+  background-color: #cb9841;
 }
 
 

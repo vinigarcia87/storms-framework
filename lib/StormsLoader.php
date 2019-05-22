@@ -44,6 +44,11 @@ function storms_load_extensions() {
 				)
 			);
 
+			/**
+		     * Enable support for wide alignment class for Gutenberg blocks
+		     */
+			add_theme_support( 'align-wide' );
+
 			if ( current_theme_supports( 'use-bootstrap' ) ) {
 				(new Storms\Bootstrap\Bootstrap)->run();
 			}

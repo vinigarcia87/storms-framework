@@ -52,7 +52,6 @@ class Layout extends Base\Runner
 			->add_action( 'widgets_init', 'register_widgets_area' )
 
 			->add_filter( 'sidebars_widgets', 'disable_sidebars' );
-
 	}
 
 	//<editor-fold desc="Scripts and Styles">
