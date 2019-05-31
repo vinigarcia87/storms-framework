@@ -1,0 +1,56 @@
+- Front/Layout Class [CHECK THIS! Move this functions to FrontEnd Class]
+	- Define $content_width as 1140px [CHECK THIS! Check if this is the correct width for Bootstrap layouts]
+	- Define a custom style file for this theme - instead of the {{current_theme}}/style.css we gonna use {{current_theme}}/css/style.css or {{current_theme}}/css/style.min.css - notice that we override parent theme styles here
+	- We remove plugin's styles like contact-form-7, newsletter, etc [CHECK THIS! We need to remove all plugin's styles to have a pure theme - add callback to add custom removal code]
+	- We define {{current_theme}}/css/style{.min}.css as main-style-theme
+	- If load_stormscss is true, we load /css/storms.css style [CHECK THIS! Why this style is necessary?]
+	- If load_external_jquery is true, we load jquery from Google CDN, otherwise, we load it from storms framework
+	- We remove plugin's scripts like contact-form-7, newsletter, etc [CHECK THIS! We need to remove all plugin's styles to have a pure theme - add callback to add custom removal code]
+	- We deregister default jquery and, if load_jquery is true, we register ours
+	- If show_theme_scripts is true, we register {{current_theme}}/js/scripts{.min}.js - We don't enqueue this file, you must include it on especific pages as you need
+	- If load_cycle2 is true, we register cycle2 scripts - but we don't enqueue them [CHECK THIS! Maybe this should be with the custom gallery shortcode?]
+	- If load_stormsjs is true, we register storms scripts - but we don't enqueue them [CHECK THIS! Why this script is necessary?]
+	- If load_fitvids is true, we register fitvids scripts - but we don't enqueue them [CHECK THIS! Why this script is necessary?]
+	- If show_modernizr is true, we register and enqueue modernizr scripts [CHECK THIS! Why this script is necessary?]
+	- If show_html5_js_shivs is true, we register html5shiv, matchmedia, respond scripts - but we don't enqueue them [CHECK THIS! Why this script is necessary?]
+	- Load WP comment-reply scripts on singular pages with comments open with thread_comments is true
+	- If show_bootlint is true, we add bootlint (boostrap linter) from CDN to the website when debug mode is on [CHECK THIS! Why this script is necessary?]
+	- If add_storms_menu is true, we add custom Main Menu to the website
+	- Register Header Sidebar, Main Sidebar, Footer Sidebar [CHECK THIS! Add more options to configure the sidebars]
+		- Can control this with add_header_sidebar, add_main_sidebar and add_footer_sidebar options
+		- We can have many Footer Sidebar, configured by number_of_footer_sidebars option
+	- On Storms Theme, we have some options to help build our layout (look at storms theme templates to see how they are used): [CHECK THIS! This is in the correct place? default is bootstrap classes... this is easy to understand its uses?]
+		- Header container type, define container or container-fluid (boostrap) for <header> tag - allow any value for class
+		- Wrap container type, define container or container-fluid (boostrap) for <div class="wrap"> tag - allow any value for class
+		- Footer container type, define container or container-fluid (boostrap) for <footer> tag - allow any value for class
+	- Define custom page layouts, used as theme option 'theme_layout':
+		- 'default', '1c' (one column - no sidebar), '2c-r' (two columns with sidebar on right side), '2c-l' (two columns with sidebar on left side)
+		- 'default' layout is '1c' if is_page() or is '2c-r' if is_rtl() or '2c-l' otherwise
+		- If layout is '1c', we disable the main and/or shop sidebars
+
+	- Storms options defined on this class:
+		- content_width: 1140
+		- load_stormscss: false
+		- load_external_jquery: false
+		- load_jquery: true
+		- show_theme_scripts: true
+		- load_cycle2: true
+		- load_stormsjs: false
+		- load_fitvids: false
+		- show_modernizr: false
+		- show_html5_js_shivs: false
+		- show_bootlint: false
+		- add_storms_menu: true
+		- widget_title_tag: 'h3'
+		- add_header_sidebar: true
+		- add_main_sidebar: true
+		- add_footer_sidebar: true
+		- number_of_footer_sidebars: 4
+		- storms_header_container_class: 'container'
+		- storms_wrap_container_class: 'container'
+		- storms_footer_container_class: 'container'
+		- main_2c_l_size: 'col-md-9'
+		- sidebar_2c_l_size: 'col-md-3'
+		- main_2c_r_size: 'col-md-9'
+		- sidebar_2c_r_size: 'col-md-3'
+		- main_1c: 'col-md-12'

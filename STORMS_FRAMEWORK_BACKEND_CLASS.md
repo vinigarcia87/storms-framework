@@ -1,0 +1,29 @@
+- BackEnd Class
+	- Add editor-style - search for editor-style in current-theme/storms-theme/storms-framework
+	- Add custom admin CSS to WP admin area
+	- Add brand meta tags (author and copyright) to website <head>
+	- Set default favicon
+	- Customize the title tag on WP admin area
+	- Customize the page title on WP admin area
+	- Remove code editor from admin menu
+	- Remove links from menu [CHECK THIS! Currently there is no menu beeing removed]
+	- Stop users from switching admin color schemes
+	- Disable 'Please update now' messages for non admin users
+	- Add "user card" on top menu, to identify current user [CHECK THIS! Add support to override this html template]
+	- Add "developed by" on bottom menu, to display who has created this website [CHECK THIS! Add support to override this html template]
+	- Change admin area footer, to display website author and copyright message
+	- Add flag on WP top admin bar, to show which environment we are using, based on SF_ENV constant: PRD, TST, DEV
+	- Remove menu items from admin bar
+	- Apply deafult admin color scheme to admin bar
+	- Add brand icon to admin bar [CHECK THIS! Add option to title, icon and link]
+	- Remove some dashboard widgets [CHECK THIS! Some common recommended plugins add widgets to this area and we are not removing them just yet]
+	- Add custom dashboard widgets: BrandInfo and System Errors [CHECK THIS! Allow to override html]
+	- Remove default login styles and scripts and replace them with custom branded styles and scripts
+	- Redirect users with no previlege to home when trying to acess admin pages
+	- Override login message to a generic one that doesn't give any hint to brute-force attackers
+
+	- Storms options defined on this class:
+		- meta_autor: 'Storms Websolutions' [CHECK THIS! Typo on variable name]
+		- meta_copyright: '&copy; 2012 - {{this year}} by {{meta autor}}' [CHECK THIS! Typo on variable name]
+		- website_favicon: '/img/storms/icons/storms_favicon.png'
+		- restricted_users_email: '/@storms.com.br$/'
