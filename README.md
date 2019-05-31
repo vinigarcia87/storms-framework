@@ -1,5 +1,6 @@
 # Storms Framework
 
+Storms Framework    | Descriptions
 ------------------: | :------------------
 **Theme:**          | [Storms Framework](http://storms.com.br)
 **Description:**    | This framework was built to help developers to customize and optimize their themes. With Bootstrap 3 and a nice support to WooCommerce, this can be the plugin you need.
@@ -30,11 +31,11 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 
 ## Plugin Manual
 
-* [BackEnd customization](/STORMS_FRAMEWORK_BACKEND_CLASS.md)
-* [Bootstrap adaptation](/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
-* [FrontEnd enhancements](/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
-* [Layout customization](/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
-* [WooCommerce support and customization](/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
+* [BackEnd customization](/wiki/STORMS_FRAMEWORK_BACKEND_CLASS.md)
+* [Bootstrap adaptation](/wiki/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
+* [FrontEnd enhancements](/wiki/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
+* [Layout customization](/wiki/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
+* [WooCommerce support and customization](/wiki/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
 
 ## WordPress Users Manual
 
