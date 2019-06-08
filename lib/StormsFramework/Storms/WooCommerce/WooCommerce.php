@@ -761,7 +761,7 @@ class WooCommerce extends Base\Runner
 					$classes[] = 'col-xs-12 col-sm-6 col-md-3';
 					break;
 				case 3:
-					$classes[] = 'col-xs-12 col-sm-12 col-md-4';
+					$classes[] = 'col-xs-12 col-sm-4 col-md-4';
 					break;
 				case 31:
 					$classes[] = 'col-xs-12 col-sm-6 col-md-4';
