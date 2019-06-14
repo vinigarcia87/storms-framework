@@ -78,6 +78,36 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Return the template url with an fallback to the parent theme
+	 */
+	public static function get_template_url( $file = null ) {
+		if ( file_exists( get_stylesheet_directory() . $file ) ) {
+			return esc_url( get_stylesheet_directory_uri() . $file );
+		} else if ( file_exists( get_template_directory() . $file ) ) {
+			return esc_url( get_template_directory_uri() . $file );
+		} else if( file_exists( plugin_dir_path( STORMS_FRAMEWORK_PATH ) . $file ) ) {
+			return esc_url( plugin_dir_url( STORMS_FRAMEWORK_PATH ) . $file );
+		} else {
+			return false;
+		}
+	}
+
+	/**
+	 * Return the template path with an fallback to the parent theme
+	 */
+	public static function get_template_path( $file = null ) {
+		if ( file_exists( get_stylesheet_directory() . $file ) ) {
+			return get_stylesheet_directory() . $file;
+		} else if ( file_exists( get_template_directory() . $file ) ) {
+			return get_template_directory() . $file;
+		} else if( file_exists( plugin_dir_path( STORMS_FRAMEWORK_PATH ) . $file ) ) {
+			return plugin_dir_path( STORMS_FRAMEWORK_PATH ) . $file;
+		} else {
+			return false;
+		}
+	}
+
+	/**
 	 * Returns true if a blog has more than 1 category.
 	 *
 	 * @return bool
