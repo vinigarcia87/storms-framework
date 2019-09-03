@@ -66,7 +66,7 @@ class BackEnd extends Base\Runner
 			->add_action( 'login_enqueue_scripts', 'login_scripts' )
 			->add_action( 'init', 'login_page_script' )
 			->add_filter( 'login_headerurl', 'change_login_logo_url' )
-			->add_filter( 'login_headertitle', 'change_login_logo_url_title' )
+			->add_filter( 'login_headertext', 'change_login_logo_url_title' )
 			->add_filter( 'login_redirect', 'login_redirect', 10, 3 )
 			->add_filter( 'login_errors', 'login_error_msg' )
 			->add_action( 'login_footer', 'change_footer_text' );
@@ -462,7 +462,7 @@ class BackEnd extends Base\Runner
 	 * Change the title of the logo
 	 */
 	public function change_login_logo_url_title() {
-		return get_bloginfo( 'name' );
+		return esc_html__( get_bloginfo( 'name' ) );
 	}
 
 	/**
