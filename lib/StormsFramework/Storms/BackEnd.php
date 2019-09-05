@@ -352,10 +352,27 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+
+			// Menu Icons plugin dashboard widget
+			'themeisle' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
+
+			// YITH widgets
+			'yith_dashboard_products_news' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
+			'yith_dashboard_blog_news' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 		);
 
-		foreach ( $remove_defaults_widgets as $widget_id => $options )
-			remove_meta_box( $widget_id, $options['page'], $options['context'] );
+		foreach ( $remove_defaults_widgets as $widget_id => $options ) {
+			remove_meta_box($widget_id, $options['page'], $options['context']);
+		}
 	}
 
 	/**
