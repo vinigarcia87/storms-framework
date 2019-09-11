@@ -522,7 +522,9 @@ class WooCommerce extends Base\Runner
 	/**
 	 * Customization for bootstrap breadcrumbs
 	 */
-	public function woocommerce_breadcrumb(){
+	public function woocommerce_breadcrumb() {
+		$var = get_option( 'add_wc_breadcrumb_before_main_content', true );
+		echo '<h2>AQUI '. ($var ? 'YES' : 'NO') .'</h2>';
         if( get_option( 'add_wc_breadcrumb_before_main_content', true ) ) {
             echo '<div class="row">';
             echo '<div class="col-xs-12">';
