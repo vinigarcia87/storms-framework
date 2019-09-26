@@ -23,6 +23,8 @@ class Layout extends Base\Runner
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 	}
 
+	private $jquery_version = '3.4.1';
+
 	public function define_hooks() {
 
 		/**
@@ -101,7 +103,7 @@ class Layout extends Base\Runner
 
 		if ( $run_next && get_option( 'load_external_jquery', false ) ) {
 			// Defaults to match the version loaded via CDN
-			$local_jquery = Storms\Helper::get_asset_url( '/js/libs/jquery/1.10.2/jquery.min.js' );
+			$local_jquery = Storms\Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' );
 			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
 
 
@@ -132,9 +134,9 @@ class Layout extends Base\Runner
 
 			// Decide se carrega jquery externo ou interno
 			if( get_option( 'load_external_jquery', false ) && !is_admin() ) {
-				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js', false, '1.10.2', false);
+				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, '1.10.2', false);
 			} else {
-				wp_register_script('jquery', Storms\Helper::get_asset_url( '/js/libs/jquery/1.10.2/jquery.min.js' ), false, '1.10.2', false);
+				wp_register_script('jquery', Storms\Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, '1.10.2', false);
 			}
 			wp_enqueue_script('jquery');
 		}
