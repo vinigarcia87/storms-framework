@@ -98,7 +98,6 @@ class WooCommerce extends Base\Runner
 
     /**
      * Cleanup wp_head(), to remove unnecessary and unsafe wp meta tags
-     * @TODO Check if this is necessary
      */
     public function head_cleanup() {
         //remove generator meta tag
