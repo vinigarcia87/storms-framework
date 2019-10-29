@@ -45,7 +45,7 @@ class WooCommerce extends Base\Runner
 
         $this->loader
             ->add_filter( 'woocommerce_page_title', 'shop_page_title' )
-            ->add_action( 'woocommerce_add_to_cart',  'add_to_cart_checkout_redirect', 11 )
+            ->add_action( 'woocommerce_add_to_cart', 'add_to_cart_checkout_redirect', 11 )
             ->add_filter( 'woocommerce_product_tabs', 'remove_product_tabs', 98);
 
 		/**
@@ -717,7 +717,7 @@ class WooCommerce extends Base\Runner
 	public function content_product_class( $classes ) {
 		global $woocommerce_loop;
 
-		// Verificamos se este eh um produto no loop de products
+		// Verificamos se este eh um loop de products
 		$is_products = false;
 		if( isset( $woocommerce_loop['name'] ) &&
 			$woocommerce_loop['name'] == 'products' ) {
@@ -725,7 +725,7 @@ class WooCommerce extends Base\Runner
 			$classes[] = $woocommerce_loop['name'];
 		}
 
-        // Verificamos se este eh um produto no loop de related products
+        // Verificamos se este eh um loop de related products
         $is_related = false;
         if( isset( $woocommerce_loop['name'] ) &&
             $woocommerce_loop['name'] == 'related' ) {
@@ -733,7 +733,7 @@ class WooCommerce extends Base\Runner
             $classes[] = $woocommerce_loop['name'];
         }
 
-        // Verificamos se este eh um produto no loop de cross sells
+        // Verificamos se este eh um loop de cross-sells
         $is_cross_sells = false;
         if( isset( $woocommerce_loop['name'] ) &&
             $woocommerce_loop['name'] == 'cross-sells' ) {
@@ -741,8 +741,16 @@ class WooCommerce extends Base\Runner
             $classes[] = $woocommerce_loop['name'];
         }
 
+        // Verificamos se este eh um loop de recent_products
+		$recent_products = false;
+        if( isset( $woocommerce_loop['name'] ) &&
+			$woocommerce_loop['name'] == 'recent_products' ) {
+			$recent_products = true;
+			$classes[] = $woocommerce_loop['name'];
+		}
+
 		// Returns true when on the product archive page (shop)
-		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells || $is_products ) {
+		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells || $is_products || $recent_products ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
