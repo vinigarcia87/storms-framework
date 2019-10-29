@@ -48,6 +48,12 @@ class WooCommerce extends Base\Runner
             ->add_action( 'woocommerce_add_to_cart', 'add_to_cart_checkout_redirect', 11 )
             ->add_filter( 'woocommerce_product_tabs', 'remove_product_tabs', 98);
 
+		$this->loader
+			->add_action( 'woocommerce_register_form', 'registration_confirm_password_add_field' )
+			->add_filter( 'woocommerce_registration_errors', 'registration_confirm_password_validation', 10, 3 )
+			->add_action( 'woocommerce_checkout_init', 'checkout_confirm_password_add_field', 10, 1 )
+			->add_action( 'woocommerce_after_checkout_validation', 'checkout_confirm_password_validation', 10, 2 );
+
 		/**
 		 * Content wrapper before and after
 		 * Will be needed if you not using woocommerce.php on your theme
@@ -442,6 +448,69 @@ class WooCommerce extends Base\Runner
 		update_option( 'shop_catalog_image_size', $catalog ); // Product category thumbs
 		update_option( 'shop_single_image_size', $single ); // Single product image
 		update_option( 'shop_thumbnail_image_size', $thumbnail ); // Image gallery thumbs
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="Check password on registration">
+
+	/**
+	 * Add a confirm password fields match on the registration page
+	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
+	 */
+	public function registration_confirm_password_add_field() {
+		?>
+		<p class="form-row form-row-wide">
+			<label for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
+			<input type="password" class="input-text" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
+		</p>
+		<?php
+	}
+
+	/**
+	 * Validate password match on the registration page
+	 */
+	public function registration_confirm_password_validation($reg_errors, $sanitized_user_login, $user_email) {
+		global $woocommerce;
+
+		extract( $_POST );
+
+		if ( strcmp( $password, $password2 ) !== 0 ) {
+			return new \WP_Error( 'registration-error', __( 'Senhas não são iguais', 'storms' ) );
+		}
+		return $reg_errors;
+	}
+
+	/**
+	 * Add a confirm password field to the checkout page
+	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
+	 */
+	public function checkout_confirm_password_add_field( $checkout ) {
+		if ( get_option( 'woocommerce_registration_generate_password' ) == 'no' ) {
+
+			$fields = $checkout->get_checkout_fields();
+
+			$fields['account']['account_confirm_password'] = array(
+				'type'              => 'password',
+				'label'             => __( 'Confirmar senha', 'storms' ),
+				'required'          => true,
+				'placeholder'       => _x( 'Confirmar senha', 'placeholder', 'storms' )
+			);
+
+			$checkout->__set( 'checkout_fields', $fields );
+		}
+	}
+
+	/**
+	 * Validate confirm password field match to the checkout page
+	 */
+	public function checkout_confirm_password_validation( $posted ) {
+		$checkout = WC()->checkout;
+		if ( ! is_user_logged_in() && ( $checkout->must_create_account || ! empty( $posted['createaccount'] ) ) ) {
+			if ( strcmp( $posted['account_password'], $posted['account_confirm_password'] ) !== 0 ) {
+				wc_add_notice( __( 'Senhas não são iguais', 'storms' ), 'error' );
+			}
+		}
 	}
 
 	//</editor-fold>
