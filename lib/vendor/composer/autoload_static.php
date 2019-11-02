@@ -20,11 +20,35 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         ),
     );
 
+    public static $classMap = array (
+        'FB' => __DIR__ . '/..' . '/firephp/firephp-core/lib/FirePHPCore/fb.php',
+        'FirePHP' => __DIR__ . '/..' . '/firephp/firephp-core/lib/FirePHPCore/FirePHP.class.php',
+        'StormsFramework\\Base\\Loader' => __DIR__ . '/../..' . '/StormsFramework/Base/Loader.php',
+        'StormsFramework\\Base\\Manager' => __DIR__ . '/../..' . '/StormsFramework/Base/Manager.php',
+        'StormsFramework\\Base\\Runner' => __DIR__ . '/../..' . '/StormsFramework/Base/Runner.php',
+        'StormsFramework\\Storms\\BackEnd' => __DIR__ . '/../..' . '/StormsFramework/Storms/BackEnd.php',
+        'StormsFramework\\Storms\\Bootstrap\\Bootstrap' => __DIR__ . '/../..' . '/StormsFramework/Storms/Bootstrap/Bootstrap.php',
+        'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Commentwalker' => __DIR__ . '/../..' . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Commentwalker.php',
+        'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Navwalker' => __DIR__ . '/../..' . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Navwalker.php',
+        'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Pagination' => __DIR__ . '/../..' . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Pagination.php',
+        'StormsFramework\\Storms\\Configuration' => __DIR__ . '/../..' . '/StormsFramework/Storms/Configuration.php',
+        'StormsFramework\\Storms\\FrontEnd' => __DIR__ . '/../..' . '/StormsFramework/Storms/FrontEnd.php',
+        'StormsFramework\\Storms\\Helper' => __DIR__ . '/../..' . '/StormsFramework/Storms/Helper.php',
+        'StormsFramework\\Storms\\Layout' => __DIR__ . '/../..' . '/StormsFramework/Storms/Layout.php',
+        'StormsFramework\\Storms\\Template' => __DIR__ . '/../..' . '/StormsFramework/Storms/Template.php',
+        'StormsFramework\\Storms\\WooCommerce\\Functions' => __DIR__ . '/../..' . '/StormsFramework/Storms/WooCommerce/Functions.php',
+        'StormsFramework\\Storms\\WooCommerce\\WooCommerce' => __DIR__ . '/../..' . '/StormsFramework/Storms/WooCommerce/WooCommerce.php',
+        'StormsFramework\\Vendor\\Thumbnail_Resizer' => __DIR__ . '/../..' . '/StormsFramework/Vendor/Thumbnail_Resizer.php',
+        'StormsFramework\\Widget\\Dashboard\\BrandInfo' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/BrandInfo.php',
+        'StormsFramework\\Widget\\Dashboard\\SystemErrors' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/SystemErrors.php',
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$classMap;
 
         }, null, ClassLoader::class);
     }

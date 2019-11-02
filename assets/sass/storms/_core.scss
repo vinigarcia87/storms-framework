@@ -6,7 +6,7 @@
  * @license   Licensed under MIT
  * @package   Storms
  * @version   2.0.0
- * 
+ *
  * Storms Core Style
  */
 
@@ -35,7 +35,7 @@
 	width: 100%;
 }
 
-// make sure navbar-form's input-group goes 100% i.e. full width of screen 
+// make sure navbar-form's input-group goes 100% i.e. full width of screen
 // to compliment the display: inline-table; that showed up in 3.2.0
 .navbar-form .input-group {
 	width: 100%;
@@ -225,7 +225,7 @@ input[type="submit"],
 input[type="reset"],
 button {
 	@extend .btn;
-	@extend .btn-default;
+	@extend .btn-secondary;
 }
 
 .form-radio-group .radio {
@@ -275,7 +275,7 @@ button {
     padding: 1em;
     background-color: #f5f5f5;
     outline: 0;
-	
+
 	.skiplink-text {
 		padding: .5em;
 		outline: 1px dotted;

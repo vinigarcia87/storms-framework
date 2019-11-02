@@ -15,7 +15,7 @@
 namespace StormsFramework\Storms\WooCommerce;
 
 use StormsFramework\Base,
-	StormsFramework\Storms\Front\Layout;
+	StormsFramework\Storms\Template;
 
 class WooCommerce extends Base\Runner
 {
@@ -40,12 +40,8 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_enqueue_styles', 'remove_woocommerce_style' )
             ->add_action( 'wp_enqueue_scripts', 'manage_woocommerce_scripts', 99 );
 
-			// @TODO Verificar a necessidade deste codigo
-			//->add_action( 'after_switch_theme', 'woocommerce_image_dimensions', 1 );
-
         $this->loader
             ->add_filter( 'woocommerce_page_title', 'shop_page_title' )
-            ->add_action( 'woocommerce_add_to_cart', 'add_to_cart_checkout_redirect', 11 )
             ->add_filter( 'woocommerce_product_tabs', 'remove_product_tabs', 98);
 
 		$this->loader
@@ -96,8 +92,12 @@ class WooCommerce extends Base\Runner
 			->add_action( 'product_cat_class', 'content_product_class' )
 			->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
 
-        // @TODO Verificar a necessidade deste codigo
-		//add_shortcode( 'storms_featured_products', array( $this, 'featured_products' ) );
+		$this->loader
+			->add_action( 'init', 'prevent_wp_login' )
+			->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
+			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10, 2 )
+			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
+			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
 	}
 
 	//<editor-fold desc="Styles and definitions">
@@ -218,16 +218,6 @@ class WooCommerce extends Base\Runner
     }
 
     /**
-     * Redirecionar cliente para a pagina de checkout, ao adicionar um produto no carrinho
-     */
-    function add_to_cart_checkout_redirect() {
-        if( get_option( 'redirect_to_checkout_on_click_buy', false ) ) {
-            wp_safe_redirect(get_permalink(get_option('woocommerce_checkout_page_id')));
-            die();
-        }
-    }
-
-    /**
      * Disable default WooCommerce tabs on product single page
      */
     function remove_product_tabs( $tabs ) {
@@ -246,6 +236,153 @@ class WooCommerce extends Base\Runner
 
         return $tabs;
     }
+
+	//</editor-fold>
+
+	//<editor-fold desc="Login redirects">
+
+	/**
+	 * Don't allow any user to access the default WP login page
+	 * We want them to use or theme custom login page
+	 */
+	public function prevent_wp_login() {
+		// WP tracks the current page - global the variable to access it
+		global $pagenow;
+
+		if( get_option( 'prevent_wp_login', 'yes' ) ) {
+			// Check if a $_GET['action'] is set, and if so, load it into $action variable
+			$action = (isset($_GET['action'])) ? $_GET['action'] : '';
+			// Check if we're on the login page, and ensure the action is not 'logout'
+			if ($pagenow == 'wp-login.php' &&
+				(!$action || ($action && !in_array($action, array('logout', 'lostpassword', 'rp', 'resetpass'))))
+			) {
+
+				// Load the 'myaccount' page url
+				$page = wc_get_page_permalink('myaccount');
+
+				// Redirect to the selected page
+				wp_redirect($page);
+				// Stop execution to prevent the page loading for any reason
+				exit();
+			}
+		}
+	}
+
+	/**
+	 * Redirect not logged in users to my-account, for registration/login
+	 * @see https://stackoverflow.com/a/39357627/1003020
+	 * @see https://wordpress.stackexchange.com/a/109097/54025
+	 */
+	public function force_login_registration_page_on_checkout() {
+		// Case 1: Non logged user on checkout page
+		if ( !is_user_logged_in() && is_checkout() ) {
+			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ) );
+			wp_redirect( $login_page );
+		}
+	}
+
+	/**
+	 * Redirect users to custom URL based on their role after login
+	 * @see https://stackoverflow.com/a/29342329/1003020
+	 *
+	 * @param string $redirect
+	 * @param object $user
+	 * @return string
+	 */
+	public function user_redirect_on_login_registration( $redirect, $user ) {
+
+		$checkout = get_permalink( wc_get_page_id( 'checkout' ) );
+
+		if( isset( $_GET['return_to'] ) && 'checkout' === $_GET['return_to'] ) {
+			// If the user came from checkout page, we send him back
+			$redirect = $checkout;
+		} else {
+			// Redirect any other role to the previous visited page or, if not available, to the home
+			$redirect = wp_get_referer() ? wp_get_referer() : home_url();
+		}
+
+		return $redirect;
+	}
+
+	/**
+	 * Logout without confirmation
+	 * Wordpress redirect logout to a 'confirm logout page' and this code avoids that
+	 */
+	public function bypass_logout_confirmation() {
+		global $wp;
+
+		if ( is_user_logged_in() && isset( $wp->query_vars['customer-logout'] ) ) {
+			wp_logout();
+			wp_redirect( home_url() );
+		}
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="Check password on registration">
+
+	/**
+	 * Add a confirm password fields match on the registration page
+	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
+	 */
+	public function registration_confirm_password_add_field() {
+		?>
+		<p class="form-row form-row-wide">
+			<label for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
+			<input type="password" class="input-text" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
+		</p>
+		<?php
+	}
+
+	/**
+	 * Validate password match on the registration page
+	 */
+	public function registration_confirm_password_validation($reg_errors, $sanitized_user_login, $user_email) {
+		global $woocommerce;
+
+		extract( $_POST );
+
+		if ( strcmp( $password, $password2 ) !== 0 ) {
+			return new \WP_Error( 'registration-error', __( 'Senhas não são iguais', 'storms' ) );
+		}
+		return $reg_errors;
+	}
+
+	/**
+	 * Add a confirm password field to the checkout page
+	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
+	 */
+	public function checkout_confirm_password_add_field( $checkout ) {
+		if ( get_option( 'woocommerce_registration_generate_password' ) == 'no' ) {
+
+			$fields = $checkout->get_checkout_fields();
+
+			$fields['account']['account_confirm_password'] = array(
+				'type'              => 'password',
+				'label'             => __( 'Confirmar senha', 'storms' ),
+				'required'          => true,
+				'placeholder'       => _x( 'Confirmar senha', 'placeholder', 'storms' )
+			);
+
+			$checkout->__set( 'checkout_fields', $fields );
+		}
+	}
+
+	/**
+	 * Validate confirm password field match to the checkout page
+	 */
+	public function checkout_confirm_password_validation( $posted ) {
+		$checkout = WC()->checkout;
+		if ( ! is_user_logged_in() && ( $checkout->must_create_account || ! empty( $posted['createaccount'] ) ) ) {
+			if ( strcmp( $posted['account_password'], $posted['account_confirm_password'] ) !== 0 ) {
+				wc_add_notice( __( 'Senhas não são iguais', 'storms' ), 'error' );
+			}
+		}
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="Bootstrap on form fields">
 
 	/**
 	 * WooCommerce - Modify each individual input type $args defaults
@@ -285,20 +422,20 @@ class WooCommerce extends Base\Runner
 				$args['class'][] = 'form-group'; // Add a class to the field's html element wrapper - woocommerce input types (fields) are often wrapped within a <p></p> tag
 				$args['input_class'] = array('form-control'); // Add a class to the form input itself
 				//$args['custom_attributes']['data-plugin'] = 'select2';
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  ); // Add custom data attributes to the form input itself
 				break;
 
 			case 'country' : /* By default WooCommerce will populate a select with the country names - $args defined for this specific input type targets only the country select element */
 				$args['class'][] = 'form-group single-country';
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				break;
 
 			case "state" : /* By default WooCommerce will populate a select with state names - $args defined for this specific input type targets only the country select element */
 				$args['class'][] = 'form-group'; // Add class to the field's html element wrapper
 				//$args['input_class'] = array('form-control'); // add class to the form input itself
 				//$args['custom_attributes']['data-plugin'] = 'select2';
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  );
 				break;
 
@@ -311,12 +448,12 @@ class WooCommerce extends Base\Runner
 				$args['class'][] = 'form-group';
 				//$args['input_class'][] = 'form-control'; // will return an array of classes, the same as bellow
 				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				break;
 
 			case 'textarea' :
 				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				break;
 
 			case 'checkbox' :
@@ -328,7 +465,7 @@ class WooCommerce extends Base\Runner
 			default :
 				$args['class'][] = 'form-group';
 				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('control-label');
+				$args['label_class'] = array('col-form-label');
 				break;
 		}
 
@@ -415,104 +552,6 @@ class WooCommerce extends Base\Runner
 		return $field;
 	}
 
-	/**
-	 * Define image sizes
-	 */
-	public function woocommerce_image_dimensions() {
-
-		global $pagenow;
-
-		if ( ! isset( $_GET['activated'] ) || $pagenow != 'themes.php' ) {
-			return;
-		}
-
-		$catalog = array(
-			'width'  => '236', // px
-			'height' => '236', // px
-			'crop'	 => 1      // true
-		);
-
-		$single = array(
-			'width'  => '527', // px
-			'height' => '527', // px
-			'crop'	 => 1      // true
-		);
-
-		$thumbnail = array(
-			'width'  => '153', // px
-			'height' => '153', // px
-			'crop'	 => 1      // false
-		);
-
-		// Image sizes
-		update_option( 'shop_catalog_image_size', $catalog ); // Product category thumbs
-		update_option( 'shop_single_image_size', $single ); // Single product image
-		update_option( 'shop_thumbnail_image_size', $thumbnail ); // Image gallery thumbs
-	}
-
-	//</editor-fold>
-
-	//<editor-fold desc="Check password on registration">
-
-	/**
-	 * Add a confirm password fields match on the registration page
-	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
-	 */
-	public function registration_confirm_password_add_field() {
-		?>
-		<p class="form-row form-row-wide">
-			<label for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
-			<input type="password" class="input-text" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
-		</p>
-		<?php
-	}
-
-	/**
-	 * Validate password match on the registration page
-	 */
-	public function registration_confirm_password_validation($reg_errors, $sanitized_user_login, $user_email) {
-		global $woocommerce;
-
-		extract( $_POST );
-
-		if ( strcmp( $password, $password2 ) !== 0 ) {
-			return new \WP_Error( 'registration-error', __( 'Senhas não são iguais', 'storms' ) );
-		}
-		return $reg_errors;
-	}
-
-	/**
-	 * Add a confirm password field to the checkout page
-	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
-	 */
-	public function checkout_confirm_password_add_field( $checkout ) {
-		if ( get_option( 'woocommerce_registration_generate_password' ) == 'no' ) {
-
-			$fields = $checkout->get_checkout_fields();
-
-			$fields['account']['account_confirm_password'] = array(
-				'type'              => 'password',
-				'label'             => __( 'Confirmar senha', 'storms' ),
-				'required'          => true,
-				'placeholder'       => _x( 'Confirmar senha', 'placeholder', 'storms' )
-			);
-
-			$checkout->__set( 'checkout_fields', $fields );
-		}
-	}
-
-	/**
-	 * Validate confirm password field match to the checkout page
-	 */
-	public function checkout_confirm_password_validation( $posted ) {
-		$checkout = WC()->checkout;
-		if ( ! is_user_logged_in() && ( $checkout->must_create_account || ! empty( $posted['createaccount'] ) ) ) {
-			if ( strcmp( $posted['account_password'], $posted['account_confirm_password'] ) !== 0 ) {
-				wc_add_notice( __( 'Senhas não são iguais', 'storms' ), 'error' );
-			}
-		}
-	}
-
 	//</editor-fold>
 
 	//<editor-fold desc="Layout definitions">
@@ -523,19 +562,8 @@ class WooCommerce extends Base\Runner
 	 */
 	public function before_content() {
 
-		if( is_product() ) {
-			$layout = get_option( 'product_layout', '2c-r' );
-		} else if( is_shop() || is_product_category() || is_product_tag() ) {
-			$layout = get_option( 'shop_layout', '2c-r' );
-		}
-
-		// Check if layout is a valid value - if it is not, then we default to '2c-r'
-		if( ! in_array( $layout, [ '1c', '2c-r', '2c-l' ] ) ) {
-			$layout = '2c-r';
-		}
-
         echo '<div class="row">';
-		echo '<main id="content" class="main '. Layout::main_layout( $layout ) . '" role="main">';
+		echo '<main id="content" class="main '. Template::main_layout() . '" role="main">';
 	}
 
 	/**
@@ -547,27 +575,9 @@ class WooCommerce extends Base\Runner
 		echo '</main>';
 
 		if( is_product() ) {
-			$layout = get_option( 'product_layout', '2c-r' );
+			get_sidebar('product');
 		} else if( is_shop() || is_product_category() || is_product_tag() ) {
-			$layout = get_option( 'shop_layout', '2c-r' );
-		}
-
-		// Check if layout is a valid value - if it is not, then we default to '2c-r'
-		if( ! in_array( $layout, [ '1c', '2c-r', '2c-l' ] ) ) {
-			$layout = '2c-r';
-		}
-
-		if( $layout != '1c' ) {
-
-			// Define $storms_wc_page_layout as global, to be visible on sidebar-shop and sidebar-product
-			global $storms_wc_page_layout;
-			$storms_wc_page_layout = $layout;
-
-			if( is_product() ) {
-				get_sidebar('product');
-			} else if( is_shop() || is_product_category() || is_product_tag() ) {
-				get_sidebar('shop');
-			}
+			get_sidebar('shop');
 		}
 
         echo '</div>';
@@ -575,16 +585,12 @@ class WooCommerce extends Base\Runner
 
 	/**
 	 * Define if the sidebar should be shown or not
+	 * We remove the action every time, because um decide to show or not, on the layout code
 	 */
 	public function remove_sidebar() {
-
 		if( is_woocommerce() ) {
-
-			// We remove the action every time, because um decide to show or not, on the layout code
 			remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar');
-
 		}
-
 	}
 
 	/**
@@ -593,7 +599,7 @@ class WooCommerce extends Base\Runner
 	public function woocommerce_breadcrumb() {
         if( 'no' !== get_option( 'add_wc_breadcrumb_before_main_content', 'yes' ) ) {
             echo '<div class="row">';
-            echo '<div class="col-xs-12">';
+            echo '<div class="col-12">';
             woocommerce_breadcrumb();
             echo '</div>';
             echo '</div>';
@@ -609,13 +615,12 @@ class WooCommerce extends Base\Runner
 				'delimiter' => '',
 				'wrap_before' => '<ol class="breadcrumb woocommerce-breadcrumb" ' . (is_single() ? 'itemprop="breadcrumb"' : '') . '>',
 				'wrap_after' => '</ol>',
-				'before' => '<li>',
+				'before' => '<li class="breadcrumb-item">',
 				'after' => '</li>',
 				'home' => _x('Home', 'breadcrumb', 'storms'),
 			);
-		} else {
-			return $args;
 		}
+		return $args;
 	}
 
 	/**
@@ -660,8 +665,6 @@ class WooCommerce extends Base\Runner
         return $columns;
 	}
 
-	//</editor-fold>
-
 	/**
 	 * Register widget area on shop pages - create and sidebar-shop.php template to used
 	 */
@@ -688,66 +691,6 @@ class WooCommerce extends Base\Runner
 			'before_title'  => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
 			'after_title'   => '</' . $widget_title_tag . '>',
 		) );
-	}
-
-	/**
-	 * Override the woocommerce's featured_products shortcode, to change the html output
-	 */
-	public function featured_products( $atts ) {
-		//if ( is_woocommerce_activated() ) {
-			global $woocommerce_loop;
-
-			extract( shortcode_atts( array(
-				'per_page' 	=> '12',
-				'columns' 	=> '4',
-				'orderby' 	=> 'date',
-				'order' 	=> 'desc'
-			), $atts ) );
-
-			$args = array(
-				'post_type'				=> 'product',
-				'post_status' 			=> 'publish',
-				'ignore_sticky_posts'	=> 1,
-				'posts_per_page' 		=> $per_page,
-				'orderby' 				=> $orderby,
-				'order' 				=> $order,
-				'meta_query'			=> array(
-					array(
-						'key' 		=> '_visibility',
-						'value' 	=> array('catalog', 'visible'),
-						'compare'	=> 'IN'
-					),
-					array(
-						'key' 		=> '_featured',
-						'value' 	=> 'yes'
-					)
-				)
-			);
-
-			ob_start();
-
-			$products = new WP_Query( apply_filters( 'woocommerce_shortcode_products_query', $args, $atts ) );
-
-			$woocommerce_loop['columns'] = $columns;
-
-			if ( $products->have_posts() ) :
-
-				woocommerce_product_loop_start();
-
-				while ( $products->have_posts() ) : $products->the_post();
-
-					wc_get_template_part( 'content', 'product' );
-
-				endwhile; // end of the loop.
-
-				woocommerce_product_loop_end();
-
-			endif;
-
-			wp_reset_postdata();
-
-			return '<div class="woocommerce col-md-12 columns-' . $columns . '">' . ob_get_clean() . '</div>';
-		//}
 	}
 
 	/**
@@ -831,22 +774,22 @@ class WooCommerce extends Base\Runner
 
 			switch ( $columns ) {
 				case 6:
-					$classes[] = 'col-xs-6 col-sm-3 col-md-2';
+					$classes[] = 'col-6 col-sm-3 col-md-2';
 					break;
 				case 4:
-					$classes[] = 'col-xs-12 col-sm-6 col-md-3';
+					$classes[] = 'col-12 col-sm-6 col-md-3';
 					break;
 				case 3:
-					$classes[] = 'col-xs-12 col-sm-4 col-md-4';
+					$classes[] = 'col-12 col-sm-4 col-md-4';
 					break;
 				case 31:
-					$classes[] = 'col-xs-12 col-sm-6 col-md-4';
+					$classes[] = 'col-12 col-sm-6 col-md-4';
 					break;
 				case 2:
-					$classes[] = 'col-xs-12 col-sm-6 col-md-6';
+					$classes[] = 'col-12 col-sm-6 col-md-6';
 					break;
 				default:
-					$classes[] = 'col-xs-12 col-sm-12 col-md-12';
+					$classes[] = 'col-12 col-sm-12 col-md-12';
 			}
 
 		}
@@ -925,4 +868,6 @@ class WooCommerce extends Base\Runner
 		}
 
 	}
+
+	//</editor-fold>
 }

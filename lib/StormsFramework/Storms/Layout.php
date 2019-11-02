@@ -12,7 +12,7 @@
  * Front end styling control class
  */
 
-namespace StormsFramework\Storms\Front;
+namespace StormsFramework\Storms;
 
 use StormsFramework\Base,
 	StormsFramework\Storms;
@@ -51,9 +51,8 @@ class Layout extends Base\Runner
 
 		$this->loader
 			->add_action( 'init', 'register_menus' )
-			->add_action( 'widgets_init', 'register_widgets_area' )
+			->add_action( 'widgets_init', 'register_widgets_area' );
 
-			->add_filter( 'sidebars_widgets', 'disable_sidebars' );
 	}
 
 	//<editor-fold desc="Scripts and Styles">
@@ -204,36 +203,6 @@ class Layout extends Base\Runner
 		}
 	}
 
-	/**
-	 * Add the HTML linter for Bootstrap projects - Bootlint
-	 * Only if is on debug mode - WP_DEBUG is true
-	 */
-	public function add_bootlint() {
-		if ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) && get_option( 'show_bootlint', false ) ) {
-			?>
-			<!-- Bootlint - Source: https://github.com/twbs/bootlint -->
-			<script src="https://maxcdn.bootstrapcdn.com/bootlint/latest/bootlint.min.js"></script>
-			<script>
-				$(function () {
-					AvaliarBootstrap = function() {
-						if( typeof (bootlint) === 'undefined' ) {
-							var s=document.createElement('script');
-							s.src='<?php echo esc_url( Storms\Helper::get_asset_url( '/js/libs/bootlint/0.14.2/bootlint.js' ) ); ?>';
-							s.onload=function(){
-								bootlint.showLintReportForCurrentDocument([], { problemFree: false });
-							};
-							document.body.appendChild(s);
-						} else {
-							bootlint.showLintReportForCurrentDocument( [], { problemFree: false } );
-						}
-					};
-					AvaliarBootstrap();
-				});
-			</script>
-			<?php
-		}
-	}
-
 	//</editor-fold>
 
 	//<editor-fold desc="Widgets and Menus">
@@ -316,128 +285,4 @@ class Layout extends Base\Runner
 
 	//</editor-fold>
 
-	//<editor-fold desc="Template functions">
-
-	/**
-	 * Classes header container size
-	 * @return string Classes name
-	 */
-	public static function header_container() {
-		return get_option( 'storms_header_container_class', 'container' );
-	}
-
-	/**
-	 * Classes wrap container size
-	 * @return string Classes name
-	 */
-	public static function wrap_container() {
-		return get_option( 'storms_wrap_container_class', 'container' );
-	}
-
-	/**
-	 * Classes footer container size
-	 * @return string Classes name
-	 */
-	public static function footer_container() {
-		return get_option( 'storms_footer_container_class', 'container' );
-	}
-
-	/**
-	 * Main layout
-	 * @param  mixed  $layout You can force an specific layout, ignoring the page defined layout - default is null
-	 * @return string Classes name
-	 */
-	public static function main_layout( $layout = null ) {
-
-		// If there is no forced layout to use, read from the page/post configuration
-		if( $layout === null ) {
-			$layout = get_theme_mod( 'theme_layout' );
-		} else {
-			// Check if forced layout is a valid value - if it is not, then we default to 'default'
-			if( ! in_array( $layout, [ 'default', '1c', '2c-r', '2c-l' ] ) ) {
-				$layout = 'default';
-			}
-		}
-
-		if( $layout == 'default' ) {
-			$layout = is_page() ? '1c' : ( is_rtl() ? '2c-r' : '2c-l' );
-		}
-
-		switch( $layout ) {
-			// 2 columns - main content on left
-			case '2c-l':
-				return get_option('main_2c_l_size', 'col-md-9') . ' main-layout-left';
-				break;
-			// 2 columns - main content on right
-			case '2c-r':
-				$sidebar = get_option( 'sidebar_2c_r_size', 'col-md-3' );
-				$push_right = preg_replace( "/col-(.*)-(.*)/", "col-$1-push-$2", $sidebar );
-				return $push_right . ' ' . get_option( 'main_2c_r_size', 'col-md-9' ) . ' main-layout-right';
-				break;
-			// 1 column
-			case '1c':
-				return get_option('main_1c_size', 'col-md-12') . ' main-layout-full';
-				break;
-		}
-	}
-
-	/**
-	 * Sidebar layout
-	 * @param  mixed  $layout You can force an specific layout, ignoring the page defined layout - default is null
-	 * @return string Classes name
-	 */
-	public static function sidebar_layout( $layout = null ) {
-
-		// If there is no forced layout to use, read from the page/post configuration
-		if( $layout === null ) {
-			$layout = get_theme_mod( 'theme_layout' );
-		} else {
-			// Check if forced layout is a valid value - if it is not, then we default to 'default'
-			if( ! in_array( $layout, [ 'default', '1c', '2c-r', '2c-l' ] ) ) {
-				$layout = 'default';
-			}
-		}
-
-		if( $layout == 'default' ) {
-			$layout = is_page() ? '1c' : is_rtl() ? '2c-r' : '2c-l';
-		}
-
-		switch( $layout ) {
-			// 2 columns - main content on left, sidebar on right
-			case '2c-l':
-				return get_option( 'sidebar_2c_l_size', 'col-md-3' ) . ' sidebar-layout-right';
-				break;
-			// 2 columns - main content on right, sidebar on left
-			case '2c-r':
-				$main = get_option( 'main_2c_r_size', 'col-md-9' );
-				$pull_left = preg_replace( "/col-(.*)-(.*)/", "col-$1-pull-$2", $main );
-				return $pull_left . ' ' . get_option( 'sidebar_2c_r_size', 'col-md-3' ) . ' sidebar-layout-left';
-				break;
-		}
-	}
-
-	/**
-	 * Remove sidebars if the layout is defined to not have
-	 * any sidebar
-	 */
-	public function disable_sidebars( $sidebars_widgets ) {
-
-		if ( current_theme_supports( 'theme-layouts' ) && ! is_admin() ) {
-
-			$layout = get_theme_mod( 'theme_layout' );
-
-			if( $layout == 'default' ) {
-				$layout = is_page() ? '1c' : is_rtl() ? '2c-r' : '2c-l';
-			}
-
-			if ( '1c' == $layout ) {
-				$sidebars_widgets['main-sidebar'] = false;
-				$sidebars_widgets['shop-sidebar'] = false;
-			}
-		}
-
-		return $sidebars_widgets;
-	}
-
-	//</editor-fold>
 }

@@ -29,20 +29,24 @@ function storms_load_extensions() {
 		(new Storms\FrontEnd())->run();
 
 		if( current_theme_supports( 'style-layout' ) ) {
-			(new Storms\Front\Layout)->run();
+			(new Storms\Layout)->run();
 
-			// Enable theme layouts
-			add_theme_support( 'theme-layouts',
-				array(
-					'1c' => __( '1 Column', 'storms' ),
-					'2c-l' => __( '2 Columns: Content / Sidebar', 'storms' ),
-					'2c-r' => __( '2 Columns: Sidebar / Content', 'storms' )
-				),
-				array(
-					'default' => 'default',
-					'customizer' => true
-				)
-			);
+			if ( current_theme_supports( 'theme-layouts' ) ) {
+				(new Storms\Template())->run();
+
+				// Enable theme layouts
+				add_theme_support('theme-layouts',
+					array(
+						'1c'   => __('1 Column', 'storms'),
+						'2c-l' => __('2 Columns: Content / Sidebar', 'storms'),
+						'2c-r' => __('2 Columns: Sidebar / Content', 'storms')
+					),
+					array(
+						'default' => 'default',
+						'customizer' => true
+					)
+				);
+			}
 
 			/**
 		     * Enable support for wide alignment class for Gutenberg blocks
@@ -58,9 +62,6 @@ function storms_load_extensions() {
 		if (WooCommerce\Functions::is_woocommerce_activated()) {
 			(new Storms\WooCommerce\WooCommerce)->run();
 		}
-	}
-	if ( current_theme_supports( 'theme-layouts' ) ) {
-		(new Vendor\Theme_Layouts)->run();
 	}
 }
 add_action( 'after_setup_theme', 'storms_load_extensions', 14 );

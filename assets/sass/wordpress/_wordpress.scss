@@ -65,8 +65,8 @@
     table {
         @extend .table;
     }
-    .table-condensed {
-        @extend .table-condensed;
+    .table-sm {
+        @extend .table-sm;
     }
 }
 
@@ -169,13 +169,13 @@ img {
     }
     .comment-content &,
     .widget & {
-        @extend .img-responsive;
+        @extend .img-fluid;
     }
 }
 
 //.entry-content p img,
 .wp-caption {
-    @extend .img-responsive;
+    @extend .img-fluid;
     &.alignleft,
     &.alignright,
     &.aligncenter,
@@ -216,7 +216,7 @@ img {
 .widget_calendar #wp-calendar {
     @extend .table;
     @extend .table-bordered;
-    @extend .table-condensed;
+    @extend .table-sm;
     @extend .table-striped;
     @extend .table-responsive;
     #prev {

@@ -830,7 +830,7 @@ class FrontEnd extends Base\Runner
                         <div class="col-sm-3" style="padding-right: 0;">
                             <a href="<?php the_permalink(); ?>">
                                 <figure class="img-blog-over">
-                                    <?php the_post_thumbnail( 'storms-post-thumb', array( 'class' => 'img-responsive blog-img' ) ); ?>
+                                    <?php the_post_thumbnail( 'storms-post-thumb', array( 'class' => 'img-fluid blog-img' ) ); ?>
                                 </figure>
                             </a>
                         </div>

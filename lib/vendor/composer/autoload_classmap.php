@@ -6,4 +6,24 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'FB' => $vendorDir . '/firephp/firephp-core/lib/FirePHPCore/fb.php',
+    'FirePHP' => $vendorDir . '/firephp/firephp-core/lib/FirePHPCore/FirePHP.class.php',
+    'StormsFramework\\Base\\Loader' => $baseDir . '/StormsFramework/Base/Loader.php',
+    'StormsFramework\\Base\\Manager' => $baseDir . '/StormsFramework/Base/Manager.php',
+    'StormsFramework\\Base\\Runner' => $baseDir . '/StormsFramework/Base/Runner.php',
+    'StormsFramework\\Storms\\BackEnd' => $baseDir . '/StormsFramework/Storms/BackEnd.php',
+    'StormsFramework\\Storms\\Bootstrap\\Bootstrap' => $baseDir . '/StormsFramework/Storms/Bootstrap/Bootstrap.php',
+    'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Commentwalker' => $baseDir . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Commentwalker.php',
+    'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Navwalker' => $baseDir . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Navwalker.php',
+    'StormsFramework\\Storms\\Bootstrap\\WP_Bootstrap_Pagination' => $baseDir . '/StormsFramework/Storms/Bootstrap/WP_Bootstrap_Pagination.php',
+    'StormsFramework\\Storms\\Configuration' => $baseDir . '/StormsFramework/Storms/Configuration.php',
+    'StormsFramework\\Storms\\FrontEnd' => $baseDir . '/StormsFramework/Storms/FrontEnd.php',
+    'StormsFramework\\Storms\\Helper' => $baseDir . '/StormsFramework/Storms/Helper.php',
+    'StormsFramework\\Storms\\Layout' => $baseDir . '/StormsFramework/Storms/Layout.php',
+    'StormsFramework\\Storms\\Template' => $baseDir . '/StormsFramework/Storms/Template.php',
+    'StormsFramework\\Storms\\WooCommerce\\Functions' => $baseDir . '/StormsFramework/Storms/WooCommerce/Functions.php',
+    'StormsFramework\\Storms\\WooCommerce\\WooCommerce' => $baseDir . '/StormsFramework/Storms/WooCommerce/WooCommerce.php',
+    'StormsFramework\\Vendor\\Thumbnail_Resizer' => $baseDir . '/StormsFramework/Vendor/Thumbnail_Resizer.php',
+    'StormsFramework\\Widget\\Dashboard\\BrandInfo' => $baseDir . '/StormsFramework/Widget/Dashboard/BrandInfo.php',
+    'StormsFramework\\Widget\\Dashboard\\SystemErrors' => $baseDir . '/StormsFramework/Widget/Dashboard/SystemErrors.php',
 );

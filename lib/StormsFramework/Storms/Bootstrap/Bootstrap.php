@@ -47,11 +47,14 @@ class Bootstrap extends Base\Runner
 
 		$this->loader
 			->add_filter( 'get_calendar', 'calendar_widget' )
-			->add_filter( 'comment_reply_link', 'add_bootstrap_btn_class', 10, 4 )
+			->add_filter( 'comment_reply_link', 'add_bootstrap_btn_class', 10 )
+			->add_filter( 'edit_comment_link', 'add_bootstrap_btn_class', 10 )
 			->add_filter( 'get_avatar', 'avatar_img_circle_class', 10, 1 )
 			->add_filter( 'cleaner_gallery_image', 'cleaner_gallery_anchor_class', 99, 4 )
 			->add_filter( 'comment_form_defaults', 'bootstrap_comment_form_args', 15 )
 			->add_filter( 'wp_list_categories', 'bootstrap_count_badges' );
+
+		add_action( 'after_setup_theme', 'register_navwalker' );
 	}
 
 	//<editor-fold desc="Scripts and Styles">
@@ -116,14 +119,14 @@ class Bootstrap extends Base\Runner
 	//</editor-fold>
 
 	/**
-	 * Wordpress Bootstrap 3 responsive images
-	 * Add img-responsive class to images
+	 * Wordpress Bootstrap 4 responsive images
+	 * Add img-fluid class to images
 	 * Source: https://gist.github.com/mkdizajn/7352469
 	 * @see https://stackoverflow.com/a/20499803/1003020
 	 */
 	public function responsive_images( $content ) {
 		if($content !== '') {
-			$new_classes = apply_filters('add_classes_to_images', array('img-responsive')); // Array of classes
+			$new_classes = apply_filters('add_classes_to_images', array('img-fluid')); // Array of classes
 
 			$content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
 			$document = new \DOMDocument();
@@ -155,7 +158,7 @@ class Bootstrap extends Base\Runner
 	 * @return mixed
 	 */
 	function add_class_post_thumbnail($attr) {
-		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-responsive' ) ); // Array of classes
+		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-fluid' ) ); // Array of classes
 
 		foreach( $new_classes as $class ) {
 			$attr['class'] .= ' ' . $class;
@@ -165,18 +168,34 @@ class Bootstrap extends Base\Runner
 
 	/**
 	 * Bootstrap password form for posts
+	 * @see https://wordpress.stackexchange.com/a/71299/54025
 	 */
 	public function password_form( $form ) {
-		global $post;
-		$form = '<p>' . __( 'This post is password protected. To view it please enter your password below: or add custom message', 'storms' ) . '</p>' .
-			'<form class="form-inline post-password-form" action="' . esc_url( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" method="post">' .
-			'	<div class="form-group">' .
-			'		<label for="password">' . __( 'Password', 'storms' ) . ' </label>' .
-			'		<input name="post_password" id="password" type="password" class="form-control" required placeholder="' . __( 'Password', 'storms' ) . '"/>' .
-			'	</div>' .
-			'	<input type="submit" name="Submit" class="btn btn-default" value="' . esc_attr__( "Submit" ) . '" />' .
-			'</form>';
-		return $form;
+
+		// We have a cookie, but it doesn’t match the password.
+		$cookie_name = 'wp-postpass_' . COOKIEHASH;
+		if ( isset ( $_COOKIE[ $cookie_name ] ) ) : ?>
+			<div class="website-notices-wrapper">
+				<div class="website-message" role="alert">
+				<?php esc_html_e( 'Sorry, your password is wrong.', 'storms' ) ?></div>
+			</div>
+		<?php
+			// Forcing the cookie to expire with the session
+			unset( $_COOKIE[ $cookie_name ] );
+			setcookie($cookie_name, '', 0, COOKIEPATH);
+		endif;
+		?>
+
+		<p><?php _e( 'This post is password protected. To view it please enter your password below: or add custom message', 'storms' ); ?></p>
+		<form class="form-inline my-2 my-lg-0 post-password-form" action="<?php echo esc_url( site_url( 'wp-login.php?action=postpass', 'login_post' ) ); ?>" method="post">
+			<div class="form-group">
+				<label for="password" class="col-form-label mr-2"><?php _e( 'Password', 'storms' ); ?></label>
+				<input name="post_password" id="password" type="password" class="form-control mr-2" required placeholder="<?php _e( 'Password', 'storms' ); ?>"/>
+			</div>
+			<input type="submit" name="Submit" class="btn btn-secondary" value="<?php esc_attr_e( "Submit" ); ?>" />
+		</form>
+		<?php
+		return '';
 	}
 
 	/**
@@ -340,15 +359,13 @@ class Bootstrap extends Base\Runner
 	/**
 	 * Parse the reply link HTML to adjust the output to meet bootstrap HTML/CSS structure
 	 */
-	public function add_bootstrap_btn_class( $html, $args, $comment, $post ) {
-
-		if ( ! $html )
+	public function add_bootstrap_btn_class( $html ) {
+		if ( ! $html ) {
 			return;
+		}
 
 		$dom = new \DOMDocument();
-
 		@$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
-
 		$x = new \DOMXPath($dom);
 
 		foreach($x->query("//a") as $node) {
@@ -358,7 +375,6 @@ class Bootstrap extends Base\Runner
 		}
 
 		$newHtml = preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML());
-
 		return $newHtml;
 
 	}
@@ -379,7 +395,7 @@ class Bootstrap extends Base\Runner
 
 		foreach($x->query("//img") as $node) {
 			$classes = $node->getAttribute( "class" );
-			$classes .= ' img-circle';
+			$classes .= ' rounded-circle';
 			$node->setAttribute( "class" , $classes );
 		}
 
@@ -449,7 +465,7 @@ class Bootstrap extends Base\Runner
 			'label_submit'         => __( 'Enviar', 'storms' ),
 			'format'               => 'html5',
 			'class_submit'         => 'submit',
-			'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s btn btn-default" value="%4$s" />',
+			'submit_button'        => '<input name="%1$s" type="submit" id="%2$s" class="%3$s btn btn-secondary" value="%4$s" />',
 			'submit_field'         => '<p class="form-submit">%1$s %2$s</p>',
 		);
 
@@ -485,70 +501,6 @@ class Bootstrap extends Base\Runner
 		$form = '';
 		locate_template('/template-parts/searchform.php', true, false);
 		return $form;
-	}
-
-	/**
-	 * Custom comments loop
-	 * @param  object $comment Comment object.
-	 * @param  array  $args    Comment arguments.
-	 * @param  int    $depth   Comment depth.
-	 *
-	 * @return void
-	 *
-	 * @deprecated Esta função não está mais disponivel. Use o Bootstrap\CommentWalker no lugar.
-	 */
-	public static function comments_loop( $comment, $args, $depth ) {
-
-		throw new Exception( 'Deprecated function called' );
-
-		$GLOBALS['comment'] = $comment;
-		switch ( $comment->comment_type ) {
-			case 'pingback' :
-			case 'trackback' :
-				?>
-				<li class="media post pingback">
-				<p><?php _e( 'Pingback:', 'storms' ); ?> <?php comment_author_link(); ?> <?php edit_comment_link( __( 'Edit', 'storms' ), '<span class="edit-link">', '</span>' ); ?></p>
-				<?php
-				break;
-			default :
-				?>
-			<li <?php comment_class( 'media' ); ?> id="li-comment-<?php comment_ID(); ?>">
-				<article id="div-comment-<?php comment_ID(); ?>" class="comment-body comment-author vcard">
-					<div class="media-left">
-						<?php echo str_replace( "class='avatar", "class='media-object avatar", get_avatar( $comment, 64 ) ); ?>
-					</div>
-					<div class="media-body">
-						<footer class="comment-meta">
-							<h5 class="media-heading">
-								<?php echo sprintf( '<strong><span class="fn">%1$s</span></strong>
-														 %2$s <a href="%3$s"><time datetime="%4$s">%5$s %6$s </time></a>
-														 <span class="says"> %7$s</span>',
-									get_comment_author_link(), __( 'in', 'storms' ),
-									esc_url( get_comment_link( $comment->comment_ID ) ),
-									get_comment_time( 'c' ),
-									get_comment_date(), __( 'at', 'storms' ),
-									get_comment_time(), __( 'said:', 'storms' ) ); ?>
-							</h5>
-
-							<?php edit_comment_link( __( 'Edit', 'storms' ), '<span class="edit-link">', ' </span>' ); ?>
-
-							<?php if ( $comment->comment_approved == '0' ) : ?>
-								<p class="comment-awaiting-moderation alert alert-info"><?php _e( 'Your comment is awaiting moderation.', 'storms' ); ?></p>
-							<?php endif; ?>
-						</footer><!-- .comment-meta -->
-
-						<div class="comment-content">
-							<?php comment_text(); ?>
-						</div><!-- .comment-content -->
-
-						<div class="comment-metadata">
-							<span class="reply-link"><?php comment_reply_link( array_merge( $args, array( 'reply_text' => __( 'Respond', 'storms' ), 'depth' => $depth, 'max_depth' => $args['max_depth'] ) ) ); ?></span>
-						</div><!-- .comment-metadata -->
-					</div>
-				</article><!-- .comment-body -->
-				<?php
-				break;
-		}
 	}
 
 }

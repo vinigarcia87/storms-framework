@@ -47,7 +47,7 @@ class Functions
 	public static function storms_get_product_thumbnail( $size = 'shop_catalog', $placeholder_width = 0, $placeholder_height = 0  ) {
 		global $post;
 
-		$bootstrap_classes = ' img-circle img-thumbnail';
+		$bootstrap_classes = ' rounded-circle img-thumbnail';
 
 		if ( has_post_thumbnail() )
 		{
@@ -119,7 +119,7 @@ class Functions
 			$image = str_replace( ' ', '%20', $image );
 
 			// echo '<img src="' . esc_url( $image ) . '" alt="' . esc_attr( $category->name ) . '" width="' . esc_attr( $dimensions['width'] ) . '" height="' . esc_attr( $dimensions['height'] ) . '" />';
-			echo '<img src="' . esc_url( $image ) . '" alt="' . esc_attr( $category->name ) . '" class="img-responsive" width="100%" />';
+			echo '<img src="' . esc_url( $image ) . '" alt="' . esc_attr( $category->name ) . '" class="img-fluid" width="100%" />';
 		}
 	}
 
@@ -143,22 +143,22 @@ class Functions
 	public static function get_product_list_classes( $columns ) {
 		switch ( $columns ) {
 			case 6:
-				$classes = 'col-xs-6 col-sm-3 col-md-2';
+				$classes = 'col-6 col-sm-3 col-md-2';
 				break;
 			case 4:
-				$classes = 'col-xs-12 col-sm-6 col-md-3';
+				$classes = 'col-12 col-sm-6 col-md-3';
 				break;
 			case 3:
-				$classes = 'col-xs-12 col-sm-12 col-md-4';
+				$classes = 'col-12 col-sm-12 col-md-4';
 				break;
 			case 31:
-				$classes = 'col-xs-12 col-sm-6 col-md-4';
+				$classes = 'col-12 col-sm-6 col-md-4';
 				break;
 			case 2:
-				$classes = 'col-xs-12 col-sm-6 col-md-6';
+				$classes = 'col-12 col-sm-6 col-md-6';
 				break;
 			default:
-				$classes = 'col-xs-12 col-sm-12 col-md-12';
+				$classes = 'col-12 col-sm-12 col-md-12';
 		}
 
 		return $classes;

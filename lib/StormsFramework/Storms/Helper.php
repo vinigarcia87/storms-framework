@@ -49,9 +49,9 @@ class Helper extends Base\Manager
 			fclose( $fp );
 
 			// Log on console with FirePHP
-			if( class_exists( 'FB' ) ) {
-				\FB::log( '[' . $date . '] ' . $content );
-			}
+			//if( class_exists( 'FB' ) ) {
+			//	\FB::log( '[' . $date . '] ' . $content );
+			//}
 		}
 	}
 
@@ -898,7 +898,7 @@ class Helper extends Base\Manager
 
 		if ( $thumb ) {
 			$image = Helper::get_image_url( $thumb, $width, $height, $crop, $upscale );
-			$html  = '<img class="wp-image-thumb img-responsive ' . sanitize_html_class( $class ) . '" src="' . $image . '" width="' . esc_attr( $width ) . '" height="' . esc_attr( $height ) . '" alt="' . esc_attr( $alt ) . '" />';
+			$html  = '<img class="wp-image-thumb img-fluid ' . sanitize_html_class( $class ) . '" src="' . $image . '" width="' . esc_attr( $width ) . '" height="' . esc_attr( $height ) . '" alt="' . esc_attr( $alt ) . '" />';
 
 			return apply_filters( 'storms_thumbnail_html', $html );
 		}
