@@ -63,6 +63,8 @@ class WooCommerce extends Base\Runner
 			->add_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 5 )
 			->add_action( 'woocommerce_before_main_content', 'before_content', 10 )
 			->add_action( 'woocommerce_after_main_content', 'after_content', 10 )
+			->add_action( 'woocommerce_before_account_navigation', 'open_row_myaccount_dashboard' )
+			->add_action( 'woocommerce_account_dashboard', 'close_row_myaccount_dashboard' )
 
 			->add_filter( 'woocommerce_breadcrumb_defaults', 'woocommerce_breadcrumb_args' )
 			->add_action( 'template_redirect', 'remove_sidebar' );
@@ -79,13 +81,24 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' )
 			->add_filter( 'woocommerce_output_related_products_args', 'related_products_args' )
             ->add_filter( 'woocommerce_cross_sells_total', 'cross_sells_limit' )
-            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' );
+            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' )
+			->add_action( 'widgets_init', 'register_widgets_area' );
 
 		$this->loader
-			->add_action( 'widgets_init', 'register_widgets_area' )
 			->add_filter( 'woocommerce_form_field_args', 'bootstrap_form_field_args', 10, 3 )
 			->add_filter( 'woocommerce_form_field_checkbox', 'bootstrap_form_field_checkbox', 10, 4 )
-			->add_filter( 'woocommerce_form_field_radio', 'bootstrap_form_field_radio', 10, 4 );
+			->add_filter( 'woocommerce_form_field_radio', 'bootstrap_form_field_radio', 10, 4 )
+			->add_filter( 'woocommerce_form_field_country', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_state', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_textarea', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_checkbox', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_password', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_text', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_email', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_tel', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_number', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_select', 'clean_checkout_fields_class_attribute_values', 20, 4 )
+			->add_filter( 'woocommerce_form_field_radio', 'clean_checkout_fields_class_attribute_values', 20, 4 );
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
@@ -94,7 +107,7 @@ class WooCommerce extends Base\Runner
 
 		$this->loader
 			->add_action( 'init', 'prevent_wp_login' )
-			->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
+			//->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
 			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
@@ -327,9 +340,9 @@ class WooCommerce extends Base\Runner
 	 */
 	public function registration_confirm_password_add_field() {
 		?>
-		<p class="form-row form-row-wide">
+		<p class="form-row-wide form-group">
 			<label for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
-			<input type="password" class="input-text" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
+			<input type="password" class="input-text form-control" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
 		</p>
 		<?php
 	}
@@ -499,12 +512,10 @@ class WooCommerce extends Base\Runner
 			}
 		}
 
-		$field = '';
-
-		$field .= '<div class="checkbox' . esc_attr( implode( ' ', $args['class'] ) ) .'" ' . implode( ' ', $custom_attributes ) . '>';
-		$field .= '	<label>';
-		$field .= '	<input type="' . esc_attr( $args['type'] ) . '" class="input-checkbox ' . esc_attr( implode( ' ', $args['input_class'] ) ) .'" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" value="1" '.checked( $value, 1, false ) .'> '. $args['label'] . $required;
-		$field .= '	</label>';
+		$field  = '';
+		$field .= '<div class="form-check ' . esc_attr( implode( ' ', $args['class'] ) ) .'" ' . implode( ' ', $custom_attributes ) . '>';
+		$field .= '	<input type="' . esc_attr( $args['type'] ) . '" class="form-check-input ' . esc_attr( implode( ' ', $args['input_class'] ) ) .'" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" value="1" '.checked( $value, 1, false ) .'/> ';
+		$field .= '	<label for="' . esc_attr( $args['id'] ) . '">'. $args['label'] . $required . '</label>';
 		$field .= '</div>';
 
 		return $field;
@@ -552,6 +563,41 @@ class WooCommerce extends Base\Runner
 		return $field;
 	}
 
+	/**
+	 * Remove the class "form-row" from all checkout fields
+	 * It conflicts with Bootstrap 4
+	 *
+	 * @param $field
+	 * @param $key
+	 * @param $args
+	 * @param $value
+	 * @return mixed
+	 */
+	public function clean_checkout_fields_class_attribute_values( $field, $key, $args, $value ) {
+		if( is_checkout() ) {
+			// remove "form-row"
+			$field = str_replace( array( '<p class="form-row ' ), array( '<p class="' ), $field );
+		}
+		return $field;
+	}
+
+	/**
+	 * Remove the class "form-row" from all checkout fields
+	 * It conflicts with Bootstrap 4
+	 *
+	 * @param $fields
+	 * @return mixed
+	 */
+	function custom_checkout_fields_class_attribute_value( $fields ) {
+		foreach( $fields as $fields_group_key => $group_fields_values ) {
+			foreach( $group_fields_values as $field_key => $field ) {
+				// Remove other classes (or set yours)
+				$fields[$fields_group_key][$field_key]['class'] = array();
+			}
+		}
+		return $fields;
+	}
+
 	//</editor-fold>
 
 	//<editor-fold desc="Layout definitions">
@@ -581,6 +627,20 @@ class WooCommerce extends Base\Runner
 		}
 
         echo '</div>';
+	}
+
+	/**
+	 * Incluindo uma row em volta do dashboard do my account - abertura
+	 */
+	public function open_row_myaccount_dashboard() {
+		echo '<div class="row myaccount-dashboard">';
+	}
+
+	/**
+	 * Incluindo uma row em volta do dashboard do my account - fechamento
+	 */
+	public function close_row_myaccount_dashboard() {
+		echo '</div>';
 	}
 
 	/**

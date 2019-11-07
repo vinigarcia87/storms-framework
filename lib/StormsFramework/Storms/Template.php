@@ -14,16 +14,13 @@
 
 namespace StormsFramework\Storms;
 
-use StormsFramework\Base,
-	StormsFramework\Storms;
+use StormsFramework\Base;
 
 class Template extends Base\Runner
 {
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 	}
-
-	private $jquery_version = '3.4.1';
 
 	public function define_hooks() {
 
