@@ -24,9 +24,6 @@ class Bootstrap extends Base\Runner
 	}
 
 	public function define_hooks() {
-        $this->loader
-			->add_action( 'wp_enqueue_scripts', 'bootstrap_scripts' )
-			->add_action( 'wp_enqueue_scripts', 'bootstrap_styles', 5 );
 
         // Add CSS class to images on posts and pages
         if( get_option( 'add_extra_classes_to_img', true ) ) {
@@ -56,67 +53,6 @@ class Bootstrap extends Base\Runner
 
 		add_action( 'after_setup_theme', 'register_navwalker' );
 	}
-
-	//<editor-fold desc="Scripts and Styles">
-
-	/**
-	 * Register all javascript scripts that will be used by bootstrap
-	 */
-	public function register_bootstrap_scripts() {
-		// http://getbootstrap.com/
-		wp_register_script('bootstrap', Storms\Helper::get_asset_url('/js/bootstrap.min.js'), array('jquery'), '3.3.5', false);
-	}
-
-	/**
-	 * Load bootstrap scripts
-	 */
-	public function bootstrap_scripts() {
-		// Check if we want to load the framework's verion of bootstrap
-		if ( get_option( 'load_sf_bootstrap', false ) ) {
-
-			$this->register_bootstrap_scripts();
-
-			// http://getbootstrap.com/
-			wp_enqueue_script('bootstrap');
-		}
-
-		// Add Bootstrap CSS for Select2 component
-	 	// Source: https://github.com/select2/select2-bootstrap-theme
-	 	if ( get_option( 'load_select2-bootstrap', false ) ) {
-
-            if (defined('WP_DEBUG') && WP_DEBUG) {
-                wp_enqueue_style('select2-bootstrap', Storms\Helper::get_asset_url('/css/vendor/select2-bootstrap.css'), array('select2'));
-            } else {
-                wp_enqueue_style('select2-bootstrap', Storms\Helper::get_asset_url('/css/vendor/select2-bootstrap.min.css'), array('select2'));
-            }
-		}
-	}
-
-	/**
-	 * Register all stylesheets that will be used by bootstrap
-	 */
-	public function register_bootstrap_styles() {
-		if (defined('WP_DEBUG') && WP_DEBUG) {
-			wp_register_style('bootstrap', Storms\Helper::get_asset_url('/css/bootstrap.css'), false, STORMS_FRAMEWORK_VERSION);
-		} else {
-			wp_register_style('bootstrap', Storms\Helper::get_asset_url('/css/bootstrap.min.css'), false, STORMS_FRAMEWORK_VERSION);
-		}
-	}
-
-	/**
-	 * Load bootstrap styles
-	 */
-	public function bootstrap_styles() {
-		// Check if we want to load the framework's verion of bootstrap
-		if ( get_option( 'load_sf_bootstrap', false ) ) {
-
-			$this->register_bootstrap_styles();
-
-			wp_enqueue_style('bootstrap');
-		}
-	}
-
-	//</editor-fold>
 
 	/**
 	 * Wordpress Bootstrap 4 responsive images
