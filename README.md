@@ -3,7 +3,7 @@
 Storms Framework    | Descriptions
 ------------------: | :------------------
 **Theme:**          | [Storms Framework](http://storms.com.br)
-**Description:**    | This framework was built to help developers to customize and optimize their themes. With Bootstrap 3 and a nice support to WooCommerce, this can be the plugin you need.
+**Description:**    | This framework was built to help developers to customize and optimize their themes. Offers support to Bootstrap 4 and WooCommerce.
 **Version:**        | 3.0.0
 **Author:**         | [Storms Websolutions Team](http://storms.com.br)
 **License:**        | [GPLv2 - GNU General Public License v2 or later](http://www.gnu.org/licenses/gpl-2.0.html)
@@ -21,15 +21,15 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 * Cross-browser compatibility
 * SEO Optimization
 * Internationalization & localization
-* Child Theme Ready
-* Build with Grunt, using SASS
+* Build with Gulp, using SASS
 * Admin area and login page fully customized with your brand
-* [Bootstrap 3](http://getbootstrap.com/) integration
-* [Font Awesome](https://fortawesome.github.io/Font-Awesome/) icons
+* [Bootstrap 4](http://getbootstrap.com/) integration
 * [WooCommerce](http://www.woothemes.com/woocommerce/) support with fully bootstraped templates
 * [EditorConfig](http://editorconfig.org/) ready
 
 ## Plugin Manual
+
+This plugin was built to offer some default customization for any WordPress website. Each feature is described on the following pages:
 
 * [BackEnd customization](/wiki/STORMS_FRAMEWORK_BACKEND_CLASS.md)
 * [Bootstrap adaptation](/wiki/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
