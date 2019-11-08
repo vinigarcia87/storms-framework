@@ -129,12 +129,11 @@ class FrontEnd extends Base\Runner
 		set_post_thumbnail_size( get_option( 'post_thumb_width' , 825 ), get_option( 'post_thumb_height' , 510 ), get_option( 'post_thumb_crop' , true ) );
 
 		/**
+		 * Support HTML5
 		 * Switch default core markup for search form, comment form, and comments to output valid HTML5
 		 * See: http://codex.wordpress.org/Function_Reference/add_theme_support#HTML5
 		 */
-		add_theme_support( 'html5', array(
-			'search-form', 'comment-form', 'comment-list', 'gallery', 'caption'
-		) );
+		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption' ) );
 
 		/**
 		 * Enable support for Post Formats.
@@ -226,9 +225,6 @@ class FrontEnd extends Base\Runner
 			'default-image' => '',
 		);
 		add_theme_support( 'custom-background', $defaults );
-
-		// Support HTML5
-		add_theme_support( 'html5', array( 'comment-list', 'comment-form', 'search-form', 'gallery', 'caption' ) );
 	}
 
     /**
