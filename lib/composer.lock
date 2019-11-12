@@ -4,45 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "b059eb6f616d08685aef4b0de9b06699",
-    "packages": [
-        {
-            "name": "firephp/firephp-core",
-            "version": "v0.4.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/firephp/firephp-core.git",
-                "reference": "fabad0f2503f9577fe8dd2cb1d1c7cd73ed2aacf"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/firephp/firephp-core/zipball/fabad0f2503f9577fe8dd2cb1d1c7cd73ed2aacf",
-                "reference": "fabad0f2503f9577fe8dd2cb1d1c7cd73ed2aacf",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "lib/FirePHPCore/FirePHP.class.php",
-                    "lib/FirePHPCore/fb.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Christoph Dorn",
-                    "email": "christoph@christophdorn.com",
-                    "homepage": "http://christophdorn.com"
-                }
-            ],
-            "description": "Traditional FirePHPCore library for sending PHP variables to the browser.",
-            "homepage": "https://github.com/firephp/firephp-core",
-            "time": "2013-04-23T15:28:20+00:00"
-        }
-    ],
+    "content-hash": "a0328558c871372a20049a98d8ae423b",
+    "packages": [],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
@@ -50,7 +13,7 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": ">=5.5.0"
+        "php": ">=7.0.0"
     },
     "platform-dev": []
 }

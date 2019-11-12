@@ -13,8 +13,7 @@
 	}
 	],
 	"require": {
-		"php": ">=5.5.0",
-		"firephp/firephp-core": "^0.4.0"
+		"php": ">=7.0.0"
 	},
 	
 	"autoload": {

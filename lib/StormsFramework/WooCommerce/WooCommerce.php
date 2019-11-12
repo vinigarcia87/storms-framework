@@ -3,19 +3,20 @@
  * Storms Framework (http://storms.com.br/)
  *
  * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
- * @copyright (c) Copyright 2012-2016, Storms Websolutions
+ * @copyright (c) Copyright 2012-2019, Storms Websolutions
  * @license   GPLv2 - GNU General Public License v2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
  * @package   Storms
- * @version   3.0.0
+ * @version   4.0.0
  *
- * StormsFramework\Storms\WooCommerce\WooCommerce class
+ * StormsFramework\WooCommerce\WooCommerce class
  * Add WooCommerce support
  */
 
-namespace StormsFramework\Storms\WooCommerce;
+namespace StormsFramework\WooCommerce;
 
 use StormsFramework\Base,
-	StormsFramework\Storms\Template;
+	StormsFramework\Template;
+use StormsFramework\Helper;
 
 class WooCommerce extends Base\Runner
 {
@@ -110,6 +111,7 @@ class WooCommerce extends Base\Runner
 			//->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
 			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
+			->add_filter( 'body_class', 'set_intern_login_body_class' )
 			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
 	}
 
@@ -263,18 +265,27 @@ class WooCommerce extends Base\Runner
 		global $pagenow;
 
 		if( get_option( 'prevent_wp_login', 'yes' ) ) {
+
 			// Check if a $_GET['action'] is set, and if so, load it into $action variable
-			$action = (isset($_GET['action'])) ? $_GET['action'] : '';
+			$action = ( isset( $_GET['action'] ) ) ? $_GET['action'] : '';
 			// Check if we're on the login page, and ensure the action is not 'logout'
-			if ($pagenow == 'wp-login.php' &&
-				(!$action || ($action && !in_array($action, array('logout', 'lostpassword', 'rp', 'resetpass'))))
+			if( $pagenow == 'wp-login.php' &&
+				( !$action || ( $action && !in_array( $action, array( 'logout', 'lostpassword', 'rp', 'resetpass' ) ) ) )
 			) {
 
+				Helper::debug( is_user_logged_in() );
+
 				// Load the 'myaccount' page url
-				$page = wc_get_page_permalink('myaccount');
+				$login_page = wc_get_page_permalink( 'myaccount' );
+
+				// Check to see if is a wp-admin login dialog
+				$is_intern_login = isset( $_GET['interim-login'] ) && 1 == $_GET['interim-login'];
+				if( $is_intern_login ) {
+					$login_page = esc_url( add_query_arg( 'interim-login', '1', $login_page ) );
+				}
 
 				// Redirect to the selected page
-				wp_redirect($page);
+				wp_redirect( $login_page );
 				// Stop execution to prevent the page loading for any reason
 				exit();
 			}
@@ -289,7 +300,8 @@ class WooCommerce extends Base\Runner
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
 		if ( !is_user_logged_in() && is_checkout() ) {
-			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', get_permalink( get_option( 'woocommerce_myaccount_page_id' ) ) ) );
+			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
+			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
 			wp_redirect( $login_page );
 		}
 	}
@@ -304,6 +316,14 @@ class WooCommerce extends Base\Runner
 	 */
 	public function user_redirect_on_login_registration( $redirect, $user ) {
 
+		// In case of internal login dialog, we want to redirect back to the login page to allow default wp behaviour
+		$is_intern_login = isset( $_GET['interim-login'] ) && 1 == $_GET['interim-login'];
+		if( $is_intern_login ) {
+			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
+			$login_page = esc_url( add_query_arg( 'interim-login', '1', $myaccount ) );
+			return $login_page;
+		}
+
 		$checkout = get_permalink( wc_get_page_id( 'checkout' ) );
 
 		if( isset( $_GET['return_to'] ) && 'checkout' === $_GET['return_to'] ) {
@@ -315,6 +335,27 @@ class WooCommerce extends Base\Runner
 		}
 
 		return $redirect;
+	}
+
+	/**
+	 * When is a internal login dialog, set a body class
+	 * so we can customize the login page
+	 *
+	 * @param $classes
+	 * @return array
+	 */
+	function set_intern_login_body_class( $classes ) {
+
+		if( is_account_page() && ( isset( $_GET['interim-login'] ) && 1 == $_GET['interim-login'] ) ) {
+
+			$classes[] = 'interim-login';
+
+			// When login was successfully on internal login dialog, this class will make wp close the dialog
+			if( is_user_logged_in() ) {
+				$classes[] = 'interim-login-success';
+			}
+		}
+		return $classes;
 	}
 
 	/**

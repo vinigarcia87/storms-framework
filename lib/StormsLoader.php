@@ -3,10 +3,10 @@
  * Storms Framework (http://storms.com.br/)
  *
  * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
- * @copyright (c) Copyright 2012-2016, Storms Websolutions
+ * @copyright (c) Copyright 2012-2019, Storms Websolutions
  * @license   GPLv2 - GNU General Public License v2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
  * @package   Storms
- * @version   3.0.0
+ * @version   4.0.0
  *
  * Storms Framework Loader file
  * Include this file in your functions.php to start the framework
@@ -14,25 +14,36 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-use StormsFramework\Storms,
-	StormsFramework\Vendor,
-	StormsFramework\Storms\WooCommerce;
+use \StormsFramework\Bootstrap,
+	\StormsFramework\WooCommerce;
 
 function storms_load_extensions() {
 	// Load Storms Framework's configurations
-	Storms\Configuration::set_defines();
+	\StormsFramework\Configuration::set_defines();
 
-	if ( current_theme_supports( 'style-backend' ) ) {
-		(new Storms\BackEnd())->run();
+	$support_backend = current_theme_supports( 'style-backend' );
+	$support_brand_customization = current_theme_supports( 'brand-customization' );
+	$support_frontend = current_theme_supports( 'style-frontend' );
+	$support_layout = current_theme_supports( 'style-layout' );
+	$support_theme_layouts = current_theme_supports( 'theme-layouts' );
+	$support_bootstrap = current_theme_supports( 'use-bootstrap' );
+	$support_woocomerce = current_theme_supports( 'use-woocommerce' );
+
+	if ( $support_backend ) {
+		(new \StormsFramework\BackEnd())->run();
+
+		if( $support_brand_customization ) {
+			(new \StormsFramework\BrandCustomization())->run();
+		}
 	}
-	if ( current_theme_supports( 'style-frontend' ) ) {
-		(new Storms\FrontEnd())->run();
+	if ( $support_frontend ) {
+		(new \StormsFramework\FrontEnd())->run();
 
-		if( current_theme_supports( 'style-layout' ) ) {
-			(new Storms\Layout)->run();
+		if( $support_layout ) {
+			(new \StormsFramework\Layout())->run();
 
-			if ( current_theme_supports( 'theme-layouts' ) ) {
-				(new Storms\Template())->run();
+			if ( $support_theme_layouts ) {
+				(new \StormsFramework\Template())->run();
 
 				// Enable theme layouts
 				add_theme_support('theme-layouts',
@@ -48,19 +59,14 @@ function storms_load_extensions() {
 				);
 			}
 
-			/**
-		     * Enable support for wide alignment class for Gutenberg blocks
-		     */
-			add_theme_support( 'align-wide' );
-
-			if ( current_theme_supports( 'use-bootstrap' ) ) {
-				(new Storms\Bootstrap\Bootstrap)->run();
+			if ( $support_bootstrap ) {
+				(new Bootstrap\Bootstrap)->run();
 			}
 		}
 	}
-	if ( current_theme_supports( 'use-woocommerce' ) ) {
+	if ( $support_woocomerce ) {
 		if (WooCommerce\Functions::is_woocommerce_activated()) {
-			(new Storms\WooCommerce\WooCommerce)->run();
+			(new WooCommerce\WooCommerce)->run();
 		}
 	}
 }

@@ -4,14 +4,14 @@ Storms Framework    | Descriptions
 ------------------: | :------------------
 **Theme:**          | [Storms Framework](http://storms.com.br)
 **Description:**    | This framework was built to help developers to customize and optimize their themes. Offers support to Bootstrap 4 and WooCommerce.
-**Version:**        | 3.0.0
+**Version:**        | 4.0.0
 **Author:**         | [Storms Websolutions Team](http://storms.com.br)
 **License:**        | [GPLv2 - GNU General Public License v2 or later](http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Product License
 
 ```
-© Copyright 2012-2019, Storms Websolutions | Storms Framework v3.0 - All rights reserved.
+© Copyright 2012-2019, Storms Websolutions | Storms Framework v4.0 - All rights reserved.
 The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and others, not including the PHP files is licensed with MIT or by the license specified inside the file.
 ```
 
@@ -31,11 +31,11 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 
 This plugin was built to offer some default customization for any WordPress website. Each feature is described on the following pages:
 
-* [BackEnd customization](/wiki/STORMS_FRAMEWORK_BACKEND_CLASS.md)
-* [Bootstrap adaptation](/wiki/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
-* [FrontEnd enhancements](/wiki/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
-* [Layout customization](/wiki/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
-* [WooCommerce support and customization](/wiki/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
+* [BackEnd customization](/_documentation/STORMS_FRAMEWORK_BACKEND_CLASS.md)
+* [Bootstrap adaptation](/_documentation/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
+* [FrontEnd enhancements](/_documentation/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
+* [Layout customization](/_documentation/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
+* [WooCommerce support and customization](/_documentation/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
 
 ## WordPress Users Manual
 

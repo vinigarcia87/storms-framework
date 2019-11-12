@@ -3,11 +3,11 @@
  * Storms Framework (http://storms.com.br/)
  *
  * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
- * @copyright (c) Copyright 2012-2016, Storms Websolutions
+ * @copyright (c) Copyright 2012-2019, Storms Websolutions
  * @license   GPLv2 - GNU General Public License v2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
  * @package   Storms
- * @version   3.0.0
- * 
+ * @version   4.0.0
+ *
  * StormsFramework\Widget\Dashboard\SystemErrors class
  * Dashboard Widget that shows system errors and warnings
  * Source: http://www.catswhocode.com/blog/10-wordpress-dashboard-hacks
@@ -22,7 +22,7 @@ class SystemErrors extends Base\Manager
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
     }
-	
+
 	/**
 	 * Load the widget dashboard
 	 */
@@ -32,9 +32,9 @@ class SystemErrors extends Base\Manager
 			__( 'System Errors', 'storms' ),
 			array( $this, 'system_errors' ),
 			'dashboard', 'high'
-		);		
+		);
 	}
-	
+
 	public function system_errors() {
 		$logfile = WP_CONTENT_DIR . '/debug.log'; // Enter the server path to your logs file here
 		$displayErrorsLimit = 100; // The maximum number of errors to display in the widget

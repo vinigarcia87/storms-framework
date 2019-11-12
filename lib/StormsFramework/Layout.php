@@ -3,19 +3,18 @@
  * Storms Framework (http://storms.com.br/)
  *
  * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
- * @copyright (c) Copyright 2012-2016, Storms Websolutions
+ * @copyright (c) Copyright 2012-2019, Storms Websolutions
  * @license   GPLv2 - GNU General Public License v2 or later (http://www.gnu.org/licenses/gpl-2.0.html)
  * @package   Storms
- * @version   3.0.0
+ * @version   4.0.0
  *
- * StormsFramework\Storms\Front\FrontStyle class
+ * StormsFramework\Layout class
  * Front end styling control class
  */
 
-namespace StormsFramework\Storms;
+namespace StormsFramework;
 
-use StormsFramework\Base,
-	StormsFramework\Storms;
+use StormsFramework\Base;
 
 class Layout extends Base\Runner
 {
@@ -62,9 +61,9 @@ class Layout extends Base\Runner
 	 */
 	public function stylesheet_uri( $stylesheet, $stylesheet_dir ) {
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			return Storms\Helper::get_asset_url( '/css/style.css' );
+			return Helper::get_asset_url( '/css/style.css' );
 		} else {
-			return Storms\Helper::get_asset_url( '/css/style.min.css' );
+			return Helper::get_asset_url( '/css/style.min.css' );
 		}
 	}
 
@@ -85,9 +84,9 @@ class Layout extends Base\Runner
 		if ( get_option( 'load_stormscss', false ) ) {
 			// Custom storms styles
 			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-				wp_register_style('storms', Storms\Helper::get_asset_url('/css/storms.css'), false, STORMS_FRAMEWORK_VERSION);
+				wp_register_style('storms', Helper::get_asset_url('/css/storms.css'), false, STORMS_FRAMEWORK_VERSION);
 			} else {
-				wp_register_style('storms', Storms\Helper::get_asset_url('/css/storms.min.css'), false, STORMS_FRAMEWORK_VERSION);
+				wp_register_style('storms', Helper::get_asset_url('/css/storms.min.css'), false, STORMS_FRAMEWORK_VERSION);
 			}
 			wp_enqueue_style('storms');
 		}
@@ -102,7 +101,7 @@ class Layout extends Base\Runner
 
 		if ( $run_next && get_option( 'load_external_jquery', false ) ) {
 			// Defaults to match the version loaded via CDN
-			$local_jquery = Storms\Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' );
+			$local_jquery = Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' );
 			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
 
 
@@ -135,7 +134,7 @@ class Layout extends Base\Runner
 			if( get_option( 'load_external_jquery', false ) && !is_admin() ) {
 				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, '1.10.2', false);
 			} else {
-				wp_register_script('jquery', Storms\Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, '1.10.2', false);
+				wp_register_script('jquery', Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, '1.10.2', false);
 			}
 			wp_enqueue_script('jquery');
 		}
@@ -143,38 +142,38 @@ class Layout extends Base\Runner
         // Main theme scripts
         if ( get_option( 'show_theme_scripts', true ) ) {
             if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
+                wp_register_script('main-script-theme', Helper::get_asset_url('/js/scripts.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             } else {
-                wp_register_script('main-script-theme', Storms\Helper::get_asset_url('/js/scripts.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
+                wp_register_script('main-script-theme', Helper::get_asset_url('/js/scripts.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             }
             //wp_enqueue_script('main-script-theme'); // Attention! You have to enqueue on the pages you need!
         }
 
         // Cycle 2 jQuery slideshow plugin
         if ( get_option( 'load_cycle2', true ) ) {
-            wp_register_script('cycle2', Storms\Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
+            wp_register_script('cycle2', Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             //wp_enqueue_script('cycle2'); // Attention! You have to enqueue on the pages you need!
 
-            wp_enqueue_script('cycle2-carousel', Storms\Helper::get_asset_url('/js/cycle2/plugin/jquery.cycle2.carousel.min.js'), array('cycle2'), '1.0.0', true);
+            wp_enqueue_script('cycle2-carousel', Helper::get_asset_url('/js/cycle2/plugin/jquery.cycle2.carousel.min.js'), array('cycle2'), '1.0.0', true);
             //wp_enqueue_script('cycle2-carousel'); // Attention! You have to enqueue on the pages you need!
         }
 
         // Storms JS
         if ( get_option( 'load_stormsjs', false ) ) {
-            wp_register_script('storms-js', Storms\Helper::get_asset_url('/js/storms.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
+            wp_register_script('storms-js', Helper::get_asset_url('/js/storms.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
             //wp_enqueue_script('storms-js'); // Attention! You have to enqueue on the pages you need!
         }
 
         // http://fitvidsjs.com/
         if ( get_option( 'load_fitvids', false ) ) {
 
-            wp_register_script( 'fitvids', Storms\Helper::get_asset_url('/js/libs/fitvids/1.1.0/jquery.fitvids.js'), array('jquery'), '1.1.0', false );
+            wp_register_script( 'fitvids', Helper::get_asset_url('/js/libs/fitvids/1.1.0/jquery.fitvids.js'), array('jquery'), '1.1.0', false );
             //wp_enqueue_script('fitvids'); // Attention! You have to enqueue on the pages you need!
         }
 
 		// http://modernizr.com/
 		if ( get_option( 'show_modernizr', false ) ) {
-			wp_register_script('modernizr', Storms\Helper::get_asset_url('/js/libs/modernizr/2.8.3/modernizr.custom.js'), array('jquery'), '2.8.3', false);
+			wp_register_script('modernizr', Helper::get_asset_url('/js/libs/modernizr/2.8.3/modernizr.custom.js'), array('jquery'), '2.8.3', false);
 			wp_enqueue_script('modernizr');
 		}
 
@@ -182,17 +181,17 @@ class Layout extends Base\Runner
 		if ( get_option( 'show_html5_js_shivs', false ) ) {
 
 			// https://github.com/afarkas/html5shiv
-			wp_register_script( 'html5shiv', Storms\Helper::get_asset_url('/js/libs/html5shiv/3.7.2/html5shiv.js'), false, '3.7.2' );
+			wp_register_script( 'html5shiv', Helper::get_asset_url('/js/libs/html5shiv/3.7.2/html5shiv.js'), false, '3.7.2' );
 			wp_enqueue_script('html5shiv');
 			wp_script_add_data('html5shiv', 'conditional', 'lt IE 9');
 
 			// https://github.com/paulirish/matchMedia.js
-			wp_register_script( 'matchmedia', Storms\Helper::get_asset_url('/js/libs/matchmedia/matchMedia.js'), false, '1.0.0' );
+			wp_register_script( 'matchmedia', Helper::get_asset_url('/js/libs/matchmedia/matchMedia.js'), false, '1.0.0' );
 			wp_enqueue_script('matchmedia');
 			wp_script_add_data('matchmedia', 'conditional', 'lt IE 9');
 
 			// https://github.com/scottjehl/Respond
-			wp_register_script( 'respond', Storms\Helper::get_asset_url('/js/libs/respond/1.4.2/respond.min.js'), false, '1.4.2' );
+			wp_register_script( 'respond', Helper::get_asset_url('/js/libs/respond/1.4.2/respond.min.js'), false, '1.4.2' );
 			wp_enqueue_script('respond');
 			wp_script_add_data('respond', 'conditional', 'lt IE 9');
 		}
