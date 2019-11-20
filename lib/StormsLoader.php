@@ -40,7 +40,7 @@ function storms_load_extensions() {
 		(new \StormsFramework\FrontEnd())->run();
 
 		if( $support_layout ) {
-			(new \StormsFramework\Layout())->run();
+			(new \StormsFramework\Assets())->run();
 
 			if ( $support_theme_layouts ) {
 				(new \StormsFramework\Template())->run();
@@ -65,9 +65,18 @@ function storms_load_extensions() {
 		}
 	}
 	if ( $support_woocomerce ) {
-		if (WooCommerce\Functions::is_woocommerce_activated()) {
+		if ( \StormsFramework\Helper::is_woocommerce_activated() ) {
 			(new WooCommerce\WooCommerce)->run();
 		}
 	}
 }
 add_action( 'after_setup_theme', 'storms_load_extensions', 14 );
+
+/**
+ * Make theme available for translation
+ * Translations can be filed in the /languages/ directory
+ */
+function load_storms_frameworktextdomain() {
+	load_theme_textdomain( 'storms', plugin_dir_path( STORMS_FRAMEWORK_PATH ) . 'languages' );
+}
+add_action( 'init', 'load_storms_frameworktextdomain' );

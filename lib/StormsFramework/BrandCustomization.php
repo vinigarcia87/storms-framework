@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\BackEnd class
- * Customization of the Wordpress Admin Area
+ * BrandCustomization class
+ * @package StormsFramework
+ *
+ * Customization of the Wordpress Admin Area to the look and fell of Storms Brand
+ * @see _documentation/BrandCustomization_Class.md
  */
 
 namespace StormsFramework;
@@ -51,7 +54,6 @@ class BrandCustomization extends Base\Runner
 
 		// Login modifications
 		$this->loader
-			//->add_action( 'login_init', 'remove_all_wp_login_style' )
 			->add_action( 'login_enqueue_scripts', 'login_scripts' )
 			->add_action( 'init', 'login_page_script' )
 			->add_filter( 'login_headerurl', 'change_login_logo_url' )
@@ -72,11 +74,8 @@ class BrandCustomization extends Base\Runner
 	}
 
 	/**
-	 * Add meta tags with brand information to Wordpress pages
-	 * Not add to admin pages
-	 * Meta tags added:
-	 * 	- author meta tag
-	 * 	- copyright meta tag
+	 * Add meta tags with brand information to the website header
+	 * Meta tags added: author meta tag, copyright meta tag
 	 */
 	public function add_brand_meta_tags() {
 		$brand_name = get_option( 'meta_autor', 'Storms Websolutions' );
@@ -92,7 +91,7 @@ class BrandCustomization extends Base\Runner
 	}
 
 	/**
-	 * Add favicon in admin area
+	 * Add favicon to the website
 	 */
 	public function set_default_favicon( $url, $size, $blog_id ) {
 		if( $url == '' ) {
@@ -104,6 +103,7 @@ class BrandCustomization extends Base\Runner
 
 	/**
 	 * Add "user card" and "developed by" card on admin menu
+	 * TODO Add options for the user define what to show here
 	 */
 	public function add_menu_user_card_developed_by() {
 		// Add the 'user card' at the top-level admin menu
@@ -140,15 +140,17 @@ class BrandCustomization extends Base\Runner
 
 	/**
 	 * Add brand icon to admin bar
+	 * TODO Add some options for customization
 	 */
 	public function add_adminbar_brand_link() {
+		/** @var \WP_Admin_Bar $wp_admin_bar */
+		global $wp_admin_bar;
 
 		$title = 'Storms Websolutions';
 		$link = esc_url( 'http://www.storms.com.br/' );
 		$src = Helper::get_asset_url( '/img/storms/logo/cloud_storms.png' );
 		$img = '<img src="' . esc_url( $src ) . '" style="height: 100%;" title="' . $title . '" />';
 
-		global $wp_admin_bar;
 		$wp_admin_bar->add_menu(array(
 			'id' => 'brand-home',
 			'title' => $img,
@@ -177,24 +179,7 @@ class BrandCustomization extends Base\Runner
 	//<editor-fold desc="Login modifications">
 
 	/**
-	 * This code will leave you with a completely unstyled wp-login.php page
-	 * Re-register the login style after deregistering it to prevent the unwanted request that results in a 404
-	 * Hook on 'login_init' : add_action( 'login_init', 'remove_all_wp_login_style' )
-	 * Source: http://wordpress.stackexchange.com/a/168491/54025
-	 */
-	public function remove_all_wp_login_style() {
-		wp_deregister_style( 'login' );
-
-		// Custom login styles
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			wp_register_style('login', Helper::get_asset_url('/css/login.css'), STORMS_FRAMEWORK_VERSION);
-		} else {
-			wp_register_style('login', Helper::get_asset_url('/css/login.min.css'), STORMS_FRAMEWORK_VERSION);
-		}
-	}
-
-	/**
-	 * Add scripts and styles to login page
+	 * Add scripts and styles to customize the login page
 	 */
 	public function login_scripts() {
 		// http://jquery.com/
@@ -211,7 +196,7 @@ class BrandCustomization extends Base\Runner
 
 	/**
 	 * Scripts that change some aspects of the login page
-	 * document title, always check "remember me", "back to blog" text and "password recovery" text
+	 * Document title, always check "remember me", "back to blog" text and "password recovery" text
 	 */
 	public function login_page_script() {
 		add_filter( 'login_footer', function() {
@@ -240,18 +225,19 @@ class BrandCustomization extends Base\Runner
 	}
 
 	/**
-	 * Change the url of the logo
+	 * Change the url of the logo, to be the website URL
 	 */
 	public function change_login_logo_url() {
 		return get_bloginfo( 'url' );
 	}
 
 	/**
-	 * Change the title of the logo
+	 * Change the title of the logo, to be the website name
 	 */
 	public function change_login_logo_url_title() {
 		return esc_html__( get_bloginfo( 'name' ) );
 	}
 
 	//</editor-fold>
+
 }

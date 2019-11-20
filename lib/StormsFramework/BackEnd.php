@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\BackEnd class
+ * BackEnd class
+ * @package StormsFramework
+ *
  * Customization of the Wordpress Admin Area
+ * @see  _documentation/BackEnd_Class.md
  */
 
 namespace StormsFramework;
@@ -60,17 +63,21 @@ class BackEnd extends Base\Runner
 	/**
 	 * Tell the TinyMCE editor to use a custom stylesheet
 	 * This theme styles the visual editor to resemble the theme style
+	 * The framework does not include a editor-style! The theme must create his own
 	 */
 	public function set_editor_style() {
-		$styles = array(
-			//Helper::get_asset_url( '/css/COLOR_FILE.min.css' ),
-			Helper::get_asset_url( '/css/editor-style.min.css' ),
-		);
-		add_editor_style( $styles );
+		if( get_option( 'set_editor_style', 'yes' ) ) {
+			$styles = array(
+				Helper::get_asset_url('/css/editor-style.min.css'),
+			);
+			add_editor_style($styles);
+		}
 	}
 
 	/**
-	 * Change the <title> in admin area
+	 * Change the <title> tag in admin area
+	 * The title will look like: 'Title of the page | My website'
+	 * TODO Add a filter for this!
 	 * Source: http://wordpress.stackexchange.com/questions/17025/change-page-title-in-admin-area
 	 */
 	public function change_admin_title( $admin_title, $title ) {
@@ -80,6 +87,7 @@ class BackEnd extends Base\Runner
 	/**
 	 * Change 'admin pages' title text to the website name and website description - if defined
 	 * For example, "Dashboard" becomes "My Site | Another Wordpress blog"
+	 * TODO Add a filter for this!
 	 */
 	public function set_admin_page_title() {
 		global $title;
@@ -96,6 +104,7 @@ class BackEnd extends Base\Runner
 
 	/**
 	 * Remove editor menu from appearance panel
+	 * For safety reasons, we don't need that
 	 */
 	public function remove_appearance_editor() {
 		remove_action( 'admin_menu', '_add_themes_utility_last', 101 );
@@ -103,6 +112,7 @@ class BackEnd extends Base\Runner
 
 	/**
 	 * Remove sensitive menu itens from Worpress admin menu - for any admin user that is not the "super user"
+	 * TODO Does not remove anything right now, we should select some items to remove
 	 * Source: http://code.tutsplus.com/tutorials/customizing-your-wordpress-admin--wp-24941
 	 * Souce: http://sethstevenson.net/customize-the-wordpress-admin-menu-based-on-user-roles/
 	 */
@@ -122,6 +132,7 @@ class BackEnd extends Base\Runner
 
 	/**
 	 * Stop users from switching Admin Color Schemes
+	 * Why anyone whould need this?
 	 * Source: http://www.wpbeginner.com/wp-tutorials/how-to-set-default-admin-color-scheme-for-new-users-in-wordpress/
 	 */
 	public function remove_admin_color_scheme_picker() {
@@ -144,9 +155,12 @@ class BackEnd extends Base\Runner
 
     /**
      * Add an alert to admin bar to make clear what environment the user is conected to
+	 * It uses SF_ENV constant to check the current environment
      * @param $wp_admin_bar
      */
     function toolbar_system_environment_alert( $wp_admin_bar ) {
+		/** @var \WP_Admin_Bar $wp_admin_bar */
+		global $wp_admin_bar;
 
         switch( SF_ENV ) {
             case 'PRD':
@@ -172,13 +186,17 @@ class BackEnd extends Base\Runner
             'href'  => '#',
             'meta'  => array( 'class' => 'system-environment ' . $env_class )
         );
+
         $wp_admin_bar->add_node( $args );
     }
 
 	/**
 	 * Remove menu items from admin bar
+	 * They are unnecessary for most users, and you may need to add your own links
+	 * TODO Add some options or filters to allow the theme to exclude some links from the list
 	 */
 	public function remove_adminbar_itens() {
+		/** @var \WP_Admin_Bar $wp_admin_bar */
 		global $wp_admin_bar;
 
 		$wp_admin_bar->remove_menu('wp-logo');
@@ -195,14 +213,14 @@ class BackEnd extends Base\Runner
 		$wp_admin_bar->remove_menu('new-content');
         //$wp_admin_bar->remove_menu('edit');
 
-        $wp_admin_bar->remove_menu('_options'); // Raymond Theme - JWSThemes
-		$wp_admin_bar->remove_menu('backwpup'); // BackWPup
-        $wp_admin_bar->remove_menu('wpseo-menu'); // Yoast SEO
-        $wp_admin_bar->remove_menu('revslider'); // Slider Revolution
+        $wp_admin_bar->remove_menu('_options'); 				// Raymond Theme - JWSThemes
+		$wp_admin_bar->remove_menu('backwpup'); 				// BackWPup
+        $wp_admin_bar->remove_menu('wpseo-menu'); 				// Yoast SEO
+        $wp_admin_bar->remove_menu('revslider'); 				// Slider Revolution
         $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); // Visual Composer
-		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); // iThemes Security
-        $wp_admin_bar->remove_menu('autoptimize'); // Autoptimize
-        $wp_admin_bar->remove_menu('wphb'); // Hummingbird
+		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); 	// iThemes Security
+        $wp_admin_bar->remove_menu('autoptimize'); 				// Autoptimize
+        $wp_admin_bar->remove_menu('wphb'); 					// Hummingbird
 
 		// wp-admin-bar-top-secondary
 		$wp_admin_bar->remove_menu('search');
@@ -215,6 +233,7 @@ class BackEnd extends Base\Runner
 
 	/**
 	 * Remove default dashboard widgets
+	 * Those are not useful for the average user
 	 */
 	public function remove_dashboard_widgets() {
 		//Remove WordPress Welcome Panel
@@ -267,7 +286,9 @@ class BackEnd extends Base\Runner
 	}
 
 	/**
-	 * Add custom dashboard widgets
+	 * Add custom Storms dashboard widgets
+	 * Only visible to admin "super user"
+	 * SystemErrors Dashboard Widget: List errors shown on debug.log file
 	 */
 	public function add_dashboard_widgets() {
 		// Storms System Errors Widget
@@ -306,7 +327,8 @@ class BackEnd extends Base\Runner
 	}
 
 	/**
-	 * Generic login error message - for security reasons
+	 * Generic login error message
+	 * For security reasons, it's not wise to tell hackers if they guess wrong the username or the password
 	 * Source: https://ausweb.com.au/tutorials/2014/12/01/securing-wordpress-16-wordpress-security-tips-tricks/
 	 */
 	public function login_error_msg( $msg ) {

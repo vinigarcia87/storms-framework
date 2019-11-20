@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\WooCommerce\WooCommerce class
+ * WooCommerce class
+ * @package StormsFramework
+ *
  * Add WooCommerce support
+ * @see  _documentation/WooCommerce_Class.md
  */
 
 namespace StormsFramework\WooCommerce;
@@ -21,21 +24,14 @@ use StormsFramework\Helper;
 class WooCommerce extends Base\Runner
 {
 	public function __construct() {
-		// Declare WooCommerce support
-		add_theme_support( 'woocommerce' );
-
-        // Enabling product gallery features - zoom, swipe, lightbox
-        // https://github.com/woocommerce/woocommerce/wiki/Enabling-product-gallery-features-(zoom,-swipe,-lightbox)-in-3.0.0
-        if( get_option( 'use_wc_product_gallery', true ) ) {
-            add_theme_support('wc-product-gallery-zoom');
-            add_theme_support('wc-product-gallery-lightbox');
-            add_theme_support('wc-product-gallery-slider');
-        }
-
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 	}
 
 	public function define_hooks() {
+
+		$this->loader
+			->add_action( 'init', 'support_woocommerce' );
+
 		$this->loader
             // @see https://gregrickaby.com/2013/05/remove-woocommerce-styles-and-scripts/
 			->add_filter( 'woocommerce_enqueue_styles', 'remove_woocommerce_style' )
@@ -103,12 +99,12 @@ class WooCommerce extends Base\Runner
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
-			->add_action( 'product_cat_class', 'content_product_class' )
-			->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
+			->add_action( 'product_cat_class', 'content_product_class' );
+			//->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
 
 		$this->loader
 			->add_action( 'init', 'prevent_wp_login' )
-			//->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
+			->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
 			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_filter( 'body_class', 'set_intern_login_body_class' )
@@ -116,6 +112,23 @@ class WooCommerce extends Base\Runner
 	}
 
 	//<editor-fold desc="Styles and definitions">
+
+	/**
+	 * Declare WooCommerce support
+	 * Enable WooCommerce gallery features
+	 */
+	public function support_woocommerce() {
+		// Declare WooCommerce support
+		add_theme_support( 'woocommerce' );
+
+		// Enabling product gallery features - zoom, swipe, lightbox
+		// https://github.com/woocommerce/woocommerce/wiki/Enabling-product-gallery-features-(zoom,-swipe,-lightbox)-in-3.0.0
+		if( get_option( 'use_wc_product_gallery', 'yes' ) ) {
+			add_theme_support( 'wc-product-gallery-zoom' );
+			add_theme_support( 'wc-product-gallery-lightbox' );
+			add_theme_support( 'wc-product-gallery-slider' );
+		}
+	}
 
     /**
      * Cleanup wp_head(), to remove unnecessary and unsafe wp meta tags
@@ -299,7 +312,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
-		if ( !is_user_logged_in() && is_checkout() ) {
+		if( !is_user_logged_in() && is_checkout() && get_option( 'force_login_registration_page_on_checkout', 'yes' ) ) {
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
 			wp_redirect( $login_page );
@@ -899,8 +912,8 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
-	 * @TODO Trabalho nao finalizado!
 	 * Generate the necessary clearfixes, breaks, and rows for an responsive shop loop
+	 * TODO Trabalho nao finalizado!
 	 * @link http://www.webdesign101.net/add-bootstrap-rows-woocommerce-loop/
 	 * @param int $woocommerce_loop Index of the current item in the shop loop
 	 */

@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\Bootstrap class
- * Bootstrap functions and styling class
+ * Bootstrap class
+ * @package StormsFramework
+ *
+ * Add Bootstrap support
+ * @see  _documentation/Bootstrap_Class.md
  */
 
 namespace StormsFramework\Bootstrap;
@@ -38,9 +41,6 @@ class Bootstrap extends Base\Runner
             ->add_filter( 'get_search_form', 'get_search_form' )
 			->add_filter( 'the_password_form', 'password_form' );
 
-		remove_shortcode( 'gallery', 'gallery_shortcode' );
-		add_shortcode( 'gallery', array( $this, 'shortcode_gallery' ) );
-
 		$this->loader
 			->add_filter( 'get_calendar', 'calendar_widget' )
 			->add_filter( 'comment_reply_link', 'add_bootstrap_btn_class', 10 )
@@ -58,10 +58,13 @@ class Bootstrap extends Base\Runner
 	 * Add img-fluid class to images
 	 * Source: https://gist.github.com/mkdizajn/7352469
 	 * @see https://stackoverflow.com/a/20499803/1003020
+	 *
+	 * @param $content
+	 * @return string
 	 */
 	public function responsive_images( $content ) {
 		if($content !== '') {
-			$new_classes = apply_filters('add_classes_to_images', array('img-fluid')); // Array of classes
+			$new_classes = apply_filters( 'add_classes_to_images', array( 'img-fluid' ) ); // Array of classes
 
 			$content = mb_convert_encoding($content, 'HTML-ENTITIES', "UTF-8");
 			$document = new \DOMDocument();
@@ -88,11 +91,13 @@ class Bootstrap extends Base\Runner
 	}
 
 	/**
+	 * Wordpress Bootstrap 4 responsive images
+	 * Add img-fluid class to images
 	 *
 	 * @param $attr
 	 * @return mixed
 	 */
-	function add_class_post_thumbnail($attr) {
+	function add_class_post_thumbnail( $attr ) {
 		$new_classes = apply_filters( 'add_classes_to_images', array( 'img-fluid' ) ); // Array of classes
 
 		foreach( $new_classes as $class ) {
@@ -134,158 +139,24 @@ class Bootstrap extends Base\Runner
 	}
 
 	/**
-	 * Change the default shortcode gallery for an bootstrap gallery
-	 */
-	public function shortcode_gallery($attr) {
-		$post = get_post();
-
-		static $instance = 0;
-		$instance++;
-
-		if (!empty($attr['ids'])) {
-			if (empty($attr['orderby'])) {
-				$attr['orderby'] = 'post__in';
-			}
-			$attr['include'] = $attr['ids'];
-		}
-
-		$output = apply_filters('post_gallery', '', $attr);
-
-		if ($output != '') {
-			return $output;
-		}
-
-		if (isset($attr['orderby'])) {
-			$attr['orderby'] = sanitize_sql_orderby($attr['orderby']);
-			if (!$attr['orderby']) {
-				unset($attr['orderby']);
-			}
-		}
-
-		extract(shortcode_atts(array(
-			'order' => 'ASC',
-			'orderby' => 'menu_order ID',
-			'id' => $post->ID,
-			'itemtag' => '',
-			'icontag' => '',
-			'captiontag' => '',
-			'columns' => 3,
-			'size' => 'thumbnail',
-			'include' => '',
-			'link' => '',
-			'exclude' => ''
-		), $attr));
-
-		$id = intval($id);
-
-		if ($order === 'RAND') {
-			$orderby = 'none';
-		}
-
-		if (!empty($include)) {
-			$_attachments = get_posts(array('include' => $include, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby));
-
-			$attachments = array();
-			foreach ($_attachments as $key => $val) {
-				$attachments[$val->ID] = $_attachments[$key];
-			}
-		} elseif (!empty($exclude)) {
-			$attachments = get_children(array('post_parent' => $id, 'exclude' => $exclude, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby));
-		} else {
-			$attachments = get_children(array('post_parent' => $id, 'post_status' => 'inherit', 'post_type' => 'attachment', 'post_mime_type' => 'image', 'order' => $order, 'orderby' => $orderby));
-		}
-
-		if (empty($attachments)) {
-			return '';
-		}
-
-		if (is_feed()) {
-			$output = "\n";
-			foreach ($attachments as $att_id => $attachment) {
-				$output .= wp_get_attachment_link($att_id, $size, true) . "\n";
-			}
-			return $output;
-		}
-
-		//Bootstrap Output Begins Here
-		//Bootstrap needs a unique carousel id to work properly. Because I'm only using one gallery per post and showing them on an archive page, this uses the $post->ID to allow for multiple galleries on the same page.
-
-		$output .= '<div id="carousel-' . $post->ID . '" class="carousel slide" data-ride="carousel">';
-		$output .= '<!-- Indicators -->';
-		$output .= '<ol class="carousel-indicators">';
-
-		//Automatically generate the correct number of slide indicators and set the first one to have be class="active".
-		$indicatorcount = 0;
-		foreach ($attachments as $id => $attachment) {
-			if ($indicatorcount == 1) {
-				$output .= '<li data-target="#carousel-' . $post->ID . '" data-slide-to="' . $indicatorcount . '" class="active"></li>';
-			} else {
-				$output .= '<li data-target="#carousel-' . $post->ID . '" data-slide-to="' . $indicatorcount . '"></li>';
-			}
-			$indicatorcount++;
-		}
-
-		$output .= '</ol>';
-		$output .= '<!-- Wrapper for slides -->';
-		$output .= '<div class="carousel-inner">';
-		$i = 0;
-
-		//Begin counting slides to set the first one as the active class
-		$slidecount = 1;
-		foreach ($attachments as $id => $attachment) {
-			$link = isset($attr['link']) && 'file' == $attr['link'] ? wp_get_attachment_link($id, $size, false, false) : wp_get_attachment_link($id, $size, true, false);
-
-			if ($slidecount == 1) {
-				$output .= '<div class="item active">';
-			} else {
-				$output .= '<div class="item">';
-			}
-
-			$image_src_url = wp_get_attachment_image_src($id, $size);
-			$output .= '<img src="' . $image_src_url[0] . '">';
-			$output .= '    </div>';
-
-
-			if (trim($attachment->post_excerpt)) {
-				$output .= '<div class="caption hidden">' . wptexturize($attachment->post_excerpt) . '</div>';
-			}
-
-			$slidecount++;
-		}
-
-		$output .= '</div>';
-		$output .= '<!-- Controls -->';
-		$output .= '<a class="left carousel-control" href="#carousel-' . $post->ID . '" data-slide="prev">';
-		$output .= '<span class="glyphicon glyphicon-chevron-left"></span>';
-		$output .= '</a>';
-		$output .= '<a class="right carousel-control" href="#carousel-' . $post->ID . '" data-slide="next">';
-		$output .= '<span class="glyphicon glyphicon-chevron-right"></span>';
-		$output .= '</a>';
-		$output .= '</div>';
-		$output .= '</dl>';
-		//$output .= '</div>'; // @TODO This is causing Bootstrap to break... must verify
-
-		return $output;
-	}
-
-	/**
 	 * Modify the calendar widget styling to work better for bootstrap styling
 	 */
 	public function calendar_widget( $html ) {
-		if ( ! $html )
+		if( ! $html ) {
 			return;
+		}
 
 		$dom = new \DOMDocument();
 
-		@$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+		@$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
 
-		$x = new \DOMXPath($dom);
+		$x = new \DOMXPath( $dom );
 
-		foreach($x->query("//table") as $node) {
-			$node->setAttribute("class","table table-striped");
+		foreach( $x->query( "//table" ) as $node ) {
+			$node->setAttribute( 'class', 'table table-sm table-striped' );
 		}
 
-		$newHtml = preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML());
+		$newHtml = preg_replace( '~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML() );
 
 		return $newHtml;
 
@@ -293,6 +164,7 @@ class Bootstrap extends Base\Runner
 
 	/**
 	 * Parse the reply link HTML to adjust the output to meet bootstrap HTML/CSS structure
+	 * Add btn btn-link classes to buttons
 	 */
 	public function add_bootstrap_btn_class( $html ) {
 		if ( ! $html ) {
@@ -310,58 +182,60 @@ class Bootstrap extends Base\Runner
 		}
 
 		$newHtml = preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML());
-		return $newHtml;
 
+		return $newHtml;
 	}
 
 	/**
 	 * Parse the avatar HTML to adjust the output to meet bootstrap HTML/CSS structure
+	 * Add rounded-circle class to avatar images
 	 */
 	public function avatar_img_circle_class( $html ) {
 
-		if ( ! $html )
+		if( ! $html ) {
 			return;
+		}
 
 		$dom = new \DOMDocument();
 
-		@$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+		@$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
 
-		$x = new \DOMXPath($dom);
+		$x = new \DOMXPath( $dom );
 
-		foreach($x->query("//img") as $node) {
+		foreach( $x->query( "//img" ) as $node ) {
 			$classes = $node->getAttribute( "class" );
 			$classes .= ' rounded-circle';
 			$node->setAttribute( "class" , $classes );
 		}
 
-		$newHtml = preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML());
+		$newHtml = preg_replace( '~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML() );
 
 		return $newHtml;
-
 	}
 
 	/**
 	 * Parse the cleaner gallery HTML to adjust the output to meet bootstrap HTML/CSS structure
+	 * Add thumbanail class to gallery image
 	 */
 	public function cleaner_gallery_anchor_class( $html, $attachment_id, $attr, $cleaner_gallery_instance ) {
 
-		if ( ! $html )
+		if( ! $html ) {
 			return;
+		}
 
 		$dom = new \DOMDocument();
 
-		@$dom->loadHTML(mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8'));
+		@$dom->loadHTML( mb_convert_encoding( $html, 'HTML-ENTITIES', 'UTF-8' ) );
 
-		$x = new \DOMXPath($dom);
+		$x = new \DOMXPath( $dom );
 
-		foreach($x->query("//a") as $node) {
-			$node->setAttribute("class","thumbnail");
+		foreach( $x->query( "//a" ) as $node ) {
+			$node->setAttribute( "class", "thumbnail" );
 		}
 
-		$newHtml = preg_replace('~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML());
+		$newHtml = preg_replace( '~<(?:!DOCTYPE|/?(?:html|body))[^>]*>\s*~i', '', $dom->saveHTML() );
 
 		return $newHtml;
-
 	}
 
 	/**
@@ -431,10 +305,14 @@ class Bootstrap extends Base\Runner
 
 	}
 
-	// Tell WordPress to use searchform.php from the template-parts/ directory
+	/**
+	 * Tell WordPress to use searchform.php from the template-parts/ directory
+	 *
+	 * @return string
+	 */
 	public static function get_search_form() {
 		$form = '';
-		locate_template('/template-parts/searchform.php', true, false);
+		locate_template( '/template-parts/searchform.php', true, false );
 		return $form;
 	}
 

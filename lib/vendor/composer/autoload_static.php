@@ -7,14 +7,14 @@ namespace Composer\Autoload;
 class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
 {
     public static $prefixLengthsPsr4 = array (
-        'S' => 
+        'S' =>
         array (
             'StormsFramework\\' => 16,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'StormsFramework\\' => 
+        'StormsFramework\\' =>
         array (
             0 => __DIR__ . '/../..' . '/StormsFramework',
         ),
@@ -32,7 +32,7 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         'StormsFramework\\Configuration' => __DIR__ . '/../..' . '/StormsFramework/Configuration.php',
         'StormsFramework\\FrontEnd' => __DIR__ . '/../..' . '/StormsFramework/FrontEnd.php',
         'StormsFramework\\Helper' => __DIR__ . '/../..' . '/StormsFramework/Helper.php',
-        'StormsFramework\\Layout' => __DIR__ . '/../..' . '/StormsFramework/Layout.php',
+        'StormsFramework\\Layout' => __DIR__ . '/../..',
         'StormsFramework\\Template' => __DIR__ . '/../..' . '/StormsFramework/Template.php',
         'StormsFramework\\Widget\\Dashboard\\BrandInfo' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/BrandInfo.php',
         'StormsFramework\\Widget\\Dashboard\\SystemErrors' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/SystemErrors.php',

@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\Front\FrontStyle class
- * Front end styling control class
+ * Template class
+ * @package StormsFramework
+ *
+ * Adding support for custom HTML templates
+ * @see  _documentation/Template_Class.md
  */
 
 namespace StormsFramework;
@@ -38,6 +41,8 @@ class Template extends Base\Runner
 			->add_filter( 'theme_mod_theme_layout', 'theme_layouts_filter_layout', 5 )
 			/* Filters the body_class hook to add a custom class. */
 			->add_filter( 'body_class', 'theme_layouts_body_class' )
+			/* Filters the tiny_mce_body_class hook to add a custom class. */
+			->add_filter( 'tiny_mce_before_init', 'add_layout_to_tinymce_body_class' )
 
 			/* Uses the selected template to decide if the sidebar must be shown or not */
 			->add_filter( 'is_active_sidebar', 'disable_sidebars', 10, 2 );
@@ -751,6 +756,19 @@ class Template extends Base\Runner
 
 		/* Return the $classes array. */
 		return $classes;
+	}
+
+	/**
+	 * Add layout classes to tinymce body class
+	 *
+	 * @param $init_array
+	 * @return mixed
+	 */
+	public function add_layout_to_tinymce_body_class( $init_array ) {
+
+		$init_array['body_class'] = 'layout-' . get_theme_mod( 'theme_layout' );
+
+		return $init_array;
 	}
 
 	/**

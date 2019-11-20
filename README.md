@@ -31,11 +31,15 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 
 This plugin was built to offer some default customization for any WordPress website. Each feature is described on the following pages:
 
-* [BackEnd customization](/_documentation/STORMS_FRAMEWORK_BACKEND_CLASS.md)
-* [Bootstrap adaptation](/_documentation/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
-* [FrontEnd enhancements](/_documentation/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
-* [Layout customization](/_documentation/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
-* [WooCommerce support and customization](/_documentation/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
+* [General configuration](/_documentation/Configuration_Class.md)
+* [BackEnd customization](/_documentation/BackEnd_Class.md)
+* [Brand customization for WordPress](/_documentation/BrandCustomization_Class.md)
+* [FrontEnd enhancements](/_documentation/FrontEnd_Class.md)
+* [Assets controlling](/_documentation/Assets_Class.md)
+* [Theme templates](/_documentation/Template_Class.md)
+* [Bootstrap adaptation](/_documentation/Bootstrap_Class.md)
+* [WooCommerce support and customization](/_documentation/WooCommerce_Class.md)
+* [Helper with many useful functions](/_documentation/Helper_Class.md)
 
 ## WordPress Users Manual
 

@@ -8,8 +8,11 @@
  * @package   Storms
  * @version   4.0.0
  *
- * StormsFramework\Configuration class
+ * Configuration class
+ * @package StormsFramework
+ *
  * Set framework's definitions and configurations
+ * @see  _documentation/Configuration_Class.md
  */
 
 namespace StormsFramework;
@@ -22,6 +25,13 @@ class Configuration extends Base\Manager
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 	}
 
+	/**
+	 * Set all defines that the framework can use
+	 * STORMS_FRAMEWORK_PATH - Define BasePath for Storms Framework
+	 * STORMS_FRAMEWORK_VERSION - Define the Storms Framework Version
+	 * STORMS_SYSTEM_VERSION - Define the System Version - Change this value on theme's functions.php for version control
+	 * STORMS_SYSTEM_COMMIT - Define the System Commit ID - Change this value on theme's functions.php to control what code you have on production
+	 */
 	public static function set_defines() {
 
 		// Define BasePath for Storms Framework
@@ -32,11 +42,11 @@ class Configuration extends Base\Manager
 		if ( !defined( 'STORMS_FRAMEWORK_VERSION' ) )
 			define( 'STORMS_FRAMEWORK_VERSION', '4.0.0' );
 
-        // Define the System Version
+        // Define the System Version - Change this value on theme's functions.php for version control
         if ( !defined( 'STORMS_SYSTEM_VERSION' ) )
             define( 'STORMS_SYSTEM_VERSION', 'YYYY.MM.DD' );
 
-        // Define the System Commit ID
+        // Define the System Commit ID - Change this value on theme's functions.php to control what code you have on production
         if ( !defined( 'STORMS_SYSTEM_COMMIT' ) )
             define( 'STORMS_SYSTEM_COMMIT', '' );
 	}
