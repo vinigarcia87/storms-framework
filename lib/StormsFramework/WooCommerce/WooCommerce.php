@@ -337,7 +337,7 @@ class WooCommerce extends Base\Runner
 			return $login_page;
 		}
 
-		$checkout = get_permalink( wc_get_page_id( 'checkout' ) );
+		$checkout = wc_get_checkout_url();
 
 		if( isset( $_GET['return_to'] ) && 'checkout' === $_GET['return_to'] ) {
 			// If the user came from checkout page, we send him back
