@@ -74,15 +74,15 @@
 
 .entry-attachment {
     .attachment {
-        @extend .text-center;
+        text-align: center;
         margin-bottom: 1em;
     }
     #nav-below {
         .nav-next {
-            @extend .pull-right;
+            float: right;
         }
         .nav-previous {
-            @extend .pull-left;
+            float: left;
         }
     }
 }
@@ -102,8 +102,8 @@
     @include clearfix;
     margin: 0 auto 1em;
     .gallery-item {
-        @extend .pull-left;
-        @extend .text-center;
+        float: left;
+        text-align: center;
         img {
             @extend .img-thumbnail;
         }

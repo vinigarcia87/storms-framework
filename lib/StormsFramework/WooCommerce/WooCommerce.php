@@ -63,6 +63,11 @@ class WooCommerce extends Base\Runner
 			->add_action( 'woocommerce_before_account_navigation', 'open_row_myaccount_dashboard' )
 			->add_action( 'woocommerce_account_dashboard', 'close_row_myaccount_dashboard' )
 
+			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_open', 1 )
+			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_close', 99 )
+			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_open', 1 )
+			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_close', 99 )
+
 			->add_filter( 'woocommerce_breadcrumb_defaults', 'woocommerce_breadcrumb_args' )
 			->add_action( 'template_redirect', 'remove_sidebar' );
 
@@ -99,8 +104,9 @@ class WooCommerce extends Base\Runner
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
-			->add_action( 'product_cat_class', 'content_product_class' );
-			//->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' );
+			->add_action( 'product_cat_class', 'content_product_class' )
+			//->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' )
+		;
 
 		$this->loader
 			->add_action( 'init', 'prevent_wp_login' )
@@ -109,6 +115,7 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
 			->add_filter( 'body_class', 'set_intern_login_body_class' )
 			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
+
 	}
 
 	//<editor-fold desc="Styles and definitions">
@@ -698,6 +705,38 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
+	 * Opening row and col-12 before result count and catolog ordering in woocommerce_before_shop_loop
+	 * and before woocommerce_pagination in woocommerce_after_shop_loop
+	 */
+	public function woocommerce_before_shop_loop_open() {
+		echo '<div class="row woocommerce-loop-header"><div class="col-12">';
+	}
+
+	/**
+	 * Closing row and col-12 after result count and catolog ordering in woocommerce_before_shop_loop
+	 * and after woocommerce_pagination in woocommerce_after_shop_loop
+	 */
+	public function woocommerce_before_shop_loop_close() {
+		echo '</div></div>';
+	}
+
+	/**
+	 * Opening row and col-12 before result count and catolog ordering in woocommerce_before_shop_loop
+	 * and before woocommerce_pagination in woocommerce_after_shop_loop
+	 */
+	public function woocommerce_after_shop_loop_open() {
+		echo '<div class="row woocommerce-loop-footer"><div class="col-12">';
+	}
+
+	/**
+	 * Closing row and col-12 after result count and catolog ordering in woocommerce_before_shop_loop
+	 * and after woocommerce_pagination in woocommerce_after_shop_loop
+	 */
+	public function woocommerce_after_shop_loop_close() {
+		echo '</div></div>';
+	}
+
+	/**
 	 * Define if the sidebar should be shown or not
 	 * We remove the action every time, because um decide to show or not, on the layout code
 	 */
@@ -876,7 +915,8 @@ class WooCommerce extends Base\Runner
 		}
 
 		// Returns true when on the product archive page (shop)
-		if( is_shop() || is_product_category() || is_product_tag() || $is_related || $is_cross_sells || $is_products || $recent_products ) {
+		if( ( is_shop() || is_product_category() || is_product_tag() ) &&
+			( $is_related || $is_cross_sells || $is_products || $recent_products ) ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
