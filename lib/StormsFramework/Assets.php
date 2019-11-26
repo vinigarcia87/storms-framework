@@ -96,7 +96,7 @@ class Assets extends Base\Runner
 			if( !is_admin() && get_option( 'load_external_jquery', 'no' ) ) {
 				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, $this->jquery_version, false);
 			}
-			wp_register_script('jquery', Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
+			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
 
 			wp_enqueue_script('jquery');
 		}
@@ -112,7 +112,7 @@ class Assets extends Base\Runner
 
 		if( $run_next && get_option( 'load_external_jquery', 'no' ) ) {
 			// Defaults to match the version loaded via CDN
-			$local_jquery = Helper::get_asset_url( '/js/libs/jquery/' . $this->jquery_version . '/jquery.min.js' );
+			$local_jquery = Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' );
 			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
 
 			$run_next = false;
