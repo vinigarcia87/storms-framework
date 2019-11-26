@@ -784,7 +784,7 @@ class Template extends Base\Runner
 		$layout = Template::getLayout();
 
 		if( '1c' === $layout ) {
-			return false;
+			//return false; // TODO Esta desabilitando todas as sidebars!! Nao pode deixar assim!
 		}
 		return $is_active_sidebar;
 	}
