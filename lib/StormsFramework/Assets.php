@@ -89,7 +89,7 @@ class Assets extends Base\Runner
 	 */
 	public function jquery_scripts() {
 		// http://jquery.com/
-		wp_deregister_script('jquery'); // Remove o jquery padrao do wordpress
+		wp_deregister_script( 'jquery' ); // Remove o jquery padrao do wordpress
 		if( get_option( 'load_jquery', 'yes' ) ) {
 
 			// Decide se carrega jquery externo ou interno
@@ -147,22 +147,20 @@ class Assets extends Base\Runner
 
         // Main theme scripts
         if ( get_option( 'show_theme_scripts', 'yes' ) ) {
-            if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-                wp_register_script('main-script-theme', Helper::get_asset_url('/js/scripts.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
-            } else {
-                wp_register_script('main-script-theme', Helper::get_asset_url('/js/scripts.min.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true);
-            }
+			wp_register_script( 'main-script-theme', Helper::get_asset_url('/js/scripts' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true );
             //wp_enqueue_script( 'main-script-theme' ); // Attention! You have to enqueue on the pages you need!
         }
 
         // Cycle 2 jQuery slideshow plugin
-        if ( get_option( 'load_cycle2', 'yes' ) ) {
+		/*
+        if ( get_option( 'load_cycle2', 'no' ) ) {
             wp_register_script( 'cycle2', Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), $this->cycle2_version, true );
             //wp_enqueue_script( 'cycle2' ); // Attention! You have to enqueue on the pages you need!
 
             wp_enqueue_script( 'cycle2-carousel', Helper::get_asset_url('/js/cycle2/plugin/jquery.cycle2.carousel.min.js'), array('cycle2'), $this->cycle2_version, true );
             //wp_enqueue_script( 'cycle2-carousel' ); // Attention! You have to enqueue on the pages you need!
         }
+		*/
 
 		// Load Thread comments WordPress script
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

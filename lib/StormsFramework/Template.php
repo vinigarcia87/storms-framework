@@ -17,8 +17,6 @@
 
 namespace StormsFramework;
 
-use StormsFramework\Base;
-
 class Template extends Base\Runner
 {
 	public function __construct() {
@@ -28,22 +26,21 @@ class Template extends Base\Runner
 	public function define_hooks() {
 
 		$this->loader
-			/* Register metadata with WordPress. */
-			->add_action( 'init', 'theme_layouts_register_meta' )
-			/* Add post type support for theme layouts. */
-			->add_action( 'init', 'theme_layouts_add_post_type_support', 5 )
 			/* Set up the custom post layouts. */
-			->add_action( 'admin_init', 'theme_layouts_admin_setup' )
+			->add_action( 'admin_init', 'admin_setup' )
+			/* Register metadata with WordPress. */
+			->add_action( 'init', 'register_meta' )
+			/* Add post type support for theme layouts. */
+			->add_action( 'init', 'add_post_type_support', 5 )
 			/* Add layout option in Customize. */
-			->add_action( 'customize_register', 'theme_layouts_customize_register' )
+			->add_action( 'customize_register', 'customize_register' )
 			->add_action( 'customize_register', 'theme_layout_customize_refresh', 11 )
 			/* Filters the theme layout mod. */
-			->add_filter( 'theme_mod_theme_layout', 'theme_layouts_filter_layout', 5 )
+			->add_filter( 'theme_mod_theme_layout', 'filter_layout', 5 )
 			/* Filters the body_class hook to add a custom class. */
-			->add_filter( 'body_class', 'theme_layouts_body_class' )
+			->add_filter( 'body_class', 'add_layout_to_body_class' )
 			/* Filters the tiny_mce_body_class hook to add a custom class. */
-			->add_filter( 'tiny_mce_before_init', 'add_layout_to_tinymce_body_class' )
-
+			//->add_filter( 'tiny_mce_before_init', 'add_layout_to_tinymce_body_class' )
 			/* Uses the selected template to decide if the sidebar must be shown or not */
 			->add_filter( 'is_active_sidebar', 'disable_sidebars', 10, 2 );
 
@@ -58,26 +55,13 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return array  Either theme-supported layouts or the default layouts.
 	 */
-	private function theme_layouts_get_layouts() {
-		$layouts = get_theme_support( 'theme-layouts' );
-		return isset( $layouts[0] ) ? array_keys( $layouts[0] ) : array_keys( $this->theme_layouts_strings() );
-	}
-
-	/**
-	 * Creates default text strings based on the default post layouts.  Theme developers that add custom
-	 * layouts should filter 'post_layouts_strings' to add strings to match the custom layouts, but it's not
-	 * required.  The layout name will be used if no text string is found.
-	 *
-	 * @since  0.2.0
-	 * @access public
-	 * @return array  $strings
-	 */
-	private function theme_layouts_strings() {
-
-		// Set up the default layout strings
-		$strings = array(
+	private function get_layouts() {
+		// Set up the default layout
+		$default = array(
 			/* Translators: Default theme layout option. */
-			'default' => _x( 'Default', 'theme layout', 'storms' )
+			'default' => array(
+				'title' => _x( 'Default', 'theme layout', 'storms' )
+			)
 		);
 
 		// Get theme-supported layouts
@@ -85,27 +69,36 @@ class Template extends Base\Runner
 
 		// Assign the strings passed in by the theme author
 		if ( isset( $layouts[0] ) ) {
-			$strings = array_merge($layouts[0], $strings);
+			$layouts[0] = array_merge( $default, $layouts[0] );
 		}
 
-		// Allow devs to filter the strings for custom layouts
-		return apply_filters( 'theme_layouts_strings', $strings );
+		return isset( $layouts[0] ) ? $layouts[0] : array();
 	}
 
 	/**
-	 * Get a specific layout's text string.
+	 * Get all layout's slugs
+	 *
+	 * @return array
+	 */
+	private function get_layouts_keys() {
+		$layouts = $this->get_layouts();
+		return array_keys( $layouts );
+	}
+
+	/**
+	 * Get a specific layout's title.
 	 *
 	 * @since  0.2.0
 	 * @param  string $layout
 	 * @return string
 	 */
-	private function theme_layouts_get_string( $layout ) {
+	private function get_layout_title( $layout_name ) {
 
 		/* Get an array of post layout strings. */
-		$strings = $this->theme_layouts_strings();
+		$layouts = $this->get_layouts();
 
 		/* Return the layout's string if it exists. Else, return the layout slug. */
-		return ( ( isset( $strings[ $layout ] ) ) ? $strings[ $layout ] : $layout );
+		return ( ( isset( $layouts[ $layout_name ]['title'] ) ) ? $layouts[ $layout_name ]['title'] : $layout_name );
 	}
 
 	/**
@@ -118,7 +111,7 @@ class Template extends Base\Runner
 	private function get_post_layout( $post_id ) {
 
 		/* Get the post layout. */
-		$layout = get_post_meta( $post_id, $this->theme_layouts_get_meta_key(), true );
+		$layout = get_post_meta( $post_id, $this->get_meta_key(), true );
 
 		/* Return the layout if one is found.  Otherwise, return 'default'. */
 		return ( !empty( $layout ) ? $layout : 'default' );
@@ -134,7 +127,7 @@ class Template extends Base\Runner
 	 * @return bool            True on successful update, false on failure.
 	 */
 	private function set_post_layout( $post_id, $layout ) {
-		return update_post_meta( $post_id, $this->theme_layouts_get_meta_key(), $layout );
+		return update_post_meta( $post_id, $this->get_meta_key(), $layout );
 	}
 
 	/**
@@ -146,7 +139,7 @@ class Template extends Base\Runner
 	 * @return bool            True on successful delete, false on failure.
 	 */
 	private function delete_post_layout( $post_id ) {
-		return delete_post_meta( $post_id, $this->theme_layouts_get_meta_key() );
+		return delete_post_meta( $post_id, $this->get_meta_key() );
 	}
 
 	/**
@@ -179,7 +172,7 @@ class Template extends Base\Runner
 	private function get_user_layout( $user_id ) {
 
 		/* Get the user layout. */
-		$layout = get_user_meta( $user_id, $this->theme_layouts_get_meta_key(), true );
+		$layout = get_user_meta( $user_id, $this->get_meta_key(), true );
 
 		/* Return the layout if one is found.  Otherwise, return 'default'. */
 		return ( !empty( $layout ) ? $layout : 'default' );
@@ -195,7 +188,7 @@ class Template extends Base\Runner
 	 * @return bool            True on successful update, false on failure.
 	 */
 	private function set_user_layout( $user_id, $layout ) {
-		return update_user_meta( $user_id, $this->theme_layouts_get_meta_key(), $layout );
+		return update_user_meta( $user_id, $this->get_meta_key(), $layout );
 	}
 
 	/**
@@ -207,7 +200,7 @@ class Template extends Base\Runner
 	 * @return bool            True on successful delete, false on failure.
 	 */
 	private function delete_user_layout( $user_id ) {
-		return delete_user_meta( $user_id, $this->theme_layouts_get_meta_key() );
+		return delete_user_meta( $user_id, $this->get_meta_key() );
 	}
 
 	/**
@@ -237,26 +230,87 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return string The layout for the given page.
 	 */
-	private function theme_layouts_get_layout() {
+	private function get_layout() {
 
-		/* Get the available theme layouts. */
-		$layouts = $this->theme_layouts_get_layouts();
+		// Get the available theme layouts.
+		$layouts = $this->get_layouts_keys();
 
-		/* Get the theme layout arguments. */
-		$args = $this->theme_layouts_get_args();
+		// Get the theme layout arguments.
+		$args = $this->get_args();
 
-		/* Set the layout to an empty string. */
+		// Set the layout to an empty string.
 		$layout = get_theme_mod( 'theme_layout', $args['default'] );
 
-		/* Make sure the given layout is in the array of available post layouts for the theme. */
-		if ( empty( $layout ) || !in_array( $layout, $layouts ) || 'default' == $layout )
+		// Make sure the given layout is in the array of available post layouts for the theme.
+		if ( empty( $layout ) || !in_array( $layout, $layouts ) || 'default' == $layout ) {
 			$layout = $args['default'];
+		}
 
-		/* @deprecated 0.2.0. Use the 'get_theme_layout' hook. */
-		$layout = apply_filters( 'get_post_layout', "layout-{$layout}" );
+		if( 'default' === $layout ) {
+			$layout = $this->get_layout_for_default();
+		}
 
-		/* @deprecated 0.5.0.  Use the 'theme_mods_theme_layout' hook. */
-		return esc_attr( apply_filters( 'get_theme_layout', $layout ) );
+		return esc_attr( apply_filters( 'theme_layout_get_layout', $layout ) );
+	}
+
+	/**
+	 * Get the default layout defined for the theme
+	 * @return string
+	 */
+	private function get_layout_for_default() {
+
+		if( is_product() ) {
+			$layout = get_option( 'product_layout', '2c-r' );
+
+		} elseif( is_shop() || is_product_category() || is_product_tag() ) {
+			$layout = get_option( 'shop_layout', '2c-r' );
+
+		} elseif( is_page() ) {
+			$layout = get_option( 'page_layout', '1c' );
+
+		} elseif( is_single() ) {
+			$layout = get_option( 'single_layout', '1c' );
+
+		} else {
+			$layout = is_rtl() ? '2c-r' : '2c-l';
+
+		}
+
+		return $layout;
+	}
+
+	/**
+	 * Get the selected layout for a page
+	 * @return string
+	 */
+	private static function get_theme_layout() {
+
+		$layout = get_theme_mod( 'theme_layout', 'default' );
+
+		// Check if layout is a valid value - if it is not, then we default to '2c-r'
+		if( ! in_array( $layout, [ '1c', '2c-r', '2c-l' ] ) ) {
+			$layout = 'default';
+		}
+
+		if( 'default' === $layout ) {
+			if( is_product() ) {
+				$layout = get_option( 'product_layout', '2c-r' );
+
+			}elseif( is_shop() || is_product_category() || is_product_tag() ) {
+				$layout = get_option( 'shop_layout', '2c-r' );
+
+			} elseif( is_page() ) {
+				$layout = get_option( 'page_layout', '1c' );
+
+			} elseif( is_single() ) {
+				$layout = get_option( 'single_layout', '1c' );
+
+			} else {
+				$layout = is_rtl() ? '2c-r' : '2c-l';
+			}
+		}
+
+		return esc_attr( apply_filters( 'theme_layout_get_layout', $layout ) );
 	}
 
 	/**
@@ -266,7 +320,7 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return string The meta key used for theme layouts.
 	 */
-	private function theme_layouts_get_meta_key() {
+	private function get_meta_key() {
 		return apply_filters( 'theme_layouts_meta_key', 'Layout' );
 	}
 
@@ -278,7 +332,7 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return array  Arguments for the theme layouts script.
 	 */
-	private function theme_layouts_get_args() {
+	private function get_args() {
 
 		$defaults = array(
 			'customize' => true,
@@ -293,31 +347,6 @@ class Template extends Base\Runner
 		return apply_filters( 'theme_layouts_args', wp_parse_args( $args, $defaults ) );
 	}
 
-	/**
-	 * Get the selected layout for a page
-	 * @return mixed|string|void
-	 */
-	private static function getLayout() {
-		if( is_product() ) {
-			$layout = get_option( 'product_layout', '2c-r' );
-		} else if( is_shop() || is_product_category() || is_product_tag() ) {
-			$layout = get_option( 'shop_layout', '2c-r' );
-		} else {
-			$layout = get_theme_mod( 'theme_layout' );
-		}
-
-		// Check if layout is a valid value - if it is not, then we default to '2c-r'
-		if( ! in_array( $layout, [ '1c', '2c-r', '2c-l' ] ) ) {
-			$layout = 'default';
-		}
-
-		if( 'default' === $layout ) {
-			$layout = is_page() ? '1c' : ( is_rtl() ? '2c-r' : '2c-l' );
-		}
-
-		return $layout;
-	}
-
 	//</editor-fold>
 
 	//<editor-fold desc="Template engine">
@@ -330,9 +359,9 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return void
 	 */
-	public function theme_layouts_register_meta() {
-		register_meta( 'post', $this->theme_layouts_get_meta_key(), 'theme_layouts_sanitize_meta' );
-		register_meta( 'user', $this->theme_layouts_get_meta_key(), 'theme_layouts_sanitize_meta' );
+	public function register_meta() {
+		register_meta( 'post', $this->get_meta_key(), array( $this, 'sanitize_meta' ) );
+		register_meta( 'user', $this->get_meta_key(), array( $this, 'sanitize_meta' ) );
 	}
 
 	/**
@@ -347,7 +376,7 @@ class Template extends Base\Runner
 	 * @param  string $meta_type  The type of metadata (post, comment, user, etc.)
 	 * @return mixed  $meta_value
 	 */
-	public function theme_layouts_sanitize_meta( $meta_value, $meta_key, $meta_type ) {
+	public function sanitize_meta( $meta_value, $meta_key, $meta_type ) {
 		return sanitize_html_class( $meta_value );
 	}
 
@@ -359,14 +388,14 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return void
 	 */
-	public function theme_layouts_add_post_type_support() {
+	public function add_post_type_support() {
 
 		/* Gets available public post types. */
 		$post_types = get_post_types( array( 'public' => true ) );
 
 		/* For each available post type, create a meta box on its edit page if it supports '$prefix-post-settings'. */
 		foreach ( $post_types as $type ) {
-			add_post_type_support($type, 'theme-layouts');
+			add_post_type_support( $type, 'theme-layouts' );
 		}
 	}
 
@@ -378,10 +407,10 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return void
 	 */
-	public function theme_layouts_admin_setup() {
+	public function admin_setup() {
 
 		// Get the extension arguments
-		$args = $this->theme_layouts_get_args();
+		$args = $this->get_args();
 
 		/* Return if the theme doesn't support the post meta box. */
 		if ( false === $args['post_meta'] ) {
@@ -389,17 +418,17 @@ class Template extends Base\Runner
 		}
 
 		/* Load the post meta boxes on the new post and edit post screens. */
-		add_action( 'load-post.php',     array( $this, 'theme_layouts_load_meta_boxes' ) );
-		add_action( 'load-post-new.php', array( $this, 'theme_layouts_load_meta_boxes' ) );
+		add_action( 'load-post.php',     array( $this, 'load_meta_boxes' ) );
+		add_action( 'load-post-new.php', array( $this, 'load_meta_boxes' ) );
 
 		/* If the attachment post type supports 'theme-layouts', add form fields for it. */
 		if ( post_type_supports( 'attachment', 'theme-layouts' ) ) {
 
 			/* Adds a theme layout <select> element to the attachment edit form. */
-			add_filter( 'attachment_fields_to_edit', array( $this, 'theme_layouts_attachment_fields_to_edit' ), 10, 2 );
+			add_filter( 'attachment_fields_to_edit', array( $this, 'attachment_fields_to_edit' ), 10, 2 );
 
 			/* Saves the theme layout for attachments. */
-			add_filter( 'attachment_fields_to_save', array( $this, 'theme_layouts_attachment_fields_to_save' ), 10, 2 );
+			add_filter( 'attachment_fields_to_save', array( $this, 'attachment_fields_to_save' ), 10, 2 );
 		}
 	}
 
@@ -412,20 +441,19 @@ class Template extends Base\Runner
 	 * @param  object $post   The attachment post object.
 	 * @return array  $fields
 	 */
-	public function theme_layouts_attachment_fields_to_edit( $fields, $post ) {
+	public function attachment_fields_to_edit( $fields, $post ) {
 
 		/* Get theme-supported theme layouts. */
-		$post_layouts = $this->theme_layouts_get_layouts();
+		$post_layouts = $this->get_layouts();
 
 		/* Get the current post's layout. */
 		$post_layout = $this->get_post_layout( $post->ID );
 
-		/* Set the default post layout. */
-		$select = '<option id="post-layout-default" value="default" ' . selected( $post_layout, 'default', false ) . '>' . esc_html( $this->theme_layouts_get_string( 'default' ) ) . '</option>';
-
 		/* Loop through each theme-supported layout, adding it to the select element. */
-		foreach ( $post_layouts as $layout )
-			$select .= '<option id="post-layout-' . esc_attr( $layout ) . '" value="' . esc_attr( $layout ) . '" ' . selected( $post_layout, $layout, false ) . '>' . esc_html( $this->theme_layouts_get_string( $layout ) ) . '</option>';
+		$select = '';
+		foreach ( $post_layouts as $key => $layout ) {
+			$select .= '<option id="post-layout-' . esc_attr( $key ) . '" value="' . esc_attr( $key ) . '" ' . selected( $post_layout, $key, false ) . '>' . esc_html( $this->get_layout_title( $layout['title'] ) ) . '</option>';
+		}
 
 		/* Set the HTML for the post layout select drop-down. */
 		$select = '<select name="attachments[' . $post->ID . '][theme-layouts-post-layout]" id="attachments[' . $post->ID . '][theme-layouts-post-layout]">' . $select . '</select>';
@@ -452,13 +480,13 @@ class Template extends Base\Runner
 	 * @param  array  $fields Array of fields for the edit attachment form.
 	 * @return array  $post
 	 */
-	public function theme_layouts_attachment_fields_to_save( $post, $fields ) {
+	public function attachment_fields_to_save( $post, $fields ) {
 
 		/* If the theme layouts field was submitted. */
 		if ( isset( $fields['theme-layouts-post-layout'] ) ) {
 
 			/* Get the meta key. */
-			$meta_key = $this->theme_layouts_get_meta_key();
+			$meta_key = $this->get_meta_key();
 
 			/* Get the previous post layout. */
 			$meta_value = $this->get_post_layout( $post['ID'] );
@@ -467,16 +495,17 @@ class Template extends Base\Runner
 			$new_meta_value = $fields['theme-layouts-post-layout'];
 
 			/* If there is no new meta value but an old value exists, delete it. */
-			if ( current_user_can( 'delete_post_meta', $post['ID'], $meta_key ) && '' == $new_meta_value && $meta_value )
+			if ( current_user_can( 'delete_post_meta', $post['ID'], $meta_key ) && '' == $new_meta_value && $meta_value ) {
 				$this->delete_post_layout( $post['ID'] );
 
-			/* If a new meta value was added and there was no previous value, add it. */
-			elseif ( current_user_can( 'add_post_meta', $post['ID'], $meta_key ) && $new_meta_value && '' == $meta_value )
+				/* If a new meta value was added and there was no previous value, add it. */
+			} elseif ( current_user_can( 'add_post_meta', $post['ID'], $meta_key ) && $new_meta_value && '' == $meta_value ) {
 				$this->set_post_layout( $post['ID'], $new_meta_value );
 
-			/* If the old layout doesn't match the new layout, update the post layout meta. */
-			elseif ( current_user_can( 'edit_post_meta', $post['ID'], $meta_key ) && $meta_value !== $new_meta_value )
+				/* If the old layout doesn't match the new layout, update the post layout meta. */
+			} elseif ( current_user_can( 'edit_post_meta', $post['ID'], $meta_key ) && $meta_value !== $new_meta_value ) {
 				$this->set_post_layout( $post['ID'], $new_meta_value );
+			}
 		}
 
 		/* Return the attachment post array. */
@@ -494,11 +523,11 @@ class Template extends Base\Runner
 	 * @access    public
 	 * @param     object $wp_customize
 	 */
-	public function theme_layouts_customize_register( $wp_customize ) {
+	public function customize_register( $wp_customize ) {
 
 		/* Get supported theme layouts. */
-		$layouts = $this->theme_layouts_get_layouts();
-		$args = $this->theme_layouts_get_args();
+		$layouts = $this->get_layouts();
+		$args = $this->get_args();
 
 		if ( true === $args['customize'] ) {
 
@@ -528,12 +557,13 @@ class Template extends Base\Runner
 			$layout_choices = array();
 
 			/* Only add 'default' if it's the actual default layout. */
-			if ( 'default' == $args['default'] )
-				$layout_choices['default'] = $this->theme_layouts_get_string( 'default' );
+			if ( 'default' == $args['default'] ) {
+				$layout_choices['default'] = $this->get_layout_title( 'default' );
+			}
 
 			/* Loop through each of the layouts and add it to the choices array with proper key/value pairs. */
 			foreach ( $layouts as $layout )
-				$layout_choices[$layout] = $this->theme_layouts_get_string( $layout );
+				$layout_choices[$layout] = $this->get_layout_title( $layout['title'] );
 
 			/* Add the layout control. */
 			$wp_customize->add_control(
@@ -548,15 +578,18 @@ class Template extends Base\Runner
 			);
 
 			/* If viewing the customize preview screen, add a script to show a live preview. */
-			if ( $wp_customize->is_preview() && !is_admin() )
-				add_action( 'wp_footer', array( $this, 'theme_layouts_customize_preview_script' ), 21 );
+			if ( $wp_customize->is_preview() && !is_admin() ) {
+				add_action( 'wp_footer', array( $this, 'customize_preview_script' ), 21 );
+			}
 		}
 	}
 
 	/**
 	 * Tell WP Customizer to refresh when layout is changed
+	 * @param \WP_Customize_Manager $wp_customize
 	 */
 	public function theme_layout_customize_refresh( $wp_customize ) {
+		/** @var \WP_Customize_Manager $wp_customize */
 		$wp_customize->get_setting( 'theme_layout' )->transport = 'refresh';
 	}
 
@@ -569,24 +602,24 @@ class Template extends Base\Runner
 	 * @param  string  $theme_layout
 	 * @return string
 	 */
-	public function theme_layouts_filter_layout( $theme_layout ) {
+	public function filter_layout( $theme_layout ) {
 
 		/* If viewing a singular post, get the post layout. */
-		if ( is_singular() )
+		if ( is_singular() ) {
 			$layout = $this->get_post_layout( get_queried_object_id() );
-
+		}
 		/* If viewing an author archive, get the user layout. */
-		elseif ( is_author() )
+		elseif ( is_author() ) {
 			$layout = $this->get_user_layout( get_queried_object_id() );
+		}
 
 		/* If a layout was found, set it. */
 		if ( !empty( $layout ) && 'default' !== $layout ) {
 			$theme_layout = $layout;
 		}
-
 		/* Else, if no layout option has yet been saved, return the theme default. */
 		elseif ( empty( $theme_layout ) ) {
-			$args = $this->theme_layouts_get_args();
+			$args = $this->get_args();
 			$theme_layout = $args['default'];
 		}
 
@@ -601,15 +634,15 @@ class Template extends Base\Runner
 	 * @access public
 	 * @return void
 	 */
-	public function theme_layouts_load_meta_boxes() {
+	public function load_meta_boxes() {
 
 		/* Add the layout meta box on the 'add_meta_boxes' hook. */
-		add_action( 'add_meta_boxes', array( $this, 'theme_layouts_add_meta_boxes' ), 10, 2 );
+		add_action( 'add_meta_boxes', array( $this, 'add_meta_boxes' ), 10, 2 );
 
 		/* Saves the post format on the post editing page. */
-		add_action( 'save_post',       array( $this, 'theme_layouts_save_post' ), 10, 2 );
-		add_action( 'add_attachment',  array( $this, 'theme_layouts_save_post' )        );
-		add_action( 'edit_attachment', array( $this, 'theme_layouts_save_post' )        );
+		add_action( 'save_post',       array( $this, 'save_post' ), 10, 2 );
+		add_action( 'add_attachment',  array( $this, 'save_post' )        );
+		add_action( 'edit_attachment', array( $this, 'save_post' )        );
 	}
 
 	/**
@@ -622,11 +655,12 @@ class Template extends Base\Runner
 	 * @param  object $post      The current post object.
 	 * @return void
 	 */
-	public function theme_layouts_add_meta_boxes( $post_type, $post ) {
+	public function add_meta_boxes( $post_type, $post ) {
 
 		/* Add the meta box if the post type supports 'post-stylesheets'. */
-		if ( ( post_type_supports( $post_type, 'theme-layouts' ) ) && ( current_user_can( 'edit_post_meta', $post->ID ) || current_user_can( 'add_post_meta', $post->ID ) || current_user_can( 'delete_post_meta', $post->ID ) ) )
-			add_meta_box( 'theme-layouts-post-meta-box', __( 'Layout', 'storms' ), array( $this, 'theme_layouts_post_meta_box' ), $post_type, 'side', 'default' );
+		if ( ( post_type_supports( $post_type, 'theme-layouts' ) ) && ( current_user_can( 'edit_post_meta', $post->ID ) || current_user_can( 'add_post_meta', $post->ID ) || current_user_can( 'delete_post_meta', $post->ID ) ) ) {
+			add_meta_box( 'theme-layouts-post-meta-box', __( 'Layout', 'storms' ), array( $this, 'post_meta_box'), $post_type, 'side', 'default' );
+		}
 	}
 
 	/**
@@ -639,10 +673,10 @@ class Template extends Base\Runner
 	 * @param  array  $box  Specific information about the meta box being loaded.
 	 * @return void
 	 */
-	public function theme_layouts_post_meta_box( $post, $box ) {
+	public function post_meta_box( $post, $box ) {
 
 		/* Get theme-supported theme layouts. */
-		$post_layouts = $this->theme_layouts_get_layouts();
+		$post_layouts = $this->get_layouts();
 
 		/* Get the current post's layout. */
 		$post_layout = $this->get_post_layout( $post->ID ); ?>
@@ -653,10 +687,8 @@ class Template extends Base\Runner
 
 		<div class="post-layout-wrap">
 			<ul>
-				<li><input type="radio" name="post-layout" id="post-layout-default" value="default" <?php checked( $post_layout, 'default' );?> /> <label for="post-layout-default"><?php echo esc_html( $this->theme_layouts_get_string( 'default' ) ); ?></label></li>
-
-				<?php foreach ( $post_layouts as $layout ) { ?>
-					<li><input type="radio" name="post-layout" id="post-layout-<?php echo esc_attr( $layout ); ?>" value="<?php echo esc_attr( $layout ); ?>" <?php checked( $post_layout, $layout ); ?> /> <label for="post-layout-<?php echo esc_attr( $layout ); ?>"><?php echo esc_html( $this->theme_layouts_get_string( $layout ) ); ?></label></li>
+				<?php foreach ( $post_layouts as $key => $layout ) { ?>
+					<li><input type="radio" name="post-layout" id="post-layout-<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $key ); ?>" <?php checked( $post_layout, $key ); ?> /> <label for="post-layout-<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $this->get_layout_title( $layout['title'] ) ); ?></label></li>
 				<?php } ?>
 			</ul>
 		</div>
@@ -672,7 +704,7 @@ class Template extends Base\Runner
 	 * @param  object   $post    The post object currently being saved.
 	 * @return void|int
 	 */
-	public function theme_layouts_save_post( $post_id, $post = '' ) {
+	public function save_post( $post_id, $post = '' ) {
 
 		/* Fix for attachment save issue in WordPress 3.5. @link http://core.trac.wordpress.org/ticket/21963 */
 		if ( !is_object( $post ) )
@@ -683,7 +715,7 @@ class Template extends Base\Runner
 			return $post_id;
 
 		/* Get the meta key. */
-		$meta_key = $this->theme_layouts_get_meta_key();
+		$meta_key = $this->get_meta_key();
 
 		/* Get the previous post layout. */
 		$meta_value = $this->get_post_layout( $post_id );
@@ -717,7 +749,7 @@ class Template extends Base\Runner
 	 * @link      http://themehybrid.com/support/topic/add-theme-layout-in-theme-customize
 	 * @return    void
 	 */
-	public function theme_layouts_customize_preview_script() { ?>
+	public function customize_preview_script() { ?>
 
 		<script type="text/javascript">
 			wp.customize(
@@ -749,12 +781,10 @@ class Template extends Base\Runner
 	 * @param  array $classes
 	 * @return array $classes
 	 */
-	public function theme_layouts_body_class( $classes ) {
-
+	public function add_layout_to_body_class( $classes ) {
 		/* Adds the layout to array of body classes. */
-		$classes[] = sanitize_html_class( $this->theme_layouts_get_layout() );
+		$classes[] = sanitize_html_class( $this->get_layout() );
 
-		/* Return the $classes array. */
 		return $classes;
 	}
 
@@ -766,7 +796,7 @@ class Template extends Base\Runner
 	 */
 	public function add_layout_to_tinymce_body_class( $init_array ) {
 
-		$init_array['body_class'] = 'layout-' . get_theme_mod( 'theme_layout' );
+		$init_array['body_class'] = 'layout-' . sanitize_html_class( $this->get_layout() );
 
 		return $init_array;
 	}
@@ -778,25 +808,30 @@ class Template extends Base\Runner
 	 * @param bool       $is_active_sidebar Whether or not the sidebar should be considered "active".
 	 *                                      In other words, whether the sidebar contains any widgets.
 	 * @param int|string $index             Index, name, or ID of the dynamic sidebar.
+	 * @return bool
 	 */
-	public function disable_sidebars($is_active_sidebar, $index) {
+	public function disable_sidebars( $is_active_sidebar, $index ) {
 
-		$layout = Template::getLayout();
+		$layout = $this->get_layout();
 
 		if( '1c' === $layout ) {
-			//return false; // TODO Esta desabilitando todas as sidebars!! Nao pode deixar assim!
+			$layouts = $this->get_layouts();
+			$hide_sidebars = $layouts[$layout]['hide-sidebars'];
+
+			if( in_array( $index, $hide_sidebars ) ) {
+				return false;
+			}
 		}
 		return $is_active_sidebar;
 	}
 
 	/**
 	 * Main layout
-	 * @param  mixed  $layout You can force an specific layout, ignoring the page defined layout - default is null
 	 * @return string Classes name
 	 */
-	public static function main_layout( $layout = null ) {
+	public static function main_layout() {
 
-		$layout = Template::getLayout();
+		$layout = Template::get_theme_layout();
 
 		switch( $layout ) {
 			// 2 columns - main content on left
@@ -816,12 +851,11 @@ class Template extends Base\Runner
 
 	/**
 	 * Sidebar layout
-	 * @param  mixed  $layout You can force an specific layout, ignoring the page defined layout - default is null
 	 * @return string Classes name
 	 */
-	public static function sidebar_layout( $layout = null ) {
+	public static function sidebar_layout() {
 
-		$layout = Template::getLayout();
+		$layout = Template::get_theme_layout();
 
 		switch( $layout ) {
 			// 2 columns - main content on left, sidebar on right

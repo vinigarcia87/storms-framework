@@ -385,7 +385,7 @@ class FrontEnd extends Base\Runner
 	/**
 	 * Filter function used to remove the tinymce emoji plugin.
 	 */
-	private function disable_emojis_tinymce( $plugins ) {
+	public function disable_emojis_tinymce( $plugins ) {
 		return ( is_array( $plugins ) ) ? array_diff( $plugins, array( 'wpemoji' ) ) : array();
 	}
 

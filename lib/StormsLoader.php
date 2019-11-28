@@ -48,12 +48,23 @@ function storms_load_extensions() {
 				// Enable theme layouts
 				add_theme_support('theme-layouts',
 					array(
-						'1c'   => __('1 Column', 'storms'),
-						'2c-l' => __('2 Columns: Content / Sidebar', 'storms'),
-						'2c-r' => __('2 Columns: Sidebar / Content', 'storms')
+						'1c'   => array(
+							'title'         => __('1 Column', 'storms'),
+							'thumbnail'     => '',
+							'hide-sidebars' => array( 'main-sidebar', 'shop-sidebar' )
+						),
+						'2c-l' => array(
+							'title'         => __('2 Columns: Content / Sidebar', 'storms'),
+							'thumbnail'     => '',
+						),
+						'2c-r' => array(
+							'title'         => __('2 Columns: Sidebar / Content', 'storms'),
+							'thumbnail'     => '',
+						),
 					),
 					array(
 						'default' => 'default',
+						'post_meta' => true,
 						'customizer' => true
 					)
 				);
