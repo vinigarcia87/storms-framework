@@ -277,7 +277,10 @@ class FrontEnd extends Base\Runner
 	 * Clean up output of <script> tags
 	 */
 	public function clean_script_tag( $input ) {
-		$input = str_replace( "type='text/javascript' ", '', $input );
+		if( !is_admin() ) {
+			$input = str_replace( "type='text/javascript' ", '', $input );
+			return str_replace( "'", '"', $input );
+		}
 		return $input;
 	}
 
@@ -285,7 +288,10 @@ class FrontEnd extends Base\Runner
 	 * Remove unnecessary self-closing tags
 	 */
 	public function remove_self_closing_tags( $input ) {
-		return str_replace( ' />', '>', $input );
+		if( !is_admin() ) {
+			return str_replace( ' />', '>', $input );
+		}
+		return $input;
 	}
 
 	/**
