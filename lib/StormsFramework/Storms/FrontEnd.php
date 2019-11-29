@@ -50,7 +50,7 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'wp_tag_cloud', 'modify_tag_rel' )
 			->add_filter( 'the_tags', 'modify_tag_rel' )
 			->add_filter( 'style_loader_tag', 'clean_style_tag' )
-			//->add_filter( 'script_loader_tag', 'clean_script_tag' )
+			->add_filter( 'script_loader_tag', 'clean_script_tag' )
 			->add_filter( 'get_avatar', 'remove_self_closing_tags' )
 			->add_filter( 'comment_id_fields', 'remove_self_closing_tags' )
 			->add_filter( 'post_thumbnail_html', 'remove_self_closing_tags' )
@@ -325,7 +325,10 @@ class FrontEnd extends Base\Runner
 	 * Clean up output of <script> tags
 	 */
 	public function clean_script_tag( $input ) {
-		$input = str_replace( "type='text/javascript' ", '', $input );
+		if( !is_admin() ) {
+			$input = str_replace( "type='text/javascript' ", '', $input );
+			return str_replace( "'", '"', $input );
+		}
 		return $input;
 	}
 
@@ -333,7 +336,10 @@ class FrontEnd extends Base\Runner
 	 * Remove unnecessary self-closing tags
 	 */
 	public function remove_self_closing_tags( $input ) {
-		return str_replace( ' />', '>', $input );
+		if( !is_admin() ) {
+			return str_replace( ' />', '>', $input );
+		}
+		return $input;
 	}
 
 	/**
