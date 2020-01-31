@@ -30,7 +30,7 @@ class WooCommerce extends Base\Runner
 	public function define_hooks() {
 
 		$this->loader
-			->add_action( 'init', 'support_woocommerce' );
+			->add_action( 'init', 'support_woocommerce_gallery' );
 
 		$this->loader
             // @see https://gregrickaby.com/2013/05/remove-woocommerce-styles-and-scripts/
@@ -124,13 +124,11 @@ class WooCommerce extends Base\Runner
 	 * Declare WooCommerce support
 	 * Enable WooCommerce gallery features
 	 */
-	public function support_woocommerce() {
-		// Declare WooCommerce support
-		add_theme_support( 'woocommerce' );
+	public function support_woocommerce_gallery() {
 
 		// Enabling product gallery features - zoom, swipe, lightbox
 		// https://github.com/woocommerce/woocommerce/wiki/Enabling-product-gallery-features-(zoom,-swipe,-lightbox)-in-3.0.0
-		if( get_option( 'use_wc_product_gallery', 'yes' ) ) {
+		if( 'yes' == get_option( 'use_wc_product_gallery', 'yes' ) ) {
 			add_theme_support( 'wc-product-gallery-zoom' );
 			add_theme_support( 'wc-product-gallery-lightbox' );
 			add_theme_support( 'wc-product-gallery-slider' );
@@ -257,15 +255,15 @@ class WooCommerce extends Base\Runner
      */
     function remove_product_tabs( $tabs ) {
 
-        if( get_option( 'remove_tab_description', false ) ) {
+        if( 'yes' == get_option( 'remove_tab_description', 'no' ) ) {
             unset( $tabs['description'] );
         }
 
-        if( get_option( 'remove_tab_reviews', false ) ) {
+        if( 'yes' == get_option( 'remove_tab_reviews', 'no' ) ) {
             unset( $tabs['reviews'] );
         }
 
-        if( get_option( 'remove_tab_additional_information', false ) ) {
+        if( 'yes' == get_option( 'remove_tab_additional_information', 'no' ) ) {
             unset( $tabs['additional_information'] );
         }
 
@@ -284,7 +282,7 @@ class WooCommerce extends Base\Runner
 		// WP tracks the current page - global the variable to access it
 		global $pagenow;
 
-		if( get_option( 'prevent_wp_login', 'yes' ) ) {
+		if( 'yes' == get_option( 'prevent_wp_login', 'yes' ) ) {
 
 			// Check if a $_GET['action'] is set, and if so, load it into $action variable
 			$action = ( isset( $_GET['action'] ) ) ? $_GET['action'] : '';
@@ -319,7 +317,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
-		if( !is_user_logged_in() && is_checkout() && get_option( 'force_login_registration_page_on_checkout', 'yes' ) ) {
+		if( !is_user_logged_in() && is_checkout() && 'yes' == get_option( 'force_login_registration_page_on_checkout', 'yes' ) ) {
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
 			wp_redirect( $login_page );
@@ -750,7 +748,7 @@ class WooCommerce extends Base\Runner
 	 * Customization for bootstrap breadcrumbs
 	 */
 	public function woocommerce_breadcrumb() {
-        if( 'no' !== get_option( 'add_wc_breadcrumb_before_main_content', 'yes' ) ) {
+        if( 'yes' == get_option( 'add_wc_breadcrumb_before_main_content', 'yes' ) ) {
             echo '<div class="row">';
             echo '<div class="col-12">';
             woocommerce_breadcrumb();
@@ -882,41 +880,44 @@ class WooCommerce extends Base\Runner
 	public function content_product_class( $classes ) {
 		global $woocommerce_loop;
 
-		// Verificamos se este eh um loop de products
+		if( ! is_woocommerce() ||
+			! isset( $woocommerce_loop['name'] ) || ( $woocommerce_loop['name'] == '' ) ) {
+			return $classes;
+		}
+
 		$is_products = false;
-		if( isset( $woocommerce_loop['name'] ) &&
-			$woocommerce_loop['name'] == 'products' ) {
-			$is_products = true;
-			$classes[] = $woocommerce_loop['name'];
-		}
-
-        // Verificamos se este eh um loop de related products
-        $is_related = false;
-        if( isset( $woocommerce_loop['name'] ) &&
-            $woocommerce_loop['name'] == 'related' ) {
-            $is_related = true;
-            $classes[] = $woocommerce_loop['name'];
-        }
-
-        // Verificamos se este eh um loop de cross-sells
-        $is_cross_sells = false;
-        if( isset( $woocommerce_loop['name'] ) &&
-            $woocommerce_loop['name'] == 'cross-sells' ) {
-            $is_cross_sells = true;
-            $classes[] = $woocommerce_loop['name'];
-        }
-
-        // Verificamos se este eh um loop de recent_products
+		$is_related = false;
+		$is_cross_sells = false;
 		$recent_products = false;
-        if( isset( $woocommerce_loop['name'] ) &&
-			$woocommerce_loop['name'] == 'recent_products' ) {
-			$recent_products = true;
-			$classes[] = $woocommerce_loop['name'];
-		}
+		switch ( $woocommerce_loop['name'] ) {
+			// Verificamos se este eh um loop de products
+			case 'products':
+				$is_products = true;
+				break;
 
-		// Returns true when on the product archive page (shop)
-		if( ( is_shop() || is_product_category() || is_product_tag() ) &&
-			( $is_related || $is_cross_sells || $is_products || $recent_products ) ) {
+			// Verificamos se este eh um loop de related products
+			case 'related':
+				$is_related = true;
+				break;
+
+			// Verificamos se este eh um loop de cross-sells
+			case 'cross-sells':
+				$is_cross_sells = true;
+				break;
+
+			// Verificamos se este eh um loop de recent_products
+			case 'recent_products':
+				$recent_products = true;
+				break;
+
+			default:
+				Helper::debug( 'content_product_class function found not listed wc loop name: ' . $woocommerce_loop['name'] );
+
+		}
+		$classes[] = $woocommerce_loop['name'];
+
+		// Returns true when on a products list
+		if( $is_products || $is_related || $is_cross_sells ||$recent_products ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();

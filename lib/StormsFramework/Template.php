@@ -260,10 +260,10 @@ class Template extends Base\Runner
 	private function get_layout_for_default() {
 
 		if( is_product() ) {
-			$layout = get_option( 'product_layout', '2c-r' );
+			$layout = get_option( 'product_layout', '1c' );
 
 		} elseif( is_shop() || is_product_category() || is_product_tag() ) {
-			$layout = get_option( 'shop_layout', '2c-r' );
+			$layout = get_option( 'shop_layout', '2c-l' );
 
 		} elseif( is_page() ) {
 			$layout = get_option( 'page_layout', '1c' );
@@ -294,10 +294,10 @@ class Template extends Base\Runner
 
 		if( 'default' === $layout ) {
 			if( is_product() ) {
-				$layout = get_option( 'product_layout', '2c-r' );
+				$layout = get_option( 'product_layout', '1c' );
 
 			}elseif( is_shop() || is_product_category() || is_product_tag() ) {
-				$layout = get_option( 'shop_layout', '2c-r' );
+				$layout = get_option( 'shop_layout', '2c-l' );
 
 			} elseif( is_page() ) {
 				$layout = get_option( 'page_layout', '1c' );
@@ -307,6 +307,7 @@ class Template extends Base\Runner
 
 			} else {
 				$layout = is_rtl() ? '2c-r' : '2c-l';
+
 			}
 		}
 

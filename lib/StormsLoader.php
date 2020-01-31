@@ -77,6 +77,10 @@ function storms_load_extensions() {
 	}
 	if ( $support_woocomerce ) {
 		if ( \StormsFramework\Helper::is_woocommerce_activated() ) {
+
+			// Declare WooCommerce support
+			add_theme_support( 'woocommerce' );
+
 			(new WooCommerce\WooCommerce)->run();
 		}
 	}

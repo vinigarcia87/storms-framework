@@ -489,50 +489,10 @@ class Helper extends Base\Manager
 			}
 		}
 
-		if ( ! is_single() && ! post_password_required() && ( comments_open() || get_comments_number() ) ) {
-			echo '<span class="comments-link">';
-			comments_popup_link(
-				sprintf(
-					wp_kses(
-						/* translators: %s: post title */
-						__( 'Leave a Comment<span class="sr-only"> on %s</span>', 'storms' ),
-						array(
-							'span' => array(
-								'class' => array(),
-							),
-						)
-					),
-					get_the_title()
-				),
-				sprintf(
-					wp_kses(
-						/* translators: %s: post title */
-						__( '1 Comment<span class="sr-only"> on %s</span>', 'storms' ),
-						array(
-							'span' => array(
-								'class' => array(),
-							),
-						)
-					),
-					get_the_title()
-				),
-				sprintf(
-					wp_kses(
-						/* translators: %s: post title */
-						__( '%s Comments<span class="sr-only"> on %s</span>', 'storms' ),
-						array(
-							'span' => array(
-								'class' => array(),
-							),
-						)
-					),
-					get_comments_number( get_the_ID() ),
-					get_the_title()
-				),
-				'',
-				__( 'Comments are closed', 'storms' )
-			);
-			echo '</span>';
+		if ( ( is_single() || is_page() ) && ( comments_open() || get_comments_number() ) && ! post_password_required() ) {
+
+			comments_template();
+
 		}
 
 		edit_post_link(

@@ -93,7 +93,7 @@ class Assets extends Base\Runner
 		if( get_option( 'load_jquery', 'yes' ) ) {
 
 			// Decide se carrega jquery externo ou interno
-			if( !is_admin() && get_option( 'load_external_jquery', 'no' ) ) {
+			if( !is_admin() && 'yes' == get_option( 'load_external_jquery', 'no' ) ) {
 				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, $this->jquery_version, false);
 			}
 			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
@@ -110,7 +110,7 @@ class Assets extends Base\Runner
 	public function jquery_local_fallback( $src, $handle = null ) {
 		static $run_next = false;
 
-		if( $run_next && get_option( 'load_external_jquery', 'no' ) ) {
+		if( $run_next && 'yes' == get_option( 'load_external_jquery', 'no' ) ) {
 			// Defaults to match the version loaded via CDN
 			$local_jquery = Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' );
 			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
@@ -146,7 +146,7 @@ class Assets extends Base\Runner
 	public function frontend_scripts() {
 
         // Main theme scripts
-        if ( get_option( 'show_theme_scripts', 'yes' ) ) {
+        if ( 'yes' == get_option( 'show_theme_scripts', 'yes' ) ) {
 			wp_register_script( 'main-script-theme', Helper::get_asset_url('/js/scripts' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true );
             //wp_enqueue_script( 'main-script-theme' ); // Attention! You have to enqueue on the pages you need!
         }
