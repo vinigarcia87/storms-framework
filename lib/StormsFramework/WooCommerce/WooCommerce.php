@@ -881,7 +881,7 @@ class WooCommerce extends Base\Runner
 		global $woocommerce_loop;
 
 		if( ! is_woocommerce() ||
-			! isset( $woocommerce_loop['name'] ) || ( $woocommerce_loop['name'] == '' ) ) {
+			! isset( $woocommerce_loop['name'] ) ) {
 			return $classes;
 		}
 
@@ -891,6 +891,7 @@ class WooCommerce extends Base\Runner
 		$recent_products = false;
 		switch ( $woocommerce_loop['name'] ) {
 			// Verificamos se este eh um loop de products
+			case '':
 			case 'products':
 				$is_products = true;
 				break;
