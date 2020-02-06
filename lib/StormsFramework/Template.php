@@ -877,7 +877,7 @@ class Template extends Base\Runner
 	 * @return string Classes name
 	 */
 	public static function header_container() {
-		return get_option( 'storms_header_container_class', 'container' );
+		return get_option( 'storms_header_container_class', 'st-grid-container container' );
 	}
 
 	/**
@@ -885,7 +885,7 @@ class Template extends Base\Runner
 	 * @return string Classes name
 	 */
 	public static function wrap_container() {
-		return get_option( 'storms_wrap_container_class', 'container' );
+		return get_option( 'storms_wrap_container_class', 'st-grid-container container' );
 	}
 
 	/**
@@ -893,6 +893,6 @@ class Template extends Base\Runner
 	 * @return string Classes name
 	 */
 	public static function footer_container() {
-		return get_option( 'storms_footer_container_class', 'container' );
+		return get_option( 'storms_footer_container_class', 'st-grid-container container' );
 	}
 }

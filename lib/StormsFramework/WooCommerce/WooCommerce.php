@@ -667,7 +667,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function before_content() {
 
-        echo '<div class="row">';
+        echo '<div class="st-grid-row row">';
 		echo '<main id="content" class="main '. Template::main_layout() . '" role="main">';
 	}
 
@@ -692,7 +692,7 @@ class WooCommerce extends Base\Runner
 	 * Incluindo uma row em volta do dashboard do my account - abertura
 	 */
 	public function open_row_myaccount_dashboard() {
-		echo '<div class="row myaccount-dashboard">';
+		echo '<div class="st-grid-row row myaccount-dashboard">';
 	}
 
 	/**
@@ -707,7 +707,7 @@ class WooCommerce extends Base\Runner
 	 * and before woocommerce_pagination in woocommerce_after_shop_loop
 	 */
 	public function woocommerce_before_shop_loop_open() {
-		echo '<div class="row woocommerce-loop-header"><div class="col-12">';
+		echo '<div class="st-grid-row row woocommerce-loop-header"><div class="col-12">';
 	}
 
 	/**
@@ -723,7 +723,7 @@ class WooCommerce extends Base\Runner
 	 * and before woocommerce_pagination in woocommerce_after_shop_loop
 	 */
 	public function woocommerce_after_shop_loop_open() {
-		echo '<div class="row woocommerce-loop-footer"><div class="col-12">';
+		echo '<div class="st-grid-row row woocommerce-loop-footer"><div class="col-12">';
 	}
 
 	/**
@@ -749,7 +749,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function woocommerce_breadcrumb() {
         if( 'yes' == get_option( 'add_wc_breadcrumb_before_main_content', 'yes' ) ) {
-            echo '<div class="row">';
+            echo '<div class="st-grid-row row">';
             echo '<div class="col-12">';
             woocommerce_breadcrumb();
             echo '</div>';
@@ -930,22 +930,22 @@ class WooCommerce extends Base\Runner
 
 			switch ( $columns ) {
 				case 6:
-					$classes[] = 'col-6 col-sm-3 col-md-2';
+					$classes[] = 'st-product-col-1 col-6 col-sm-3 col-md-2';
 					break;
 				case 4:
-					$classes[] = 'col-12 col-sm-6 col-md-3';
+					$classes[] = 'st-product-col-2 col-12 col-sm-6 col-md-3';
 					break;
 				case 3:
-					$classes[] = 'col-12 col-sm-4 col-md-4';
+					$classes[] = 'st-product-col-3 col-12 col-sm-4 col-md-4';
 					break;
 				case 31:
-					$classes[] = 'col-12 col-sm-6 col-md-4';
+					$classes[] = 'st-product-col-4 col-12 col-sm-6 col-md-4';
 					break;
 				case 2:
-					$classes[] = 'col-12 col-sm-6 col-md-6';
+					$classes[] = 'st-product-col-5 col-12 col-sm-6 col-md-6';
 					break;
 				default:
-					$classes[] = 'col-12 col-sm-12 col-md-12';
+					$classes[] = 'st-product-col-6 col-12 col-sm-12 col-md-12';
 			}
 
 		}
@@ -1020,7 +1020,7 @@ class WooCommerce extends Base\Runner
 		*/
 
 		if( $woocommerce_loop % $columns === 0 ) {
-			echo '</div><div class="row">';
+			echo '</div><div class="st-grid-row row">';
 		}
 
 	}

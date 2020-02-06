@@ -762,7 +762,7 @@ class Helper extends Base\Manager
 
 				$layout = '<div id="related-post">';
 				$layout .= '<h3>' . esc_attr( $title ) . '</h3>';
-				$layout .= ( $thumb ) ? '<div class="row">' : '<ul>';
+				$layout .= ( $thumb ) ? '<div class="grid-row  row">' : '<ul>';
 
 				while ( $related->have_posts() ) {
 					$related->the_post();
