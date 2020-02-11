@@ -26,7 +26,6 @@ class Assets extends Base\Runner
 	}
 
 	private $jquery_version = '3.4.1';
-	private $cycle2_version = '2.1.7';
 
 	public function define_hooks() {
 
@@ -139,29 +138,9 @@ class Assets extends Base\Runner
 
 	/**
 	 * Register main theme script
-	 * Register cycle2 and cycle2-carousel script
 	 * Adjust Thread comments WordPress script to load only on specific pages
-	 * TODO Check if cycle2 is necessary
 	 */
 	public function frontend_scripts() {
-
-        // Main theme scripts
-        if ( 'yes' == get_option( 'show_theme_scripts', 'yes' ) ) {
-			wp_register_script( 'main-script-theme', Helper::get_asset_url('/js/scripts' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.js'), array('jquery'), STORMS_FRAMEWORK_VERSION, true );
-            //wp_enqueue_script( 'main-script-theme' ); // Attention! You have to enqueue on the pages you need!
-        }
-
-        // Cycle 2 jQuery slideshow plugin
-		/*
-        if ( get_option( 'load_cycle2', 'no' ) ) {
-            wp_register_script( 'cycle2', Helper::get_asset_url('/js/jquery.cycle2.min.js'), array('jquery'), $this->cycle2_version, true );
-            //wp_enqueue_script( 'cycle2' ); // Attention! You have to enqueue on the pages you need!
-
-            wp_enqueue_script( 'cycle2-carousel', Helper::get_asset_url('/js/cycle2/plugin/jquery.cycle2.carousel.min.js'), array('cycle2'), $this->cycle2_version, true );
-            //wp_enqueue_script( 'cycle2-carousel' ); // Attention! You have to enqueue on the pages you need!
-        }
-		*/
-
 		// Load Thread comments WordPress script
 		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );

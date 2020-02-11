@@ -21,6 +21,7 @@ use StormsFramework\Base;
 
 class Helper extends Base\Manager
 {
+
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 
@@ -49,12 +50,40 @@ class Helper extends Base\Manager
 			$log_info = '[' . $date . ' - '. $file . ' at "' . $function . '" on line ' . $line . '] ' . PHP_EOL;
 			fwrite( $fp, $log_info . "\t" . $title . PHP_EOL. "\t" . $content . PHP_EOL );
 			fclose( $fp );
-
-			// Log on console with FirePHP
-			//if( class_exists( 'FB' ) ) {
-			//	\FB::log( '[' . $date . '] ' . $content );
-			//}
 		}
+	}
+
+	/**
+	 * Print a separator element on log files
+	 * @param bool $write_on_file
+	 */
+	public static function debug_separator( $write_on_file = true ) {
+		if( !$write_on_file ) {
+			echo '<hr/>';
+		} else {
+			$fp = fopen( WP_CONTENT_DIR . '/storms-framework.log', 'a+' );
+			fwrite( $fp, PHP_EOL . "=====================================================================" . PHP_EOL . PHP_EOL );
+			fclose( $fp );
+		}
+	}
+
+	/**
+	 * Return an array of functions that have been called to get to the current point in code
+	 * @param string $title
+	 * @param null $ignore_class
+	 * @param int $skip_frames
+	 */
+	public static function backtrace( $title = '', $ignore_class = null, $skip_frames = 0 ) {
+		Helper::debug( wp_debug_backtrace_summary( $ignore_class, $skip_frames, false ), $title );
+	}
+
+	/**
+	 * Get the current page URL
+	 * @return string|void
+	 */
+	public static function get_current_page() {
+		global $wp;
+		return home_url( $wp->request );
 	}
 
 	/**

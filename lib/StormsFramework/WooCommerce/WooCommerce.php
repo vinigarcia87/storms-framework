@@ -148,7 +148,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function remove_woocommerce_style( $enqueue_styles )
     {
-        if( get_option( 'use_wc_styles', false ) ) {
+        if( 'yes' === get_option( 'use_wc_styles', 'no' ) ) {
             return $enqueue_styles;
         } else {
             return array();
@@ -158,88 +158,33 @@ class WooCommerce extends Base\Runner
     /**
      * Optimize WooCommerce Scripts
      * Remove WooCommerce Generator tag, styles, and scripts from non WooCommerce pages.
+	 * @see https://crunchify.com/how-to-stop-loading-woocommerce-js-javascript-and-css-files-on-all-wordpress-postspages/
      */
     public function manage_woocommerce_scripts() {
 
 		// Check if we should apply this modifications
-		if( ! get_option( 'manage_woocommerce_scripts', false ) ) {
+		if( 'no' === get_option( 'manage_woocommerce_scripts', 'yes' ) ) {
 			return false;
 		}
 
-        // @TODO wc-cart-fragments e outros podem ser necessários na home! Verificar!
-
         // Dequeue scripts and styles
-        if ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
-			wp_dequeue_script( 'js-cookie' );
-			wp_dequeue_script( 'jquery-blockui' );
-			wp_dequeue_script( 'jquery-cookie' );           // deprecated.
-			wp_dequeue_script( 'jquery-payment' );
-			wp_dequeue_script( 'select2' );
-			wp_dequeue_script( 'wc-address-i18n' );
-			wp_dequeue_script( 'wc-add-payment-method' );
-			wp_dequeue_script( 'wc-cart' );
-			wp_dequeue_script( 'wc-cart-fragments' );
-			wp_dequeue_script( 'wc-checkout' );
-			wp_dequeue_script( 'wc-country-select' );
-			wp_dequeue_script( 'wc-credit-card-form' );
-			wp_dequeue_script( 'wc-add-to-cart' );
-			wp_dequeue_script( 'wc-add-to-cart-variation' );
-			wp_dequeue_script( 'wc-geolocation' );
-			wp_dequeue_script( 'wc-lost-password' );
-			wp_dequeue_script( 'wc-password-strength-meter' );
-			wp_dequeue_script( 'wc-single-product' );
-			wp_dequeue_script( 'woocommerce' );
+		if ( ! is_front_page() && ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) ) {
 
-            wp_dequeue_script( 'flexslider' );
-            wp_dequeue_script( 'photoswipe' );
-            wp_dequeue_script( 'photoswipe-ui-default' );
-            wp_dequeue_script( 'prettyPhoto' );             // deprecated.
-            wp_dequeue_script( 'prettyPhoto-init' );        // deprecated.
-			wp_dequeue_script( 'zoom' );
-        } else {
-            // If the theme is NOT using WC product gallery, we don't load the scripts
-            if( ! get_option( 'use_wc_product_gallery', true ) ) {
-                wp_dequeue_script( 'flexslider' );
-                wp_dequeue_script( 'photoswipe' );
-                wp_dequeue_script( 'photoswipe-ui-default' );
-                wp_dequeue_script( 'prettyPhoto' );             // deprecated.
-                wp_dequeue_script( 'prettyPhoto-init' );        // deprecated.
-                wp_dequeue_script( 'zoom' );
-            }
+			// Dequeue WooCommerce styles
+			wp_dequeue_style( 'woocommerce-layout' );
+			wp_dequeue_style( 'woocommerce-general' );
+			wp_dequeue_style( 'woocommerce-smallscreen' );
+
+			// Dequeue WooCommerce scripts
+			wp_dequeue_script('wc-cart-fragments');
+			wp_dequeue_script('woocommerce');
+			wp_dequeue_script('wc-add-to-cart');
+
+			wp_deregister_script( 'js-cookie' );
+			wp_dequeue_script( 'js-cookie' );
+
         }
 
-        // https://github.com/woocommerce/woocommerce/issues/15762
-
-//        'photoswipe' // assets/css/photoswipe/photoswipe.css
-//        'photoswipe-default-skin' // assets/css/photoswipe/default-skin/default-skin.css // 'photoswipe'
-//        'select2' // assets/css/select2.css
-//        'woocommerce_prettyPhoto_css' // deprecated. // assets/css/prettyPhoto.css
-//
-//        'flexslider' // assets/js/flexslider/jquery.flexslider.js // 'jquery'
-//        'js-cookie' // assets/js/js-cookie/js.cookie.js
-//        'jquery-blockui' // assets/js/jquery-blockui/jquery.blockUI.js // 'jquery'
-//        'jquery-cookie' // deprecated. // assets/js/jquery-cookie/jquery.cookie.js // 'jquery'
-//        'jquery-payment' // assets/js/jquery-payment/jquery.payment.js // 'jquery'
-//        'photoswipe' // assets/js/photoswipe/photoswipe.js
-//        'photoswipe-ui-default' // assets/js/photoswipe/photoswipe-ui-default.js // 'photoswipe'
-//        'prettyPhoto' // deprecated. // assets/js/prettyPhoto/jquery.prettyPhoto.js // 'jquery'
-//        'prettyPhoto-init' // deprecated. // assets/js/prettyPhoto/jquery.prettyPhoto.init.js // 'jquery', 'prettyPhoto'
-//        'select2' // assets/js/select2/select2.full.js // 'jquery'
-//        'wc-address-i18n' // assets/js/frontend/address-i18n.js // 'jquery'
-//        'wc-add-payment-method' // assets/js/frontend/add-payment-method.js // 'jquery', 'woocommerce'
-//        'wc-cart' // assets/js/frontend/cart.js // 'jquery', 'wc-country-select', 'wc-address-i18n'
-//        'wc-cart-fragments' // assets/js/frontend/cart-fragments.js' // 'jquery', 'js-cookie'
-//        'wc-checkout' // assets/js/frontend/checkout.js' // 'jquery', 'woocommerce', 'wc-country-select', 'wc-address-i18n'
-//        'wc-country-select' // assets/js/frontend/country-select.js' // 'jquery'
-//        'wc-credit-card-form' // assets/js/frontend/credit-card-form.js // 'jquery', 'jquery-payment'
-//        'wc-add-to-cart' // assets/js/frontend/add-to-cart.js // 'jquery'
-//        'wc-add-to-cart-variation' // assets/js/frontend/add-to-cart-variation.js // 'jquery', 'wp-util'
-//        'wc-geolocation' // assets/js/frontend/geolocation.js // 'jquery'
-//        'wc-lost-password' // assets/js/frontend/lost-password.js // 'jquery', 'woocommerce'
-//        'wc-password-strength-meter' // assets/js/frontend/password-strength-meter.js // 'jquery', 'password-strength-meter'
-//        'wc-single-product' // assets/js/frontend/single-product.js // 'jquery'
-//        'woocommerce' // assets/js/frontend/woocommerce.js // 'jquery', 'jquery-blockui', 'js-cookie'
-//        'zoom' // assets/js/zoom/jquery.zoom.js // 'jquery'
     }
 
     /**
@@ -880,8 +825,7 @@ class WooCommerce extends Base\Runner
 	public function content_product_class( $classes ) {
 		global $woocommerce_loop;
 
-		if( ! is_woocommerce() ||
-			! isset( $woocommerce_loop['name'] ) ) {
+		if( ! isset( $woocommerce_loop['name'] ) ) {
 			return $classes;
 		}
 
