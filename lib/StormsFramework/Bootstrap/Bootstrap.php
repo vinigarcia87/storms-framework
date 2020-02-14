@@ -305,15 +305,4 @@ class Bootstrap extends Base\Runner
 
 	}
 
-	/**
-	 * Tell WordPress to use searchform.php from the template-parts/ directory
-	 *
-	 * @return string
-	 */
-	public static function get_search_form() {
-		$form = '';
-		locate_template( '/template-parts/searchform.php', true, false );
-		return $form;
-	}
-
 }

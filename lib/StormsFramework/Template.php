@@ -258,25 +258,7 @@ class Template extends Base\Runner
 	 * @return string
 	 */
 	private function get_layout_for_default() {
-
-		if( is_product() ) {
-			$layout = get_option( 'product_layout', '1c' );
-
-		} elseif( is_shop() || is_product_category() || is_product_tag() ) {
-			$layout = get_option( 'shop_layout', '2c-l' );
-
-		} elseif( is_page() ) {
-			$layout = get_option( 'page_layout', '1c' );
-
-		} elseif( is_single() ) {
-			$layout = get_option( 'single_layout', '1c' );
-
-		} else {
-			$layout = is_rtl() ? '2c-r' : '2c-l';
-
-		}
-
-		return $layout;
+		return Template::get_theme_layout();
 	}
 
 	/**
@@ -298,6 +280,9 @@ class Template extends Base\Runner
 
 			}elseif( is_shop() || is_product_category() || is_product_tag() ) {
 				$layout = get_option( 'shop_layout', '2c-l' );
+
+			} elseif( is_404() ) {
+				$layout = get_option( 'page_layout', '1c' );
 
 			} elseif( is_page() ) {
 				$layout = get_option( 'page_layout', '1c' );

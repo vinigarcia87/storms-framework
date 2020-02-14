@@ -148,6 +148,38 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Tell WordPress to use searchform.php from the template-parts/ directory
+	 *
+	 * @return string
+	 */
+	public static function get_search_form() {
+		$form = '';
+		locate_template( '/template-parts/searchform.php', true, false );
+		return $form;
+	}
+
+	/**
+	 * Display product search form.
+	 *
+	 * Will first attempt to locate the product-searchform.php file in either the child or.
+	 * the parent, then load it. If it doesn't exist, then the default search form.
+	 * will be displayed.
+	 *
+	 * @param bool $echo (default: true).
+	 * @return string
+	 */
+	public static function get_product_search_form( $echo = true ) {
+
+		$form = get_product_search_form(false);
+
+		if ( ! $echo ) {
+			return $form;
+		}
+
+		echo $form; // WPCS: XSS ok.
+	}
+
+	/**
 	 * Get a card with the avatar and the email of the logged in user
 	 */
 	public static function get_user_info_card( $user_id = '' ) {

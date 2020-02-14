@@ -236,8 +236,6 @@ class WooCommerce extends Base\Runner
 				( !$action || ( $action && !in_array( $action, array( 'logout', 'lostpassword', 'rp', 'resetpass' ) ) ) )
 			) {
 
-				Helper::debug( is_user_logged_in() );
-
 				// Load the 'myaccount' page url
 				$login_page = wc_get_page_permalink( 'myaccount' );
 
