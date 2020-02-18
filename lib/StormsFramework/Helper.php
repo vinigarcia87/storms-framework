@@ -148,14 +148,22 @@ class Helper extends Base\Manager
 	}
 
 	/**
-	 * Tell WordPress to use searchform.php from the template-parts/ directory
+	 * Display search form.
 	 *
+	 * Will first attempt to locate the searchform.php file in either the child or
+	 * the parent, then load it. If it doesn't exist, then the default search form
+	 * will be displayed
+	 *
+	 * @type bool   $echo       Whether to echo or return the form. Default true.
 	 * @return string
 	 */
-	public static function get_search_form() {
-		$form = '';
-		locate_template( '/template-parts/searchform.php', true, false );
-		return $form;
+	public static function get_search_form( $echo = true ) {
+
+		$searchform = get_search_form( array( 'echo' => false ) );
+		if( ! $echo ) {
+			return $searchform;
+		}
+		echo $searchform;
 	}
 
 	/**
@@ -170,7 +178,7 @@ class Helper extends Base\Manager
 	 */
 	public static function get_product_search_form( $echo = true ) {
 
-		$form = get_product_search_form(false);
+		$form = get_product_search_form( array( 'echo' => false ));
 
 		if ( ! $echo ) {
 			return $form;
@@ -229,20 +237,6 @@ class Helper extends Base\Manager
 	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!
 	 * ======================================================================================= */
-
-	/**
-	 * Display Product Search
-	 * @uses  is_woocommerce_activated() check if WooCommerce is activated
-	 * @return void
-	 */
-	public static function storms_product_search() {
-		if ( Helper::is_woocommerce_activated() ) { ?>
-			<div class="site-search">
-				<?php the_widget( 'WC_Widget_Product_Search', 'title=' ); ?>
-			</div>
-			<?php
-		}
-	}
 
 	/**
 	 * Returns true if a blog has more than 1 category.

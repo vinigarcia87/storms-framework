@@ -38,7 +38,6 @@ class Bootstrap extends Base\Runner
         }
 
         $this->loader
-            ->add_filter( 'get_search_form', 'get_search_form' )
 			->add_filter( 'the_password_form', 'password_form' );
 
 		$this->loader

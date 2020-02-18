@@ -7,20 +7,21 @@ namespace Composer\Autoload;
 class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
 {
     public static $prefixLengthsPsr4 = array (
-        'S' =>
+        'S' => 
         array (
             'StormsFramework\\' => 16,
         ),
     );
 
     public static $prefixDirsPsr4 = array (
-        'StormsFramework\\' =>
+        'StormsFramework\\' => 
         array (
             0 => __DIR__ . '/../..' . '/StormsFramework',
         ),
     );
 
     public static $classMap = array (
+        'StormsFramework\\Assets' => __DIR__ . '/../..' . '/StormsFramework/Assets.php',
         'StormsFramework\\BackEnd' => __DIR__ . '/../..' . '/StormsFramework/BackEnd.php',
         'StormsFramework\\Base\\Loader' => __DIR__ . '/../..' . '/StormsFramework/Base/Loader.php',
         'StormsFramework\\Base\\Manager' => __DIR__ . '/../..' . '/StormsFramework/Base/Manager.php',
@@ -29,14 +30,13 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         'StormsFramework\\Bootstrap\\WP_Bootstrap_Commentwalker' => __DIR__ . '/../..' . '/StormsFramework/Bootstrap/WP_Bootstrap_Commentwalker.php',
         'StormsFramework\\Bootstrap\\WP_Bootstrap_Navwalker' => __DIR__ . '/../..' . '/StormsFramework/Bootstrap/WP_Bootstrap_Navwalker.php',
         'StormsFramework\\Bootstrap\\WP_Bootstrap_Pagination' => __DIR__ . '/../..' . '/StormsFramework/Bootstrap/WP_Bootstrap_Pagination.php',
+        'StormsFramework\\BrandCustomization' => __DIR__ . '/../..' . '/StormsFramework/BrandCustomization.php',
         'StormsFramework\\Configuration' => __DIR__ . '/../..' . '/StormsFramework/Configuration.php',
         'StormsFramework\\FrontEnd' => __DIR__ . '/../..' . '/StormsFramework/FrontEnd.php',
         'StormsFramework\\Helper' => __DIR__ . '/../..' . '/StormsFramework/Helper.php',
-        'StormsFramework\\Layout' => __DIR__ . '/../..',
         'StormsFramework\\Template' => __DIR__ . '/../..' . '/StormsFramework/Template.php',
         'StormsFramework\\Widget\\Dashboard\\BrandInfo' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/BrandInfo.php',
         'StormsFramework\\Widget\\Dashboard\\SystemErrors' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/SystemErrors.php',
-        'StormsFramework\\WooCommerce\\Functions' => __DIR__ . '/../..' . '/StormsFramework/WooCommerce/Functions.php',
         'StormsFramework\\WooCommerce\\WooCommerce' => __DIR__ . '/../..' . '/StormsFramework/WooCommerce/WooCommerce.php',
     );
 

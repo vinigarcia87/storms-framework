@@ -498,6 +498,21 @@ class FrontEnd extends Base\Runner
 
 		}
 
+		// Header Menu Right Sidebar
+		if( get_option( 'add_header_menu_right_sidebar', 'yes' ) ) {
+
+			register_sidebar(array(
+				'name' => __( 'Header Menu Right Sidebar', 'storms' ),
+				'id' => 'header-menu-sidebar-right',
+				'description' => __( 'Add widgets here to appear in your header region.', 'storms' ),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			));
+
+		}
+
 		// Main Sidebar
 		if( get_option( 'add_main_sidebar', 'yes' ) ) {
 

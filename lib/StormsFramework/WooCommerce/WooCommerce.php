@@ -167,6 +167,15 @@ class WooCommerce extends Base\Runner
 			return false;
 		}
 
+		// Remove CSS and/or JS for Select2 used by WooCommerce, see https://gist.github.com/Willem-Siebe/c6d798ccba249d5bf080.
+		if( 'no' === get_option( 'manage_woocommerce_selectWoo_scripts', 'no' ) ) {
+			wp_dequeue_style('selectWoo');
+			wp_deregister_style('selectWoo');
+
+			wp_dequeue_script('selectWoo');
+			wp_deregister_script('selectWoo');
+		}
+
         // Dequeue scripts and styles
 		if ( ! is_front_page() && ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) ) {
 

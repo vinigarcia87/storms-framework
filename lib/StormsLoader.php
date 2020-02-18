@@ -82,6 +82,9 @@ function storms_load_extensions() {
 			add_theme_support( 'woocommerce' );
 
 			(new WooCommerce\WooCommerce)->run();
+
+			// Registering WooCommerce Mini Cart Widget
+			require_once __DIR__ . '/StormsFramework/WooCommerce/Storms_WC_Cart_Mini.php';
 		}
 	}
 }
