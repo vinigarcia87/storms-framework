@@ -83,7 +83,6 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		// Get total of items on cart
 		$cart_contents_count = $woocommerce->cart->get_cart_contents_count();
 
-\StormsFramework\Helper::debug($atts['show_products_list']);
 		if( $atts['show_products_list'] == 'yes' ) {
 			$atts['extra_classes'] = 'storms-cart-contents ' . $atts['extra_classes'];
 		} else {

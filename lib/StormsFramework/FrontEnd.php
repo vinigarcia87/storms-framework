@@ -35,6 +35,8 @@ class FrontEnd extends Base\Runner
 
 		remove_action( 'wp_head', 'rel_canonical' );
 
+		$this->remove_oembed();
+
 		// Links and tags cleanup
 		$this->loader
 			->add_filter( 'document_title_separator', 'title_separator' )
@@ -213,6 +215,28 @@ class FrontEnd extends Base\Runner
 	 */
 	public function remove_the_generator() {
 		return false; // __return_false
+	}
+
+	/**
+	 * Remove Wordpress oembed
+	 * @see https://www.isitwp.com/remove-everything-oembed/
+	 */
+	public function remove_oembed() {
+
+		//Remove the REST API endpoint.
+		remove_action('rest_api_init', 'wp_oembed_register_route');
+
+		// Turn off oEmbed auto discovery.
+		add_filter( 'embed_oembed_discover', '__return_false' );
+
+		//Don't filter oEmbed results.
+		remove_filter('oembed_dataparse', 'wp_filter_oembed_result', 10);
+
+		//Remove oEmbed discovery links.
+		remove_action('wp_head', 'wp_oembed_add_discovery_links');
+
+		//Remove oEmbed JavaScript from the front-end and back-end.
+		remove_action('wp_head', 'wp_oembed_add_host_js');
 	}
 
 	//</editor-fold>
