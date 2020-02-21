@@ -111,8 +111,8 @@ class WooCommerce extends Base\Runner
 		$this->loader
 			->add_action( 'init', 'prevent_wp_login' )
 			->add_action( 'template_redirect', 'force_login_registration_page_on_checkout' )
-			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10, 2 )
-			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10, 2 )
+			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10 )
+			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10 )
 			->add_filter( 'body_class', 'set_intern_login_body_class' )
 			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
 
@@ -284,7 +284,7 @@ class WooCommerce extends Base\Runner
 	 * @param object $user
 	 * @return string
 	 */
-	public function user_redirect_on_login_registration( $redirect, $user ) {
+	public function user_redirect_on_login_registration( $redirect ) {
 
 		// In case of internal login dialog, we want to redirect back to the login page to allow default wp behaviour
 		$is_intern_login = isset( $_GET['interim-login'] ) && 1 == $_GET['interim-login'];
