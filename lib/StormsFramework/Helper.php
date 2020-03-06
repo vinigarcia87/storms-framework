@@ -98,10 +98,13 @@ class Helper extends Base\Manager
 	 */
 	public static function get_asset_url( $file = null ) {
 
+		// Stylesheet directory path for current theme
 		if ( file_exists( get_stylesheet_directory() . '/assets' . $file ) ) {
 			return esc_url( get_stylesheet_directory_uri() . '/assets' . $file );
+			// Current theme directory
 		} else if ( file_exists( get_template_directory() . '/assets' . $file ) ) {
 			return esc_url( get_template_directory_uri() . '/assets' . $file );
+			// Storms Framework plugin directory
 		} else if( file_exists( plugin_dir_path( STORMS_FRAMEWORK_PATH ) . 'assets' . $file ) ) {
             return esc_url( plugin_dir_url( STORMS_FRAMEWORK_PATH ) . 'assets' . $file );
         } else {
