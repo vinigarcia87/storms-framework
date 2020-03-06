@@ -543,30 +543,44 @@ class WooCommerce extends Base\Runner
 	 */
 	public function bootstrap_form_field_radio( $field, $key, $args, $value ) {
 
-		if ( $args['required'] ) {
+		/*if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';
 			$required = ' <abbr class="required" title="' . esc_attr__( 'required', 'storms'  ) . '">*</abbr>';
 		} else {
 			$required = '';
-		}
+		}*/
 
 		// Custom attribute handling
 		$custom_attributes = array();
 
+		$external_div_class = '';
 		if ( ! empty( $args['custom_attributes'] ) && is_array( $args['custom_attributes'] ) ) {
 			foreach ( $args['custom_attributes'] as $attribute => $attribute_value ) {
-				$custom_attributes[] = esc_attr( $attribute ) . '="' . esc_attr( $attribute_value ) . '"';
+				if( $attribute == 'external_div_class' ) {
+					$external_div_class = esc_attr( $attribute_value );
+				} else {
+					$custom_attributes[] = esc_attr($attribute) . '="' . esc_attr($attribute_value) . '"';
+				}
 			}
 		}
 
 		$field = '';
 
 		if ( ! empty( $args['options'] ) ) {
-			$field .= '<div class="radio' . esc_attr( implode( ' ', $args['class'] ) ) .'" ' . implode( ' ', $custom_attributes ) . '>';
+			$field = '<div class="' . $external_div_class . '">';
 			foreach ( $args['options'] as $option_key => $option_text ) {
-				$field .= '	<label class="radio-inline">';
-				$field .= '<input type="radio" class="input-radio ' . esc_attr( implode( ' ', $args['input_class'] ) ) .'" value="' . esc_attr( $option_key ) . '" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '_' . esc_attr( $option_key ) . '"' . checked( $value, $option_key, false ) . ' />' . $option_text;
-				$field .= '	</label>';
+				$name = esc_attr($key);
+				$id = esc_attr($args['id']) . '_' . esc_attr($option_key);
+				$value = esc_attr($option_key);
+				$checked = checked($value, $option_key, false);
+				$custom_attr = implode( ' ', $custom_attributes );
+				$div_class = esc_attr(implode(' ', $args['class']));
+				$input_class = esc_attr(implode(' ', $args['input_class']));
+
+				$field .= '	<div class="form-check ' . $div_class . '" ' . $custom_attr . '>';
+				$field .= '		<input class="form-check-input ' . $input_class . '" type="radio" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $checked . '>';
+				$field .= '		<label class="form-check-label" for="' . $id . '">' . $option_text . '</label>';
+				$field .= '	</div>';
 			}
 			$field .= '</div>';
 		}
