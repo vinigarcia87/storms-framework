@@ -45,7 +45,22 @@ class Storms_WC_Cart_Mini extends WC_Widget
 			)
 		);
 
+		add_action( 'wp_enqueue_scripts', array( $this, 'frontend_scripts' ) );
+
 		parent::__construct();
+	}
+
+	public function frontend_scripts() {
+		wp_enqueue_script('storms-wc-cart-mini-script',
+			\StormsFramework\Helper::get_asset_url( '/js/storms-wc-mini-cart' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.js' ),
+			array( 'jquery' ), STORMS_FRAMEWORK_VERSION, true );
+
+		// Add WordPress data to a Javascript file
+		wp_localize_script( 'storms-wc-cart-mini-script', 'storms_vars', [
+			'ajax_url' => admin_url( 'admin-ajax.php' ),
+			'wc_ajax_url' => WC_AJAX::get_endpoint( "%%endpoint%%" ),
+			'debug_mode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
+		] );
 	}
 
 	/**
