@@ -1,11 +1,11 @@
 /**
  * Open/close the wc cart mini products list - and keep it opened unless you click outside the element
  */
-/* global storms_vars */
+/* global storms_wc_mini_cart_vars */
 jQuery( function( $ ) {
 
-	// storms_vars is required to continue, ensure the object exists
-	if ( typeof storms_vars === 'undefined' ) {
+	// storms_wc_mini_cart_vars is required to continue, ensure the object exists
+	if ( typeof storms_wc_mini_cart_vars === 'undefined' ) {
 		return false;
 	}
 
@@ -58,7 +58,7 @@ jQuery( function( $ ) {
 
 		// Modificamos a funçao original do WC para controlar melhor o 'block' na tela
 		// @see wp-content/plugins/woocommerce/assets/js/frontend/add-to-cart.js:71
-		$.post( storms_vars.wc_ajax_url.toString().replace( '%%endpoint%%', 'remove_from_cart' ), { cart_item_key : item_key }, function( response ) {
+		$.post( storms_wc_mini_cart_vars.wc_ajax_url.toString().replace( '%%endpoint%%', 'remove_from_cart' ), { cart_item_key : item_key }, function( response ) {
 			if ( ! response || ! response.fragments ) {
 				window.location = $el.attr( 'href' );
 				return;

@@ -56,7 +56,7 @@ class Storms_WC_Cart_Mini extends WC_Widget
 			array( 'jquery' ), STORMS_FRAMEWORK_VERSION, true );
 
 		// Add WordPress data to a Javascript file
-		wp_localize_script( 'storms-wc-cart-mini-script', 'storms_vars', [
+		wp_localize_script( 'storms-wc-cart-mini-script', 'storms_wc_mini_cart_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
 			'wc_ajax_url' => WC_AJAX::get_endpoint( "%%endpoint%%" ),
 			'debug_mode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
