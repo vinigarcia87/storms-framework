@@ -3,15 +3,15 @@
 Storms Framework    | Descriptions
 ------------------: | :------------------
 **Theme:**          | [Storms Framework](http://storms.com.br)
-**Description:**    | This framework was built to help developers to customize and optimize their themes. With Bootstrap 3 and a nice support to WooCommerce, this can be the plugin you need.
-**Version:**        | 3.0.0
+**Description:**    | This framework was built to help developers to customize and optimize their themes. Offers support to Bootstrap 4 and WooCommerce.
+**Version:**        | 4.0.0
 **Author:**         | [Storms Websolutions Team](http://storms.com.br)
 **License:**        | [GPLv2 - GNU General Public License v2 or later](http://www.gnu.org/licenses/gpl-2.0.html)
 
 ## Product License
 
 ```
-© Copyright 2012-2019, Storms Websolutions | Storms Framework v3.0 - All rights reserved.
+© Copyright 2012-2019, Storms Websolutions | Storms Framework v4.0 - All rights reserved.
 The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and others, not including the PHP files is licensed with MIT or by the license specified inside the file.
 ```
 
@@ -21,21 +21,25 @@ The PHP code is licensed with GPLv2. All the CSS, SCSS, JS, images files and oth
 * Cross-browser compatibility
 * SEO Optimization
 * Internationalization & localization
-* Child Theme Ready
-* Build with Grunt, using SASS
+* Build with Gulp, using SASS
 * Admin area and login page fully customized with your brand
-* [Bootstrap 3](http://getbootstrap.com/) integration
-* [Font Awesome](https://fortawesome.github.io/Font-Awesome/) icons
+* [Bootstrap 4](http://getbootstrap.com/) integration
 * [WooCommerce](http://www.woothemes.com/woocommerce/) support with fully bootstraped templates
 * [EditorConfig](http://editorconfig.org/) ready
 
 ## Plugin Manual
 
-* [BackEnd customization](/wiki/STORMS_FRAMEWORK_BACKEND_CLASS.md)
-* [Bootstrap adaptation](/wiki/STORMS_FRAMEWORK_BOOTSTRAP-BOOTSTRAP_CLASS.md)
-* [FrontEnd enhancements](/wiki/STORMS_FRAMEWORK_FRONTEND_CLASS.md)
-* [Layout customization](/wiki/STORMS_FRAMEWORK_FRONT-LAYOUT_CLASS.md)
-* [WooCommerce support and customization](/wiki/STORMS_FRAMEWORK_WOOCOMMERCE-WOOCOMMERCE_CLASS.md)
+This plugin was built to offer some default customization for any WordPress website. Each feature is described on the following pages:
+
+* [General configuration](/_documentation/Configuration_Class.md)
+* [BackEnd customization](/_documentation/BackEnd_Class.md)
+* [Brand customization for WordPress](/_documentation/BrandCustomization_Class.md)
+* [FrontEnd enhancements](/_documentation/FrontEnd_Class.md)
+* [Assets controlling](/_documentation/Assets_Class.md)
+* [Theme templates](/_documentation/Template_Class.md)
+* [Bootstrap adaptation](/_documentation/Bootstrap_Class.md)
+* [WooCommerce support and customization](/_documentation/WooCommerce_Class.md)
+* [Helper with many useful functions](/_documentation/Helper_Class.md)
 
 ## WordPress Users Manual
 

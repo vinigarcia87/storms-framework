@@ -1,8 +1,8 @@
 {
-	"name": "vinigarcia87/StormsFramework3",
+	"name": "vinigarcia87/storms-framework",
 	"description": "An Wordpress framework to make your themes safer and cleaner",
 	"keywords": ["storms","framework","wordpress"],
-	"homepage": "http://github.com/vinigarcia87/StormsFramework3",
+	"homepage": "http://github.com/vinigarcia87/storms-framework",
 	"type": "library",
 	"license": "GPLv2",
 	"authors": [
@@ -13,8 +13,7 @@
 	}
 	],
 	"require": {
-		"php": ">=5.5.0",
-		"firephp/firephp-core": "^0.4.0"
+		"php": ">=7.0.0"
 	},
 	
 	"autoload": {
