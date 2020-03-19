@@ -278,7 +278,15 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+
+			// Other widgets
+			'wpgenie_dashboard_products_news' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 		);
+
+		// ual_dashboard_widget -> show only if admin
 
 		foreach ( $remove_defaults_widgets as $widget_id => $options ) {
 			remove_meta_box($widget_id, $options['page'], $options['context']);
