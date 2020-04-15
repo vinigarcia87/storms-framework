@@ -87,9 +87,12 @@ class WooCommerce extends Base\Runner
 			->add_action( 'widgets_init', 'register_widgets_area' );
 
 		$this->loader
+			// @see plugins/woocommerce/includes/wc-template-functions.php - woocommerce_form_field
 			->add_filter( 'woocommerce_form_field_args', 'bootstrap_form_field_args', 10, 3 )
 			->add_filter( 'woocommerce_form_field_checkbox', 'bootstrap_form_field_checkbox', 10, 4 )
 			->add_filter( 'woocommerce_form_field_radio', 'bootstrap_form_field_radio', 10, 4 )
+
+			// Remove conflicting classes from form fields
 			->add_filter( 'woocommerce_form_field_country', 'clean_checkout_fields_class_attribute_values', 20, 4 )
 			->add_filter( 'woocommerce_form_field_state', 'clean_checkout_fields_class_attribute_values', 20, 4 )
 			->add_filter( 'woocommerce_form_field_textarea', 'clean_checkout_fields_class_attribute_values', 20, 4 )
@@ -543,12 +546,16 @@ class WooCommerce extends Base\Runner
 	 */
 	public function bootstrap_form_field_radio( $field, $key, $args, $value ) {
 
-		/*if ( $args['required'] ) {
+		if ( $args['required'] ) {
 			$args['class'][] = 'validate-required';
-			$required = ' <abbr class="required" title="' . esc_attr__( 'required', 'storms'  ) . '">*</abbr>';
+			$required        = '&nbsp;<abbr class="required" title="' . esc_attr__( 'required', 'woocommerce' ) . '">*</abbr>';
 		} else {
-			$required = '';
-		}*/
+			$required = '&nbsp;<span class="optional">(' . esc_html__( 'optional', 'woocommerce' ) . ')</span>';
+		}
+
+		if ( is_null( $value ) ) {
+			$value = $args['default'];
+		}
 
 		// Custom attribute handling
 		$custom_attributes = array();
@@ -567,22 +574,48 @@ class WooCommerce extends Base\Runner
 		$field = '';
 
 		if ( ! empty( $args['options'] ) ) {
-			$field = '<div class="' . $external_div_class . '">';
-			foreach ( $args['options'] as $option_key => $option_text ) {
-				$name = esc_attr($key);
-				$id = esc_attr($args['id']) . '_' . esc_attr($option_key);
-				$value = esc_attr($option_key);
-				$checked = checked($value, $option_key, false);
-				$custom_attr = implode( ' ', $custom_attributes );
-				$div_class = esc_attr(implode(' ', $args['class']));
-				$input_class = esc_attr(implode(' ', $args['input_class']));
+			$sort            = $args['priority'] ? $args['priority'] : '';
+			$field_container = '<div class="form-row form-group ' . $external_div_class . '" id="%1$s" data-priority="' . esc_attr( $sort ) . '">%2$s</div>';
 
-				$field .= '	<div class="form-check ' . $div_class . '" ' . $custom_attr . '>';
+			$label_id        = $args['id'];
+			$label_id .= '_' . current( array_keys( $args['options'] ) );
+
+			$name = esc_attr( $key );
+			$custom_attr = implode( ' ', $custom_attributes );
+			$input_class = esc_attr( implode( ' ', $args['input_class'] ) );
+
+			// Default to form-check, you can use also form-check-inline
+			$div_class = esc_attr( implode( ' ', $args['class'] ) );
+			if( ! in_array( array( 'form-check', 'form-check-inline' ), $args['class'] ) ) {
+				$div_class = 'form-check ' . $div_class;
+			}
+
+			foreach ( $args['options'] as $option_key => $option_text ) {
+				$id = esc_attr( $args['id'] ) . '_' . esc_attr( $option_key );
+				$checked = checked( $value, $option_key, false );
+
+				$field .= '	<div class="' . $div_class . '" ' . $custom_attr . '>';
 				$field .= '		<input class="form-check-input ' . $input_class . '" type="radio" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $checked . '>';
 				$field .= '		<label class="form-check-label" for="' . $id . '">' . $option_text . '</label>';
 				$field .= '	</div>';
 			}
-			$field .= '</div>';
+		}
+
+		if ( ! empty( $field ) ) {
+			$field_html = '';
+
+			if ( $args['label'] && 'checkbox' !== $args['type'] ) {
+				$field_html .= '<label for="' . esc_attr( $label_id ) . '" class="col-form-label ' . esc_attr( implode( ' ', $args['label_class'] ) ) . '">' . $args['label'] . $required . '</label>';
+			}
+
+			$field_html .= $field;
+
+			if ( $args['description'] ) {
+				$field_html .= '<span class="description" id="' . esc_attr( $args['id'] ) . '-description" aria-hidden="true">' . wp_kses_post( $args['description'] ) . '</span>';
+			}
+
+			$container_id    = esc_attr( $args['id'] ) . '_field';
+			$field           = sprintf( $field_container, $container_id, $field_html );
 		}
 
 		return $field;
@@ -602,6 +635,7 @@ class WooCommerce extends Base\Runner
 		if( is_checkout() ) {
 			// remove "form-row"
 			$field = str_replace( array( '<p class="form-row ' ), array( '<p class="' ), $field );
+			$field = str_replace( array( '<div class="form-row ' ), array( '<div class="' ), $field );
 		}
 		return $field;
 	}
