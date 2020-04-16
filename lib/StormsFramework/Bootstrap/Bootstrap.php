@@ -30,11 +30,11 @@ class Bootstrap extends Base\Runner
         // Add CSS class to images on posts and pages
         if( get_option( 'add_extra_classes_to_img', true ) ) {
             $this->loader
-                ->add_filter('the_content', 'responsive_images', 10)
-                ->add_filter('post_thumbnail_html', 'responsive_images', 10)
-                ->add_filter('image_send_to_editor', 'responsive_images', 10)
-				->add_action('woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 2)
-				->add_filter('wp_get_attachment_image_attributes','add_class_post_thumbnail', 10);
+                ->add_filter( 'the_content', 'responsive_images', 10 )
+                ->add_filter( 'post_thumbnail_html', 'responsive_images', 10 )
+                ->add_filter( 'image_send_to_editor', 'responsive_images', 10 )
+				->add_action( 'woocommerce_single_product_image_thumbnail_html', 'responsive_images', 10, 2 )
+				->add_filter( 'wp_get_attachment_image_attributes','add_class_post_thumbnail', 10 );
         }
 
         $this->loader

@@ -69,6 +69,10 @@ class FrontEnd extends Base\Runner
             ->add_filter( 'the_title', 'menu_title_markup', 10, 2 );
 
 		$this->loader
+			->add_filter( 'the_content', 'content_add_rel_noopener', 10 );
+			//->add_filter( 'the_content', 'content_remove_wrapping_p', 10 );
+
+		$this->loader
 			->add_action( 'init', 'register_menus' )
 			->add_action( 'widgets_init', 'register_widgets_area' );
     }
@@ -478,6 +482,96 @@ class FrontEnd extends Base\Runner
         }
         return $title;
     }
+
+	//</editor-fold>
+
+	//<editor-fold desc="Parsing a post content">
+
+	/**
+	 * Adding rel=noopener
+	 * Fixing security issue regarding links opening in a new tab.
+	 * @see https://css-tricks.com/leverage-wordpress-functions-reduce-html-posts/#article-header-id-14
+	 * @see https://mathiasbynens.github.io/rel-noopener/
+	 */
+	public function content_add_rel_noopener( $content ) {
+		if( $content !== '' ) {
+			$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+			$document = new \DOMDocument();
+			libxml_use_internal_errors( true );
+			$document->loadHTML( utf8_decode( $content ) );
+
+			/** @var /DOMNodeList $nodes */
+			$nodes = $document->getElementsByTagName( 'a' );
+			foreach( $nodes as $node ) {
+				$href = $node->getAttribute( 'href' );
+				// We add rel="noopener noreferrer" only on links to external websites
+				if( strpos( $href, get_site_url() ) === false ) {
+					$node->setAttribute( 'rel', 'noopener noreferrer' );
+				}
+			}
+
+			$html = $document->saveHTML();
+			return $html;
+		}
+		return $content;
+	}
+
+	/**
+	 * Removing wrapping paragraphs
+	 * Remove the wrapping paragraph from images and other elements, such as picture, video, audio, and iframe.
+	 * @TODO Test this before using! Not sure if needed or working
+	 * @see https://css-tricks.com/leverage-wordpress-functions-reduce-html-posts/#article-header-id-13
+	 * @see https://www.jitbit.com/alexblog/256-targetblank---the-most-underestimated-vulnerability-ever/
+	 */
+	public function content_remove_wrapping_p( $content ) {
+		if( $content !== '' ) {
+			$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
+			$document = new \DOMDocument();
+			libxml_use_internal_errors( true );
+			$document->loadHTML( utf8_decode( $content ) );
+
+			// Iterating a nodelist while manipulating it is not a good thing, because
+			// the nodelist dynamically updates itself. Get all things that must be
+			// unwrapped and put them in an array.
+			$tagNames = array( 'img', 'picture', 'video', 'audio', 'iframe' );
+			$mediaElements = array();
+			foreach( $tagNames as $tagName ) {
+				$nodes = $document->getElementsByTagName( $tagName );
+				foreach ( $nodes as $node ) {
+					$mediaElements[] = $node;
+				}
+			}
+
+			foreach( $mediaElements as $element ) {
+				// Get a reference to the parent paragraph that may have been added by
+				// WordPress. It might be the direct parent node or the grandparent
+				// (LOL) in case of links
+				$paragraph = null;
+
+				// Get a reference to the image itself or to the link containing the
+				// image, so we can later remove the wrapping paragraph
+				$theElement = null;
+
+				if( $element->parentNode->nodeName == 'p' ) {
+					$paragraph = $element->parentNode;
+					$theElement = $element;
+				} else if( $element->parentNode->nodeName == 'a' &&
+					$element->parentNode->parentNode->nodeName == 'p' ) {
+					$paragraph = $element->parentNode->parentNode;
+					$theElement = $element->parentNode;
+				}
+
+				// Make sure the wrapping paragraph only contains this child
+				if( $paragraph && $paragraph->textContent == '' ) {
+					$paragraph->parentNode->replaceChild( $theElement, $paragraph );
+				}
+			}
+
+			$html = $document->saveHTML();
+			return $html;
+		}
+		return $content;
+	}
 
 	//</editor-fold>
 
