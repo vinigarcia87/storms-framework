@@ -548,8 +548,9 @@ class Template extends Base\Runner
 			}
 
 			/* Loop through each of the layouts and add it to the choices array with proper key/value pairs. */
-			foreach ( $layouts as $layout )
-				$layout_choices[$layout] = $this->get_layout_title( $layout['title'] );
+			foreach ( $layouts as $layout_key => $layout ) {
+				$layout_choices[$layout_key] = $this->get_layout_title( $layout_key );
+			}
 
 			/* Add the layout control. */
 			$wp_customize->add_control(
@@ -863,6 +864,14 @@ class Template extends Base\Runner
 	 */
 	public static function header_container() {
 		return apply_filters( 'storms_header_container_class', 'st-grid-container container' );
+	}
+
+	/**
+	 * Classes menu container size
+	 * @return string Classes name
+	 */
+	public static function menu_container() {
+		return apply_filters( 'storms_menu_container_class', 'st-grid-container container' );
 	}
 
 	/**

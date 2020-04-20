@@ -10,6 +10,7 @@ var project 		= 'storms-framework',         // Project name, used for build zip.
 
 // Load plugins
 var gulp          = require('gulp'),
+	pipeline 	  = require('readable-stream').pipeline,
 	debug         = require('gulp-debug'),
 	notify        = require('gulp-notify'),
 
@@ -92,19 +93,22 @@ gulp.task('load-assets', async function() {
  * Scripts
  * Look at /js/raw files and concatenate those files, send them to /js where we then minimize the concatenated file.
  */
-gulp.task('scripts', async function() {
-	gulp.src( [
-		'./js/src/**/*.js' // All our custom scripts
-	] )
-	//.pipe( debug() )
-		.pipe( gulp.dest( './js/' ) )
-		.pipe( sourcemaps.init() )
-		.pipe( rename({ suffix: '.min' } ) )
-		.pipe( uglify() )
-		.pipe( sourcemaps.write( './maps' ) )
-		.pipe( gulp.dest( './js/' ) )
-		.pipe( notify( { message: 'Scripts task complete', onLast: true } ) );
-});
+function scripts_source() {
+	return pipeline(
+		gulp.src( [
+			'./js/src/**/*.js' // All our custom scripts
+		] ),
+		//debug(),
+		gulp.dest( './js/' ),
+		sourcemaps.init(),
+		rename({ suffix: '.min' } ),
+		uglify(),
+		sourcemaps.write( './maps' ),
+		gulp.dest( './js/' ),
+		notify( { message: 'Source scripts task complete', onLast: true } )
+	);
+}
+gulp.task('scripts', gulp.parallel(scripts_source));
 
 /**
  * Images
@@ -149,6 +153,7 @@ gulp.task('default', gulp.series(['load-assets', 'styles', 'scripts', 'images'])
 
 // Watch Task
 gulp.task('watch', gulp.series(['styles', 'scripts', 'images'], function () {
-	gulp.watch('./sass/*.scss', ['styles']);
-	gulp.watch('./js/src/**/*.js', ['scripts']);
+	gulp.watch('./sass/*.scss', gulp.series('styles'));
+	gulp.watch('./js/src/**/*.js', gulp.series('scripts'));
+	gulp.watch('./img/raw/**/*.{png,jpg,gif,svg}', gulp.series('images'));
 }));

@@ -75,8 +75,9 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		global $woocommerce;
 
 		$atts = [
+			'wrap_widget'			=> ( ! empty( $instance['wrap_widget'] ) ) ? esc_attr( $instance['wrap_widget'] ) : 'yes',
 			'show_products_list'    => ( ! empty( $instance['show_products_list'] ) ) ? esc_attr( $instance['show_products_list'] ) : 'yes',
-			'extra_classes' => esc_attr( $instance['extra_classes'] ?? '' ),
+			'extra_classes' 		=> esc_attr( $instance['extra_classes'] ?? '' ),
 		];
 
 		// Make sure cart is loaded!
@@ -98,7 +99,7 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		// Get total of items on cart
 		$cart_contents_count = $woocommerce->cart->get_cart_contents_count();
 
-		if( $atts['show_products_list'] == 'yes' ) {
+		if( 'yes' === $atts['show_products_list'] ) {
 			$atts['extra_classes'] = 'storms-cart-contents ' . $atts['extra_classes'];
 		} else {
 			$atts['extra_classes'] = 'storms-cart-contents-no-list ' . $atts['extra_classes'];
@@ -109,10 +110,10 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		$html .= '    <a class="cart-link" href="' . wc_get_cart_url() . '" title="' . __( 'View your shopping cart', 'storms' ) . '" aria-haspopup="true" aria-expanded="false">';
 		//$html .= '        <i class="fa fa-shopping-cart" aria-hidden="true"></i> ';
 		$html .= '        <i class="fa st-ic-shop-cart" aria-hidden="true"></i> ';
-		$html .= '        <span class="cart-contents-count">' . esc_html( $cart_contents_count ) . '</span> / ';
+		$html .= '        <span class="cart-contents-count">' . esc_html( $cart_contents_count ) . '</span> ';
 		$html .= '        <span class="cart-contents-total">' . strip_tags( $cart_contents_total ) . '</span>';
 		$html .= '    </a>';
-		if( $atts['show_products_list'] == 'yes' ) {
+		if( 'yes' === $atts['show_products_list'] ) {
 
 			// @see https://generatewp.com/snippet/nkVvvJ6/
 			ob_start();
@@ -127,12 +128,51 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		}
 		$html .= '</div>';
 
-		$this->widget_start( $args, $instance );
-		echo $html;
-		$this->widget_end( $args );
+		if( 'yes' === $atts['wrap_widget'] ) {
+			$this->widget_start($args, $instance);
+			echo $html;
+			$this->widget_end( $args );
+		} else {
+			echo $html;
+		}
 	}
 
 }
+
+/**
+ * Minify html output
+ * @see https://stackoverflow.com/a/48123642/1003020
+ * @param $html
+ * @return string|string[]|null
+ */
+function storms_minify_html( $html ) {
+	$search = array(
+		'/(\n|^)(\x20+|\t)/',
+		'/(\n|^)\/\/(.*?)(\n|$)/',
+		'/\n/',
+		'/\<\!--.*?-->/',
+		'/(\x20+|\t)/', 	// Delete multispace (Without \n)
+		'/\>\s+\</', 		// strip whitespaces between tags
+		'/(\"|\')\s+\>/', 	// strip whitespaces between quotation ("') and end tags
+		'/=\s+(\"|\')/'); 	// strip whitespaces between = "'
+
+	$replace = array( "\n", "\n", " ", "", " ", "><", "$1>", "=$1" );
+
+	/*
+	$search = array(
+		'/\>[^\S ]+/s',     // strip whitespaces after tags, except space
+		'/[^\S ]+\</s',     // strip whitespaces before tags, except space
+		'/(\s)+/s',         // shorten multiple whitespace sequences
+		'/<!--(.|\s)*?-->/' // Remove HTML comments
+	);
+
+	$replace = array( '>', '<', '\\1', '' );
+	*/
+
+	$html = preg_replace( $search, $replace, $html );
+	return $html;
+}
+
 function storms_wc_cart_mini_ajax_fragments( $fragments )
 {
 	if ( ! defined('WOOCOMMERCE_CART') ) {
@@ -141,12 +181,12 @@ function storms_wc_cart_mini_ajax_fragments( $fragments )
 
 	// Select the html element to be replaced with the updated cart
 	ob_start();
-	the_widget( 'Storms_WC_Cart_Mini' );
-	$fragments['div.storms-cart-contents'] = ob_get_clean();
+	the_widget( 'Storms_WC_Cart_Mini', [ 'wrap_widget' => 'no' ] );
+	$fragments['div.storms-cart-contents'] = storms_minify_html( ob_get_clean() );
 
 	ob_start();
-	the_widget( 'Storms_WC_Cart_Mini', [ 'show_products_list' => 'no' ] );
-	$fragments['div.storms-cart-contents-no-list'] = ob_get_clean();
+	the_widget( 'Storms_WC_Cart_Mini', [  'wrap_widget' => 'no' , 'show_products_list' => 'no' ] );
+	$fragments['div.storms-cart-contents-no-list'] = storms_minify_html( ob_get_clean() );
 
 	return $fragments;
 }
