@@ -132,42 +132,67 @@ a[href*="developed-by"] .wp-menu-image {
 }
 
 #wpadminbar {
-  /* System Environment Alert */
-  .system-environment {
-    position: absolute;
-    width: 200px;
-    text-align: center;
-    margin: 0 auto;
-    left: 45%;
+ 	/* System Environment Alert */
+	.system-environment {
+		display: block;
 
-    font-weight: 900 !important;
-    color: #ffffff;
-    background-color: #084d84;
+		text-align: center;
+		font-weight: 900 !important;
+		color: #ffffff;
+		background-color: #084d84;
 
-    @-webkit-keyframes blink-bg {
-      0%, 49% { background-color: #ce0217; }
-      50%, 100% { background-color: #92000f; }
-    }
-    @-moz-keyframes blink-bg {
-      0%, 49% { background-color: #ce0217; }
-      50%, 100% { background-color: #92000f; }
-    }
-    @keyframes blink-bg {
-      0%, 49% { background-color: #ce0217; }
-      50%, 100% { background-color: #92000f; }
-    }
+		@-webkit-keyframes blink-bg {
+			0%, 49% { background-color: #ce0217; }
+			50%, 100% { background-color: #92000f; }
+		}
+		@-moz-keyframes blink-bg {
+			0%, 49% { background-color: #ce0217; }
+			50%, 100% { background-color: #92000f; }
+		}
+		@keyframes blink-bg {
+			0%, 49% { background-color: #ce0217; }
+			50%, 100% { background-color: #92000f; }
+		}
 
-    &.testing {
-      color: #ffffff;
-      background-color: #ded619;
-    }
+		&.testing {
+			color: #ffffff;
+			background-color: #ded619;
+		}
 
-    &.production {
-      color: #ffffff;
-      background-color: #92000f;
-      -webkit-animation: blink-bg 2.5s infinite;
-      -moz-animation:    blink-bg 2.5s infinite;
-      animation:         blink-bg 2.5s infinite;
-    }
-  }
+		&.production {
+			color: #ffffff;
+			background-color: #92000f;
+			-webkit-animation: blink-bg 2.5s infinite;
+			-moz-animation:    blink-bg 2.5s infinite;
+			animation:         blink-bg 2.5s infinite;
+		}
+
+		// Extra small devices (portrait phones, less than 576px)
+		// No media query since this is the default in Bootstrap
+		width: 3ch;
+		margin-left: 10px;
+		padding: 0 15px;
+		& > a {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: clip;
+		}
+		// Small devices (landscape phones, 576px and up)
+		@media (min-width: 576px) {
+			width: auto;
+			margin-left: 20px;
+			padding: 0 20px;
+			& > a {
+				white-space: initial;
+				overflow: initial;
+				text-overflow: initial;
+			}
+		}
+	}
+
+	/* Bootstrap 4 Media Brekpoints */
+	.bootstrap-media-breakpoints {
+		// We don't have bootstrap inside WP Admin area
+		display: none !important;
+	}
 }

@@ -43,6 +43,7 @@ class BackEnd extends Base\Runner
 
 			// Admin bar modifications
 			$this->loader
+				->add_action( 'admin_bar_menu', 'toolbar_bootstrap_media_breakpoints_alert', 9900 )
                 ->add_action( 'admin_bar_menu', 'toolbar_system_environment_alert', 9999 )
 				->add_action( 'wp_before_admin_bar_render', 'remove_adminbar_itens' );
 
@@ -156,10 +157,9 @@ class BackEnd extends Base\Runner
     /**
      * Add an alert to admin bar to make clear what environment the user is conected to
 	 * It uses SF_ENV constant to check the current environment
-     * @param $wp_admin_bar
+     * @param \WP_Admin_Bar $wp_admin_bar
      */
     function toolbar_system_environment_alert( $wp_admin_bar ) {
-		/** @var \WP_Admin_Bar $wp_admin_bar */
 		global $wp_admin_bar;
 
         switch( SF_ENV ) {
@@ -184,11 +184,42 @@ class BackEnd extends Base\Runner
             'id'    => 'system_environment',
             'title' => $env,
             'href'  => '#',
-            'meta'  => array( 'class' => 'system-environment ' . $env_class )
+            'meta'  => array(
+            	'class' => 'system-environment ' . $env_class,
+				//'html'  => $media
+			)
         );
 
         $wp_admin_bar->add_node( $args );
     }
+
+	/**
+	 * Add an alert to admin bar to show what media breakpoint is currently being displayed
+	 * @param \WP_Admin_Bar $wp_admin_bar
+	 */
+    function toolbar_bootstrap_media_breakpoints_alert( $wp_admin_bar ) {
+		global $wp_admin_bar;
+
+		$media = '';
+		$media .= '<div id="detect-breakpoints">';
+		$media .= '		<div class="d-block d-sm-none">XS</div>';
+		$media .= '		<div class="d-none d-sm-block d-md-none">SM</div>';
+		$media .= '		<div class="d-none d-md-block d-lg-none">MD</div>';
+		$media .= '		<div class="d-none d-lg-block d-xl-none">LG</div>';
+		$media .= '		<div class="d-none d-xl-block">XL</div>';
+		$media .= '</div>';
+
+		$args = array(
+			'id'    => 'bootstrap_media_breakpoints',
+			'title' => $media,
+			'meta'  => array(
+				'class' => 'bootstrap-media-breakpoints',
+				//'html'  => $media
+			)
+		);
+
+		$wp_admin_bar->add_node( $args );
+	}
 
 	/**
 	 * Remove menu items from admin bar

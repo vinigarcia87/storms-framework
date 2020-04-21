@@ -22,12 +22,9 @@
 #wpadminbar {
     /* System Environment Alert */
     .system-environment {
-        position: absolute;
-        width: 200px;
-        text-align: center;
-        margin: 0 auto;
-        left: 45%;
+		display: block;
 
+		text-align: center;
         font-weight: 900 !important;
         color: #ffffff;
         background-color: #084d84;
@@ -57,5 +54,48 @@
             -moz-animation:    blink-bg 2.5s infinite;
             animation:         blink-bg 2.5s infinite;
         }
+
+		// Extra small devices (portrait phones, less than 576px)
+		// No media query since this is the default in Bootstrap
+		width: 3ch;
+		margin-left: 10px;
+		padding: 0 15px;
+		& > a {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: clip;
+		}
+		// Small devices (landscape phones, 576px and up)
+		@media (min-width: 576px) {
+			width: auto;
+			margin-left: 20px;
+			padding: 0 20px;
+			& > a {
+				white-space: initial;
+				overflow: initial;
+				text-overflow: initial;
+			}
+		}
     }
+
+	/* Bootstrap 4 Media Brekpoints */
+	.bootstrap-media-breakpoints {
+		display: block !important;
+
+		#detect-breakpoints div {
+			font-size: 20px;
+			font-weight: 900;
+			padding: 0 5px;
+			vertical-align: middle;
+
+			// The wp adminbar change height from 46px to 32px on 782px
+			@media screen and (min-width: 783px) {
+				&.d-md-block,
+				&.d-lg-block,
+				&.d-xl-block {
+					font-size: 13px;
+				}
+			}
+		}
+	}
 }
