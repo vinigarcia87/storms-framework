@@ -632,11 +632,9 @@ class WooCommerce extends Base\Runner
 	 * @return mixed
 	 */
 	public function clean_checkout_fields_class_attribute_values( $field, $key, $args, $value ) {
-		if( is_checkout() ) {
-			// remove "form-row"
-			$field = str_replace( array( '<p class="form-row ' ), array( '<p class="' ), $field );
-			$field = str_replace( array( '<div class="form-row ' ), array( '<div class="' ), $field );
-		}
+		// Remove "form-row"
+		$field = str_replace( array( '<p class="form-row ' ), array( '<p class="' ), $field );
+		$field = str_replace( array( '<div class="form-row ' ), array( '<div class="' ), $field );
 		return $field;
 	}
 
