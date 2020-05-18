@@ -20,6 +20,13 @@
 @import "../../../../../wp-admin/css/colors/_admin";
 
 #wpadminbar {
+
+	#wp-admin-bar-site-name {
+		#wp-admin-bar-customize > .ab-item:before {
+			display: none;
+		}
+	}
+
     /* System Environment Alert */
     .system-environment {
 		display: block;

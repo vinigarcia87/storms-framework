@@ -593,6 +593,10 @@ div#wp-responsive-toggle a:before {
   
 }
 
+#wpadminbar #wp-admin-bar-site-name #wp-admin-bar-customize > .ab-item:before {
+  display: none;
+}
+
 #wpadminbar .system-environment {
   display: block;
   text-align: center;

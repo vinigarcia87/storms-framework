@@ -74,7 +74,9 @@ class FrontEnd extends Base\Runner
 
 		$this->loader
 			->add_action( 'init', 'register_menus' )
-			->add_action( 'widgets_init', 'register_widgets_area' );
+			->add_action( 'widgets_init', 'register_widgets_area_header', 1 )
+			->add_action( 'widgets_init', 'register_widgets_area_main', 10 )
+			->add_action( 'widgets_init', 'register_widgets_area_footer', 20 );
     }
 
 	//<editor-fold desc="FrontEnd optimizations">
@@ -593,10 +595,8 @@ class FrontEnd extends Base\Runner
 	/**
 	 * Register widgets area
 	 * Header Sidebar widget area
-	 * Main Sidebar widget area
-	 * Footer Sidebar widget area
 	 */
-	public function register_widgets_area() {
+	public function register_widgets_area_header() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
 		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
@@ -646,6 +646,17 @@ class FrontEnd extends Base\Runner
 
 		}
 
+	}
+
+	/**
+	 * Register widgets area
+	 * Main Sidebar widget area
+	 */
+	public function register_widgets_area_main() {
+
+		// Define what title tag will be use on widgets - h1, h2, h3, ...
+		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
+
 		// Main Sidebar
 		if( get_option( 'add_main_sidebar', 'yes' ) ) {
 
@@ -660,6 +671,17 @@ class FrontEnd extends Base\Runner
 			));
 
 		}
+
+	}
+
+	/**
+	 * Register widgets area
+	 * Footer Sidebar widget area
+	 */
+	public function register_widgets_area_footer() {
+
+		// Define what title tag will be use on widgets - h1, h2, h3, ...
+		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
 
 		// Footer Sidebars
 		if( get_option( 'add_footer_sidebar', 'yes' ) ) {
