@@ -80,6 +80,11 @@ class Storms_WC_Cart_Mini extends WC_Widget
 			'extra_classes' 		=> esc_attr( $instance['extra_classes'] ?? '' ),
 		];
 
+		// We don't show the mini cart when the customer is on checkout
+		if( is_checkout() ) {
+			return;
+		}
+
 		// Make sure cart is loaded!
 		// @see https://wordpress.org/support/topic/activation-breaks-customise?replies=10#post-7908988
 		if ( empty( $woocommerce->cart ) ) {

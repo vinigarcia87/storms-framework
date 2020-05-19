@@ -76,7 +76,8 @@ class FrontEnd extends Base\Runner
 			->add_action( 'init', 'register_menus' )
 			->add_action( 'widgets_init', 'register_widgets_area_header', 1 )
 			->add_action( 'widgets_init', 'register_widgets_area_main', 10 )
-			->add_action( 'widgets_init', 'register_widgets_area_footer', 20 );
+			->add_action( 'widgets_init', 'register_widgets_area_footer_1', 15 )
+			->add_action( 'widgets_init', 'register_widgets_area_footer_2', 20 );
     }
 
 	//<editor-fold desc="FrontEnd optimizations">
@@ -676,9 +677,80 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * Register widgets area
-	 * Footer Sidebar widget area
+	 * Footer 1 Sidebar widget area
 	 */
-	public function register_widgets_area_footer() {
+	public function register_widgets_area_footer_1() {
+
+		// Define what title tag will be use on widgets - h1, h2, h3, ...
+		$widget_title_tag = get_option('widget_title_tag', 'h3');
+
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Top', 'storms'),
+				'id' => 'footer-1-sidebar-top',
+				'description' => __('Add widgets here to appear in your footer 1 top side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Left', 'storms'),
+				'id' => 'footer-1-sidebar-left',
+				'description' => __('Add widgets here to appear in your footer 1 left side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Middle 1', 'storms'),
+				'id' => 'footer-1-sidebar-middle-1',
+				'description' => __('Add widgets here to appear in your footer 1 middle 1 side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Middle 2', 'storms'),
+				'id' => 'footer-1-sidebar-middle-2',
+				'description' => __('Add widgets here to appear in your footer 1 middle 2 side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Right', 'storms'),
+				'id' => 'footer-1-sidebar-right',
+				'description' => __('Add widgets here to appear in your footer 1 right side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+		register_sidebar(array(
+				'name' => __('Footer 1 Sidebar Bottom', 'storms'),
+				'id' => 'footer-1-sidebar-bottom',
+				'description' => __('Add widgets here to appear in your footer 1 bottom side.', 'storms'),
+				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+				'after_widget' => '</aside>',
+				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			)
+		);
+	}
+
+	/**
+	 * Register widgets area
+	 * Footer 2 Sidebar widget area
+	 */
+	public function register_widgets_area_footer_2() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
 		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
