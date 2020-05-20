@@ -4,45 +4,11 @@
  * Storms Framework (http://storms.com.br/)
  *
  * @author    Vinicius Garcia | vinicius.garcia@storms.com.br
- * @copyright (c) Copyright 2012-2019, Storms Websolutions
+ * @copyright (c) Copyright 2012-2020, Storms Websolutions
  * @license   Licensed under MIT
  * @package   Storms
  * @version   4.0.0
  *
- * TinyMCE Editor Style
+ * Editor Style
  */
 
-// ==========================================================================
-// Style used to style the TinyMCE editor
-// ==========================================================================
-
-// Bootstrap 3
-@import "bootstrap/bootstrap-variables";
-@import "bootstrap/bootstrap-import";
-
-// Font-Awesome
-@import "fontawesome/fontawesome-variables";
-@import "fontawesome/fontawesome-import";
-
-// ==========================================================================
-// Custom Editor Styles
-// ==========================================================================
-
-body#tinymce.wp-editor:not(.layout-1c),
-body.wp-autoresize:not(.layout-1c) {
-	background-color: #ffffff;
-	font-family: $font-family-base;
-	padding:  10px !important;
-	max-width: 868px  !important; // 848px of the content + 10px of the left padding + 10px of the right padding
-}
-
-body#tinymce.wp-editor.layout-1c,
-body.wp-autoresize.layout-1c,
-body#tinymce.wp-editor.layout-1c,
-body.wp-autoresize.layout-1c {
-	background-color: #ffffff;
-	font-family: $font-family-base;
-	padding:  10px !important;
-	width: 1160px !important;
-	max-width: 1160px !important; // 1140px of the content + 10px of the left padding + 10px of the right padding
-}
