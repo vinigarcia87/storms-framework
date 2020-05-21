@@ -40,7 +40,15 @@ class BrandInfo extends Base\Manager
 		$brand_email = 'storms@storms.com.br';
 		$brand_src = Helper::get_asset_url( '/img/storms/logo/brandinfo-logo.png' );
 		$brand_manual = Helper::get_option( 'storms_system_manual', plugins_url( 'wp-manual/EasyWPGuide_WP4.8.pdf', STORMS_FRAMEWORK_PATH ) ); // @TODO Set default system manual link
-        $env = '';
+
+		$wp_version = get_bloginfo('version');
+
+		$wc_version = '-';
+		if ( defined( 'WC_VERSION' ) ) {
+			$wc_version = WC_VERSION;
+		}
+
+		$env = '';
         switch( SF_ENV ) {
             case 'PRD':
                 $env = '<strong style="color: #92000f;">' . strtoupper( __( 'production', 'storms' ) ) . '</strong>';
@@ -58,7 +66,10 @@ class BrandInfo extends Base\Manager
 
 		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . ' ' .
                             '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' .
-			                __( 'System environment', 'storms' ) . ': ' . $env . '</p>';
+			                __( 'System environment', 'storms' ) . ': ' . $env . '<br><br>' .
+							__( 'PHP version', 'storms' ) . ': ' . phpversion() . '<br>' .
+							__( 'Wordpress version', 'storms' ) . ': ' . $wp_version . '<br>' .
+							__( 'WooCommerce version', 'storms' ) . ': ' . $wc_version . '</p>';
 
 		$content = '<div style="display: table-cell;vertical-align: middle;padding-right: 10px;">' .
 				   '	<img style="height: 70px;" alt="' . $brand_name . '" src="' . $brand_src . '">' .
