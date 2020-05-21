@@ -167,6 +167,14 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Query any plugin activation
+	 * @return boolean
+	 */
+	public static function is_plugin_activated( $plugin_name ) {
+		return in_array( $plugin_name, apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+	}
+
+	/**
 	 * Display search form.
 	 *
 	 * Will first attempt to locate the searchform.php file in either the child or
