@@ -18,6 +18,7 @@
 namespace StormsFramework\Bootstrap;
 
 use StormsFramework\Base;
+use StormsFramework\Helper;
 
 class Bootstrap extends Base\Runner
 {
@@ -28,7 +29,7 @@ class Bootstrap extends Base\Runner
 	public function define_hooks() {
 
         // Add CSS class to images on posts and pages
-        if( get_option( 'add_extra_classes_to_img', true ) ) {
+        if( Helper::get_option( 'storms_add_extra_classes_to_img', true ) ) {
             $this->loader
                 ->add_filter( 'the_content', 'responsive_images', 10 )
                 ->add_filter( 'post_thumbnail_html', 'responsive_images', 10 )

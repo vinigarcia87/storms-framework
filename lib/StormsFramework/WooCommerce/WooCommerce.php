@@ -131,7 +131,7 @@ class WooCommerce extends Base\Runner
 
 		// Enabling product gallery features - zoom, swipe, lightbox
 		// https://github.com/woocommerce/woocommerce/wiki/Enabling-product-gallery-features-(zoom,-swipe,-lightbox)-in-3.0.0
-		if( 'yes' == get_option( 'use_wc_product_gallery', 'yes' ) ) {
+		if( 'yes' == Helper::get_option( 'storms_use_wc_product_gallery', 'yes' ) ) {
 			add_theme_support( 'wc-product-gallery-zoom' );
 			add_theme_support( 'wc-product-gallery-lightbox' );
 			add_theme_support( 'wc-product-gallery-slider' );
@@ -151,7 +151,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function remove_woocommerce_style( $enqueue_styles )
     {
-        if( 'yes' === get_option( 'use_wc_styles', 'no' ) ) {
+        if( 'yes' === Helper::get_option( 'storms_use_wc_styles', 'no' ) ) {
             return $enqueue_styles;
         } else {
             return array();
@@ -166,12 +166,12 @@ class WooCommerce extends Base\Runner
     public function manage_woocommerce_scripts() {
 
 		// Check if we should apply this modifications
-		if( 'no' === get_option( 'manage_woocommerce_scripts', 'yes' ) ) {
+		if( 'no' === Helper::get_option( 'storms_manage_woocommerce_scripts', 'yes' ) ) {
 			return false;
 		}
 
 		// Remove CSS and/or JS for Select2 used by WooCommerce, see https://gist.github.com/Willem-Siebe/c6d798ccba249d5bf080.
-		if( 'no' === get_option( 'manage_woocommerce_selectWoo_scripts', 'no' ) ) {
+		if( 'no' === Helper::get_option( 'storms_manage_woocommerce_selectWoo_scripts', 'no' ) ) {
 			wp_dequeue_style('selectWoo');
 			wp_deregister_style('selectWoo');
 
@@ -204,7 +204,7 @@ class WooCommerce extends Base\Runner
      */
     public function shop_page_title( $page_title ) {
 
-        return get_option( 'shop_page_title', $page_title );
+        return Helper::get_option( 'storms_shop_page_title', $page_title );
     }
 
     /**
@@ -212,15 +212,15 @@ class WooCommerce extends Base\Runner
      */
     function remove_product_tabs( $tabs ) {
 
-        if( 'yes' == get_option( 'remove_tab_description', 'no' ) ) {
+        if( 'yes' == Helper::get_option( 'storms_remove_tab_description', 'no' ) ) {
             unset( $tabs['description'] );
         }
 
-        if( 'yes' == get_option( 'remove_tab_reviews', 'no' ) ) {
+        if( 'yes' == Helper::get_option( 'storms_remove_tab_reviews', 'no' ) ) {
             unset( $tabs['reviews'] );
         }
 
-        if( 'yes' == get_option( 'remove_tab_additional_information', 'no' ) ) {
+        if( 'yes' == Helper::get_option( 'storms_remove_tab_additional_information', 'no' ) ) {
             unset( $tabs['additional_information'] );
         }
 
@@ -239,7 +239,7 @@ class WooCommerce extends Base\Runner
 		// WP tracks the current page - global the variable to access it
 		global $pagenow;
 
-		if( 'yes' == get_option( 'prevent_wp_login', 'yes' ) ) {
+		if( 'yes' == Helper::get_option( 'storms_prevent_wp_login', 'yes' ) ) {
 
 			// Check if a $_GET['action'] is set, and if so, load it into $action variable
 			$action = ( isset( $_GET['action'] ) ) ? $_GET['action'] : '';
@@ -272,7 +272,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
-		if( !is_user_logged_in() && is_checkout() && 'yes' == get_option( 'force_login_registration_page_on_checkout', 'yes' ) ) {
+		if( !is_user_logged_in() && is_checkout() && 'yes' == Helper::get_option( 'storms_force_login_registration_page_on_checkout', 'yes' ) ) {
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
 			wp_redirect( $login_page );
@@ -746,7 +746,7 @@ class WooCommerce extends Base\Runner
 	 * Customization for bootstrap breadcrumbs
 	 */
 	public function woocommerce_breadcrumb() {
-        if( 'yes' == get_option( 'add_wc_breadcrumb_before_main_content', 'yes' ) ) {
+        if( 'yes' == Helper::get_option( 'storms_add_wc_breadcrumb_before_main_content', 'yes' ) ) {
             echo '<div class="st-grid-row row">';
             echo '<div class="col-12">';
             woocommerce_breadcrumb();
@@ -759,7 +759,7 @@ class WooCommerce extends Base\Runner
 	 * Customization for bootstrap breadcrumbs
 	 */
 	public function woocommerce_breadcrumb_args( $args = array() ) {
-		if ( get_option( 'customize_woo_breadcrumb' , true ) ) {
+		if ( Helper::get_option( 'storms_customize_woo_breadcrumb' , true ) ) {
 			return array(
 				'delimiter' => '',
 				'wrap_before' => '<ol class="breadcrumb woocommerce-breadcrumb" ' . (is_single() ? 'itemprop="breadcrumb"' : '') . '>',
@@ -794,7 +794,7 @@ class WooCommerce extends Base\Runner
 			$default = 12;
 		}
 
-		return get_option( 'products_per_page', $default );
+		return Helper::get_option( 'storms_products_per_page', $default );
 	}
 
 	/**
@@ -804,7 +804,7 @@ class WooCommerce extends Base\Runner
 	public function shop_loop_number_of_columns() {
 		global $woocommerce_loop;
 
-		$columns = get_option( 'shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+		$columns = Helper::get_option( 'storms_shop_loop_number_of_columns', 4 ); // Default is 4 products per row
 
 		// If the number of columns is already setted (like, on a shortcode's parameter), we preserve it here
 		if( isset( $woocommerce_loop['columns'] ) ) {
@@ -819,7 +819,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function register_widgets_area() {
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = get_option('widget_title_tag', 'h3');
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
 
 		register_sidebar( array(
 			'name'          => __( 'Shop Sidebar', 'storms' ),

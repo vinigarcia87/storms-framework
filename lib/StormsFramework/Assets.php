@@ -89,10 +89,10 @@ class Assets extends Base\Runner
 	public function jquery_scripts() {
 		// http://jquery.com/
 		wp_deregister_script( 'jquery' ); // Remove o jquery padrao do wordpress
-		if( get_option( 'load_jquery', 'yes' ) ) {
+		if( Helper::get_option( 'storms_load_jquery', 'yes' ) ) {
 
 			// Decide se carrega jquery externo ou interno
-			if( !is_admin() && 'yes' == get_option( 'load_external_jquery', 'no' ) ) {
+			if( !is_admin() && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
 				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, $this->jquery_version, false);
 			}
 			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
@@ -109,7 +109,7 @@ class Assets extends Base\Runner
 	public function jquery_local_fallback( $src, $handle = null ) {
 		static $run_next = false;
 
-		if( $run_next && 'yes' == get_option( 'load_external_jquery', 'no' ) ) {
+		if( $run_next && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
 			// Defaults to match the version loaded via CDN
 			$local_jquery = Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' );
 			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
@@ -142,7 +142,7 @@ class Assets extends Base\Runner
 	 */
 	public function frontend_scripts() {
 		// Load Thread comments WordPress script
-		if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
+		if ( is_singular() && comments_open() && Helper::get_option( 'storms_thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );
 		}
 	}

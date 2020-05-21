@@ -67,7 +67,7 @@ class BackEnd extends Base\Runner
 	 * The framework does not include a editor-style! The theme must create his own
 	 */
 	public function set_editor_style() {
-		if( get_option( 'set_editor_style', 'yes' ) ) {
+		if( Helper::get_option( 'storms_set_editor_style', 'yes' ) ) {
 			$styles = array(
 				Helper::get_asset_url('/css/editor-style.min.css'),
 			);
@@ -120,7 +120,7 @@ class BackEnd extends Base\Runner
 	public function remove_links_from_menu() {
 		global $userdata;
 
-		$restricted_users_email = get_option( 'restricted_users_email', '/@storms.com.br$/' );
+		$restricted_users_email = Helper::get_option( 'storms_restricted_users_email', '/@storms.com.br$/' );
 
 		// If logged in user don't match $restricted_users_email email, we disable sensitive menu itens
 		if( !preg_match( $restricted_users_email, $userdata->user_email ) ) {
@@ -380,7 +380,7 @@ class BackEnd extends Base\Runner
 		if ( class_exists( 'StormsFramework\\Widget\\Dashboard\\SystemErrors' ) ) {
 			global $userdata;
 
-			$restricted_users_email = get_option( 'restricted_users_email', '/@storms.com.br$/' );
+			$restricted_users_email = Helper::get_option( 'storms_restricted_users_email', '/@storms.com.br$/' );
 
 			// If logged in user's email match $restricted_users_email, we show the errors log
 			if( preg_match( $restricted_users_email, $userdata->user_email ) ) {

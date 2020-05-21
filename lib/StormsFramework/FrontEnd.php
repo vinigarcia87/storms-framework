@@ -105,7 +105,7 @@ class FrontEnd extends Base\Runner
 		 */
 		global $content_width;
 		if ( !isset( $content_width ) ) {
-			$content_width = get_option( 'content_width', 1140 );
+			$content_width = Helper::get_option( 'storms_content_width', 1140 );
 		}
 
 		/**
@@ -129,7 +129,7 @@ class FrontEnd extends Base\Runner
 		 * See: https://codex.wordpress.org/Function_Reference/add_theme_support#Post_Thumbnails
 		 */
 		add_theme_support( 'post-thumbnails' );
-		set_post_thumbnail_size( get_option( 'post_thumb_width' , 825 ), get_option( 'post_thumb_height' , 510 ), get_option( 'post_thumb_crop' , true ) );
+		set_post_thumbnail_size( Helper::get_option( 'storms_post_thumb_width' , 825 ), Helper::get_option( 'storms_post_thumb_height' , 510 ), 'yes' === Helper::get_option( 'storms_post_thumb_crop' , 'yes' ) );
 
 		/**
 		 * Support HTML5
@@ -254,7 +254,7 @@ class FrontEnd extends Base\Runner
 	 * Change the separator between title tag parts
 	 */
 	public function title_separator() {
-		return get_option( 'title_separator', '|' );
+		return Helper::get_option( 'storms_title_separator', '|' );
 	}
 
 	/**
@@ -363,7 +363,7 @@ class FrontEnd extends Base\Runner
 	    $src = esc_url( remove_query_arg( 'ver', $src ) );
 
 		// Apply a versioning number based on modification time of functions.php
-	    if( get_option( 'timestamp_assets', 'yes' ) ) {
+	    if( Helper::get_option( 'storms_timestamp_assets', 'yes' ) ) {
             $ver = filemtime( get_stylesheet_directory() . '/functions.php' );
             $src = esc_url( add_query_arg( [ 'ver' => $ver ], $src ) );
         }
@@ -403,9 +403,10 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * Remove Emoji's from Wordpress
+	 * @see https://kinsta.com/pt/base-de-conhecimento/desativar-os-emojis-no-wordpress/
 	 */
 	public function remove_emojis() {
-		if( get_option( 'remove_emoji', 'yes' ) ) {
+		if( Helper::get_option( 'storms_remove_emoji', 'yes' ) ) {
 			// Emoji's
 			remove_action( 'wp_head', 'print_emoji_detection_script', 7 );
 			remove_action( 'admin_print_scripts', 'print_emoji_detection_script' );
@@ -415,8 +416,25 @@ class FrontEnd extends Base\Runner
 			remove_filter( 'comment_text_rss', 'wp_staticize_emoji' );
 			remove_filter( 'wp_mail', 'wp_staticize_emoji_for_email' );
 
-			$this->loader->add_filter( 'tiny_mce_plugins', 'disable_emojis_tinymce' );
+			$this->loader->add_filter( 'wp_resource_hints', 'disable_emojis_remove_dns_prefetch', 10, 2 )
+						 ->add_filter( 'tiny_mce_plugins', 'disable_emojis_tinymce' );
 		}
+	}
+
+	/**
+	 * Remove emoji CDN hostname from DNS prefetching hints.
+	 *
+	 * @param array $urls URLs to print for resource hints.
+	 * @param string $relation_type The relation type the URLs are printed for.
+	 * @return array Difference betwen the two arrays.
+	 */
+	function disable_emojis_remove_dns_prefetch( $urls, $relation_type ) {
+		if ( 'dns-prefetch' == $relation_type ) {
+			// This filter is documented in wp-includes/formatting.php
+			$emoji_svg_url = apply_filters( 'emoji_svg_url', 'https://s.w.org/images/core/emoji/2/svg/' );
+			$urls = array_diff( $urls, array( $emoji_svg_url ) );
+		}
+		return $urls;
 	}
 
 	/**
@@ -428,6 +446,9 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * Remove injected CSS for recent comments widget
+	 *
+	 * @param array $plugins
+	 * @return array Difference betwen the two arrays
 	 */
 	public function remove_wp_widget_recent_comments_style() {
 		if ( has_filter( 'wp_head', 'wp_widget_recent_comments_style' ) ) {
@@ -586,7 +607,7 @@ class FrontEnd extends Base\Runner
 	 * @link http://codex.wordpress.org/Function_Reference/register_nav_menus
 	 */
 	public function register_menus() {
-		if( get_option( 'add_storms_menu', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_storms_menu', 'yes' ) ) {
 			register_nav_menus(array(
 				'main_menu' => __( 'Main Menu', 'storms' ),
 			));
@@ -600,10 +621,10 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_header() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
 
 		// Header Sidebar
-		if( get_option( 'add_header_sidebar', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_header_sidebar', 'yes' ) ) {
 
 			register_sidebar(array(
 				'name' => __( 'Header Sidebar', 'storms' ),
@@ -618,7 +639,7 @@ class FrontEnd extends Base\Runner
 		}
 
 		// Header Menu Right Sidebar
-		if( get_option( 'add_header_menu_right_sidebar', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_header_menu_right_sidebar', 'yes' ) ) {
 
 			register_sidebar(array(
 				'name' => __( 'Header Menu Right Sidebar', 'storms' ),
@@ -633,7 +654,7 @@ class FrontEnd extends Base\Runner
 		}
 
 		// Header Menu Right Sidebar
-		if( get_option( 'add_header_bottom_sidebar', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_header_bottom_sidebar', 'yes' ) ) {
 
 			register_sidebar(array(
 				'name' => __( 'Header Bottom Sidebar', 'storms' ),
@@ -656,10 +677,10 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_main() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
 
 		// Main Sidebar
-		if( get_option( 'add_main_sidebar', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_main_sidebar', 'yes' ) ) {
 
 			register_sidebar(array(
 				'name' => __( 'Main Sidebar', 'storms' ),
@@ -682,7 +703,7 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_footer_1() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = get_option('widget_title_tag', 'h3');
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
 
 		register_sidebar(array(
 				'name' => __('Footer 1 Sidebar Top', 'storms'),
@@ -753,12 +774,12 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_footer_2() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = get_option( 'widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
 
 		// Footer Sidebars
-		if( get_option( 'add_footer_sidebar', 'yes' ) ) {
+		if( Helper::get_option( 'storms_add_footer_sidebar', 'yes' ) ) {
 
-			$numFooterSidebars = get_option( 'number_of_footer_sidebars', 4 );
+			$numFooterSidebars = Helper::get_option( 'storms_number_of_footer_sidebars', 4 );
 			for ($i = 1; $i <= intval($numFooterSidebars); $i++) {
 				register_sidebar(array(
 						'name' => sprintf( __( 'Footer Sidebar %d', 'storms' ), $i ),

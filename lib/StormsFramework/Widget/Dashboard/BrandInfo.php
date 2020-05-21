@@ -39,7 +39,7 @@ class BrandInfo extends Base\Manager
 		$brand_name = 'Storms Websolutions';
 		$brand_email = 'storms@storms.com.br';
 		$brand_src = Helper::get_asset_url( '/img/storms/logo/brandinfo-logo.png' );
-		$brand_manual = get_option( 'storms_system_manual', plugins_url( 'wp-manual/EasyWPGuide_WP4.8.pdf', STORMS_FRAMEWORK_PATH ) ); // @TODO Set default system manual link
+		$brand_manual = Helper::get_option( 'storms_system_manual', plugins_url( 'wp-manual/EasyWPGuide_WP4.8.pdf', STORMS_FRAMEWORK_PATH ) ); // @TODO Set default system manual link
         $env = '';
         switch( SF_ENV ) {
             case 'PRD':

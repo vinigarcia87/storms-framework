@@ -276,19 +276,19 @@ class Template extends Base\Runner
 
 		if( 'default' === $layout ) {
 			if( is_product() ) {
-				$layout = get_option( 'product_layout', '1c' );
+				$layout = Helper::get_option( 'storms_product_layout', '1c' );
 
 			}elseif( is_shop() || is_product_category() || is_product_tag() ) {
-				$layout = get_option( 'shop_layout', '2c-l' );
+				$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
 
 			} elseif( is_404() ) {
-				$layout = get_option( 'page_layout', '1c' );
+				$layout = Helper::get_option( 'storms_page_layout', '1c' );
 
 			} elseif( is_page() ) {
-				$layout = get_option( 'page_layout', '1c' );
+				$layout = Helper::get_option( 'storms_page_layout', '1c' );
 
 			} elseif( is_single() ) {
-				$layout = get_option( 'single_layout', '1c' );
+				$layout = Helper::get_option( 'storms_single_layout', '1c' );
 
 			} else {
 				$layout = is_rtl() ? '2c-r' : '2c-l';
@@ -823,15 +823,15 @@ class Template extends Base\Runner
 		switch( $layout ) {
 			// 2 columns - main content on left
 			case '2c-l':
-				return get_option('main_2c_l_size', 'col-md-9') . ' order-1 main-layout-left';
+				return Helper::get_option( 'storms_main_2c_l_size', 'col-md-9' ) . ' order-1 main-layout-left';
 				break;
 			// 2 columns - main content on right
 			case '2c-r':
-				return get_option( 'main_2c_r_size', 'col-md-9' ) . ' order-2 main-layout-right';
+				return Helper::get_option( 'storms_main_2c_r_size', 'col-md-9' ) . ' order-2 main-layout-right';
 				break;
 			// 1 column
 			case '1c':
-				return get_option('main_1c_size', 'col-md-12') . ' main-layout-full';
+				return Helper::get_option( 'storms_main_1c_size', 'col-md-12' ) . ' main-layout-full';
 				break;
 		}
 	}
@@ -847,11 +847,11 @@ class Template extends Base\Runner
 		switch( $layout ) {
 			// 2 columns - main content on left, sidebar on right
 			case '2c-l':
-				return get_option( 'sidebar_2c_l_size', 'col-md-3' ) . '  order-2 sidebar-layout-right';
+				return Helper::get_option( 'storms_sidebar_2c_l_size', 'col-md-3' ) . '  order-2 sidebar-layout-right';
 				break;
 			// 2 columns - main content on right, sidebar on left
 			case '2c-r':
-				return get_option( 'sidebar_2c_r_size', 'col-md-3' ) . '  order-1 sidebar-layout-left';
+				return Helper::get_option( 'storms_sidebar_2c_r_size', 'col-md-3' ) . '  order-1 sidebar-layout-left';
 				break;
 		}
 	}

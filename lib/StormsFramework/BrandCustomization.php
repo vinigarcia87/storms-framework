@@ -78,8 +78,8 @@ class BrandCustomization extends Base\Runner
 	 * Meta tags added: author meta tag, copyright meta tag
 	 */
 	public function add_brand_meta_tags() {
-		$brand_name = get_option( 'meta_autor', 'Storms Websolutions' );
-		$copyright = get_option( 'meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
+		$brand_name = Helper::get_option( 'storms_meta_autor', 'Storms Websolutions' );
+		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
 
 		$meta_tags = '';
 		if ( !is_admin() ) {
@@ -95,7 +95,7 @@ class BrandCustomization extends Base\Runner
 	 */
 	public function set_default_favicon( $url, $size, $blog_id ) {
 		if( $url == '' ) {
-		    $icon = get_option( 'website_favicon', '/img/storms/icons/storms_favicon.png' );
+		    $icon = Helper::get_option( 'storms_website_favicon', '/img/storms/icons/storms_favicon.png' );
 			return Helper::get_asset_url( $icon );
 		}
 		return $url;
@@ -119,8 +119,8 @@ class BrandCustomization extends Base\Runner
 	 * Change dashboard and login footer text
 	 */
 	public function change_footer_text() {
-		$brand_name = get_option( 'meta_autor', 'Storms Websolutions' );
-		$copyright = get_option( 'meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
+		$brand_name = Helper::get_option( 'storms_meta_autor', 'Storms Websolutions' );
+		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
 
 		echo '<p id="footer">' . $copyright . ' </p>';
 	}
@@ -200,7 +200,7 @@ class BrandCustomization extends Base\Runner
 	 */
 	public function login_page_script() {
 		add_filter( 'login_footer', function() {
-			$doc_title = get_bloginfo( 'name' ) . ' ' . get_option( 'title_separator', '|' ) . ' ' .  __( 'Login', 'storms' );
+			$doc_title = get_bloginfo( 'name' ) . ' ' . Helper::get_option( 'storms_title_separator', '|' ) . ' ' .  __( 'Login', 'storms' );
 			$script = '
 				<script>
 					jQuery(document).ready(function( $ ) {

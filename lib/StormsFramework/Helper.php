@@ -30,6 +30,22 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * If the option we trying to get is not setted
+	 * in the DB, we initialize it if the default option
+	 *
+	 * @param $option
+	 * @param bool $default
+	 * @return mixed|void
+	 */
+	public static function get_option( $option, $default = false ) {
+		$value = get_option( $option );
+		if( empty( $value ) ) {
+			update_option( $option, $default );
+		}
+		return $value;
+	}
+
+	/**
 	 * Debug variables
      * @reminder (new \Exception())->getTraceAsString() to show call stack
      * @see https://stackoverflow.com/a/7039409/1003020
