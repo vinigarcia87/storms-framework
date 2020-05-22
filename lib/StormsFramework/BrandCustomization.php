@@ -186,11 +186,7 @@ class BrandCustomization extends Base\Runner
 		wp_enqueue_script( 'jquery' );
 
 		// Custom login styles
-		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-			wp_register_style('login-style', Helper::get_asset_url('/css/login.css'), STORMS_FRAMEWORK_VERSION);
-		} else {
-			wp_register_style('login-style', Helper::get_asset_url('/css/login.min.css'), STORMS_FRAMEWORK_VERSION);
-		}
+		wp_register_style('login-style', Helper::get_asset_url('/css/login' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.css'), STORMS_FRAMEWORK_VERSION);
 		wp_enqueue_style( 'login-style' );
 	}
 
