@@ -25,8 +25,8 @@ class Helper extends Base\Manager
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
 
-		add_action( 'edit_category', array( $this, 'category_transient_flusher' ) );
-		add_action( 'save_post', array( $this, 'category_transient_flusher' ) );
+		//add_action( 'edit_category', array( $this, 'category_transient_flusher' ) );
+		//add_action( 'save_post', array( $this, 'category_transient_flusher' ) );
 	}
 
 	/**

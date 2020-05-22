@@ -239,7 +239,7 @@ class WooCommerce extends Base\Runner
 		// WP tracks the current page - global the variable to access it
 		global $pagenow;
 
-		if( 'yes' == Helper::get_option( 'storms_prevent_wp_login', 'yes' ) ) {
+		if( 'yes' === Helper::get_option( 'storms_prevent_wp_login', 'yes' ) ) {
 
 			// Check if a $_GET['action'] is set, and if so, load it into $action variable
 			$action = ( isset( $_GET['action'] ) ) ? $_GET['action'] : '';
@@ -272,7 +272,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
-		if( !is_user_logged_in() && is_checkout() && 'yes' == Helper::get_option( 'storms_force_login_registration_page_on_checkout', 'yes' ) ) {
+		if( !is_user_logged_in() && is_checkout() && 'yes' === Helper::get_option( 'storms_force_login_registration_page_on_checkout', 'yes' ) ) {
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
 			wp_redirect( $login_page );

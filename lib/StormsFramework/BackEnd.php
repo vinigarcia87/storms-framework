@@ -38,6 +38,11 @@ class BackEnd extends Base\Runner
 				->add_action( 'admin_menu', 'remove_links_from_menu' )
 				->add_action( '_admin_menu', 'remove_appearance_editor' );
 
+			$this->loader
+				->add_filter( 'heartbeat_settings', 'optimize_heartbeat_settings' )
+				->add_action( 'init', 'disable_heartbeat_unless_post_edit_screen', 1 )
+				->add_action( 'init', 'stop_heartbeat', 1 );
+
 			$this->remove_admin_color_scheme_picker();
 			$this->disable_wp_update_for_non_admin();
 
@@ -112,6 +117,40 @@ class BackEnd extends Base\Runner
 	}
 
 	/**
+	 * Limit Heartbeat API in WordPress
+	 * @see https://wordpress.stackexchange.com/a/222021/54025
+	 *
+	 * @param $settings
+	 * @return mixed
+	 */
+	public function optimize_heartbeat_settings( $settings ) {
+		$settings['autostart'] = false;
+		$settings['interval'] = 60;
+		return $settings;
+	}
+
+	/**
+	 * Limit on what pages Heartbeat API will work in WordPress
+	 */
+	public function disable_heartbeat_unless_post_edit_screen() {
+		global $pagenow;
+
+		if ( $pagenow != 'post.php' && $pagenow != 'post-new.php' ) {
+			wp_deregister_script('heartbeat');
+		}
+	}
+
+	/**
+	 * Disable Heartbeat API in WordPress
+	 */
+	public function stop_heartbeat() {
+
+		if( 'yes' === Helper::get_option( 'stop_heartbeat', 'yes' ) ) {
+			wp_deregister_script('heartbeat');
+		}
+	}
+
+	/**
 	 * Remove sensitive menu itens from Worpress admin menu - for any admin user that is not the "super user"
 	 * TODO Does not remove anything right now, we should select some items to remove
 	 * Source: http://code.tutsplus.com/tutorials/customizing-your-wordpress-admin--wp-24941
@@ -121,6 +160,10 @@ class BackEnd extends Base\Runner
 		global $userdata;
 
 		$restricted_users_email = Helper::get_option( 'storms_restricted_users_email', '/@storms.com.br$/' );
+
+		if( empty( $restricted_users_email ) ) {
+			return;
+		}
 
 		// If logged in user don't match $restricted_users_email email, we disable sensitive menu itens
 		if( !preg_match( $restricted_users_email, $userdata->user_email ) ) {
@@ -381,6 +424,10 @@ class BackEnd extends Base\Runner
 			global $userdata;
 
 			$restricted_users_email = Helper::get_option( 'storms_restricted_users_email', '/@storms.com.br$/' );
+
+			if( empty( $restricted_users_email ) ) {
+				return;
+			}
 
 			// If logged in user's email match $restricted_users_email, we show the errors log
 			if( preg_match( $restricted_users_email, $userdata->user_email ) ) {
