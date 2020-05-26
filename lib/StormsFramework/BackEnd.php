@@ -135,8 +135,10 @@ class BackEnd extends Base\Runner
 	public function disable_heartbeat_unless_post_edit_screen() {
 		global $pagenow;
 
-		if ( $pagenow != 'post.php' && $pagenow != 'post-new.php' ) {
-			wp_deregister_script('heartbeat');
+		if( 'yes' === Helper::get_option( 'storms_disable_heartbeat_unless_post_edit_screen', 'yes' ) ) {
+			if ( $pagenow != 'post.php' && $pagenow != 'post-new.php' ) {
+				wp_deregister_script( 'heartbeat' );
+			}
 		}
 	}
 
@@ -145,7 +147,7 @@ class BackEnd extends Base\Runner
 	 */
 	public function stop_heartbeat() {
 
-		if( 'yes' === Helper::get_option( 'stop_heartbeat', 'yes' ) ) {
+		if( 'yes' === Helper::get_option( 'storms_stop_heartbeat', 'no' ) ) {
 			wp_deregister_script('heartbeat');
 		}
 	}
