@@ -38,7 +38,6 @@ class WooCommerce extends Base\Runner
             ->add_action( 'wp_enqueue_scripts', 'manage_woocommerce_scripts', 99 );
 
         $this->loader
-            ->add_filter( 'woocommerce_page_title', 'shop_page_title' )
             ->add_filter( 'woocommerce_product_tabs', 'remove_product_tabs', 98);
 
 		$this->loader
@@ -197,14 +196,6 @@ class WooCommerce extends Base\Runner
 
         }
 
-    }
-
-    /**
-     * Change the name of shop page
-     */
-    public function shop_page_title( $page_title ) {
-
-        return Helper::get_option( 'storms_shop_page_title', $page_title );
     }
 
     /**
