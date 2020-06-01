@@ -68,7 +68,7 @@ class WooCommerce extends Base\Runner
 			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_close', 99 )
 
 			->add_filter( 'woocommerce_breadcrumb_defaults', 'woocommerce_breadcrumb_args' )
-			->add_action( 'template_redirect', 'remove_sidebar' );
+			->add_action( 'init', 'remove_sidebar' );
 
 		/**
 		 * Filters
@@ -668,9 +668,9 @@ class WooCommerce extends Base\Runner
 
 		echo '</main>';
 
-		if( is_product() ) {
+		if( apply_filters( 'storms_show_product_sidebar', is_product() ) ) {
 			get_sidebar('product');
-		} else if( is_shop() || is_product_category() || is_product_tag() ) {
+		} else if( apply_filters( 'storms_show_shop_sidebar', is_shop() || is_product_category() || is_product_tag() ) ) {
 			get_sidebar('shop');
 		}
 
@@ -878,6 +878,7 @@ class WooCommerce extends Base\Runner
 		$is_cross_sells = false;
 		$is_up_sells = false;
 		$recent_products = false;
+		$sale_products = false;
 		switch ( $woocommerce_loop['name'] ) {
 			// Verificamos se este eh um loop de products
 			case '':
@@ -905,6 +906,10 @@ class WooCommerce extends Base\Runner
 				$recent_products = true;
 				break;
 
+			case 'sale_products':
+				$sale_products = true;
+				break;
+
 			default:
 				Helper::debug( 'content_product_class function found not listed wc loop name: ' . $woocommerce_loop['name'] );
 
@@ -912,7 +917,7 @@ class WooCommerce extends Base\Runner
 		$classes[] = $woocommerce_loop['name'];
 
 		// Returns true when on a products list
-		if( $is_products || $is_related || $is_cross_sells || $is_up_sells ||$recent_products ) {
+		if( $is_products || $is_related || $is_cross_sells || $is_up_sells || $recent_products || $sale_products ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
