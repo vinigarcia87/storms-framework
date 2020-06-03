@@ -136,9 +136,21 @@ class BackEnd extends Base\Runner
 		global $pagenow;
 
 		if( 'yes' === Helper::get_option( 'storms_disable_heartbeat_unless_post_edit_screen', 'yes' ) ) {
-			if ( $pagenow != 'post.php' && $pagenow != 'post-new.php' ) {
-				wp_deregister_script( 'heartbeat' );
+
+			// We need on post and post-new pages
+			$pages_that_need_heartbeat = array( 'post.php', 'post-new.php' );
+
+			// If we are on admin.php?page=wc-admin we also gonna need heartbeat
+			if ( isset( $_GET['page'] ) && $pagenow == 'admin.php' && $_GET['page'] == 'wc-admin' ) {
+				$pages_that_need_heartbeat[] = 'admin.php';
 			}
+
+			if ( ! in_array( $pagenow, $pages_that_need_heartbeat ) ) {
+
+				wp_deregister_script( 'heartbeat' );
+
+			}
+
 		}
 	}
 

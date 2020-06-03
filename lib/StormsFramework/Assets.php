@@ -75,7 +75,7 @@ class Assets extends Base\Runner
 	 * Styles that we remove are: contact-form-7, newsletter-subscription, newsletter_enqueue_style
 	 */
 	public function remove_unused_styles() {
-		wp_deregister_style( 'contact-form-7' );
+		//wp_deregister_style( 'contact-form-7' );
 		wp_deregister_style( 'newsletter-subscription' );
 		add_filter( 'newsletter_enqueue_style', '__return_false' );
 	}
@@ -128,7 +128,7 @@ class Assets extends Base\Runner
 	public function remove_unused_scripts() {
 		// We remove some know plugin's scripts, so you can add them only on the pages you need
 		wp_deregister_script( 'jquery-form' );
-		wp_deregister_script('contact-form-7');
+		//wp_deregister_script('contact-form-7');
 		wp_deregister_script( 'newsletter-subscription' );
 		wp_deregister_script( 'wp-embed' ); // https://codex.wordpress.org/Embeds
 	}
