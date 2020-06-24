@@ -277,10 +277,16 @@ class Template extends Base\Runner
 		if( 'default' === $layout ) {
 			if( is_front_page() ) {
 				$layout = Helper::get_option( 'storms_front_page_layout', '1c' );
+
 			}elseif( is_product() ) {
 				$layout = Helper::get_option( 'storms_product_layout', '1c' );
+
 			}elseif( is_account_page() ) {
 				$layout = Helper::get_option( 'storms_account_layout', '1c' );
+
+			}elseif( is_checkout() ) {
+				$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
+
 			}elseif( is_shop() || is_product_category() || is_product_tag() ) {
 				$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
 
