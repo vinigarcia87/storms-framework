@@ -65,7 +65,7 @@ class BrandInfo extends Base\Manager
         $env .= ( (defined( 'WP_DEBUG' ) && WP_DEBUG) ? '<i> - DEBUG está habilitado.</i>' : '' );
 
 		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . ' ' .
-                            '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' .
+							( '' == STORMS_SYSTEM_COMMIT ? '<br>' : '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' ) .
 			                __( 'System environment', 'storms' ) . ': ' . $env . '<br><br>' .
 							__( 'PHP version', 'storms' ) . ': ' . phpversion() . '<br>' .
 							__( 'Wordpress version', 'storms' ) . ': ' . $wp_version . '<br>' .
@@ -88,7 +88,7 @@ class BrandInfo extends Base\Manager
 
 		if( ! empty( $theme_custom_info ) ) {
 			$content .= '<hr style="border-color: #fefefe -moz-use-text-color #fafafa;"/>';
-			$content .= '<div class="brand-extra-content">' . $theme_custom_info . '</div>';
+			$content .= '<div class="brand-extra-content" style="margin: 1em 0;">' . $theme_custom_info . '</div>';
 		}
 
 		echo $content;
