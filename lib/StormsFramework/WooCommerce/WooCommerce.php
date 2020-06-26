@@ -77,13 +77,16 @@ class WooCommerce extends Base\Runner
 		 * @see  shop_loop_number_of_columns()
 		 */
 		$this->loader
+			->add_action( 'widgets_init', 'register_widgets_area' )
+
 			->add_filter( 'woocommerce_product_thumbnails_columns', 'product_thumbnail_columns' )
 			->add_filter( 'loop_shop_per_page', 'products_per_page' )
 			->add_filter( 'loop_shop_columns', 'shop_loop_number_of_columns' )
-			->add_filter( 'woocommerce_output_related_products_args', 'related_products_args' )
+			->add_filter( 'woocommerce_output_related_products_args', 'related_products_on_product_page_args' )
+			->add_filter( 'woocommerce_upsell_display_args', 'upsell_on_product_page_args' )
+
             ->add_filter( 'woocommerce_cross_sells_total', 'cross_sells_limit' )
-            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' )
-			->add_action( 'widgets_init', 'register_widgets_area' );
+            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' );
 
 		$this->loader
 			// @see plugins/woocommerce/includes/wc-template-functions.php - woocommerce_form_field
@@ -837,14 +840,24 @@ class WooCommerce extends Base\Runner
 	 * Change number of related products on product page
 	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
 	 */
-    public function related_products_args( $args ) {
+    public function related_products_on_product_page_args( $args ) {
 		$args['posts_per_page'] = 3; // 3 related products
 		$args['columns'] = apply_filters( 'woocommerce_related_products_columns', 3 ); // Default: arranged in 3 columns
 		return $args;
 	}
 
+	/**
+	 * Change number of upsell products on product page
+	 */
+	public function upsell_on_product_page_args( $args ) {
+		$args['posts_per_page'] = 3; // 3 related products
+		$args['columns'] = apply_filters( 'woocommerce_upsells_columns', 3 ); // Default: arranged in 3 columns
+		return $args;
+	}
+
     /**
      * Change the number of products to be shown on cross-sells loop
+	 * Displayed on cart page
      * @param $limit
      * @return int
      */
@@ -854,6 +867,7 @@ class WooCommerce extends Base\Runner
 
     /**
      * Change the number of columns to be shown on cross-sells loop
+	 * Displayed on cart page
      * @param $columns
      * @return int
      */
