@@ -37,6 +37,15 @@ class FrontEnd extends Base\Runner
 
 		$this->remove_oembed();
 
+		/**
+		 * Set X-Frame-Options Header in Wordpress
+		 * The X-Frame-Options HTTP response header can be used to indicate whether or not a browser
+		 * should be allowed to render a page in a <frame>, <iframe>, <embed> or <object>. Sites can
+		 * use this to avoid click-jacking attacks, by ensuring that their content is not embedded into other sites
+		 * @see https://stackoverflow.com/a/44573750/1003020
+		 */
+		add_action( 'send_headers', 'send_frame_options_header', 10, 0 );
+
 		// Links and tags cleanup
 		$this->loader
 			->add_filter( 'document_title_separator', 'title_separator' )
