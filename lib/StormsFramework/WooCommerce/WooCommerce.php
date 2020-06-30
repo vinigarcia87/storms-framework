@@ -416,46 +416,24 @@ class WooCommerce extends Base\Runner
 	 * @return mixed
 	 */
 	public function bootstrap_form_field_args( $args, $key, $value = null ) {
-		/*
-        $defaults = array(
-            'type'              => 'text',
-            'label'             => '',
-            'description'       => '',
-            'placeholder'       => '',
-            'maxlength'         => false,
-            'required'          => false,
-            'id'                => $key,
-            'class'             => array(),
-            'label_class'       => array(),
-            'input_class'       => array(),
-            'return'            => false,
-            'options'           => array(),
-            'custom_attributes' => array(),
-            'validate'          => array(),
-            'default'           => '',
-        );
-        */
 
 		// Start field type switch case
 		switch ( $args['type'] ) {
 
-			case "select" :  /* Targets all select input type elements, except the country and state select input types */
+			case "select" :  // Targets all select input type elements, except the country and state select input types
 				$args['class'][] = 'form-group'; // Add a class to the field's html element wrapper - woocommerce input types (fields) are often wrapped within a <p></p> tag
 				$args['input_class'] = array('form-control'); // Add a class to the form input itself
-				//$args['custom_attributes']['data-plugin'] = 'select2';
 				$args['label_class'] = array('col-form-label');
 				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  ); // Add custom data attributes to the form input itself
 				break;
 
-			case 'country' : /* By default WooCommerce will populate a select with the country names - $args defined for this specific input type targets only the country select element */
+			case 'country' : // By default WooCommerce will populate a select with the country names - $args defined for this specific input type targets only the country select element
 				$args['class'][] = 'form-group single-country';
 				$args['label_class'] = array('col-form-label');
 				break;
 
-			case "state" : /* By default WooCommerce will populate a select with state names - $args defined for this specific input type targets only the country select element */
+			case "state" : // By default WooCommerce will populate a select with state names - $args defined for this specific input type targets only the country select element
 				$args['class'][] = 'form-group'; // Add class to the field's html element wrapper
-				//$args['input_class'] = array('form-control'); // add class to the form input itself
-				//$args['custom_attributes']['data-plugin'] = 'select2';
 				$args['label_class'] = array('col-form-label');
 				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  );
 				break;
@@ -467,7 +445,6 @@ class WooCommerce extends Base\Runner
 			case "tel" :
 			case "number" :
 				$args['class'][] = 'form-group';
-				//$args['input_class'][] = 'form-control'; // will return an array of classes, the same as bellow
 				$args['input_class'] = array('form-control');
 				$args['label_class'] = array('col-form-label');
 				break;
@@ -509,6 +486,10 @@ class WooCommerce extends Base\Runner
 			$required = ' <abbr class="required" title="' . esc_attr__( 'required', 'storms'  ) . '">*</abbr>';
 		} else {
 			$required = '';
+		}
+
+		if ( is_null( $value ) ) {
+			$value = $args['default'];
 		}
 
 		// Custom attribute handling
@@ -588,10 +569,10 @@ class WooCommerce extends Base\Runner
 				$id = esc_attr( $args['id'] ) . '_' . esc_attr( $option_key );
 				$checked = checked( $value, $option_key, false );
 
-				$field .= '	<div class="' . $div_class . '" ' . $custom_attr . '>';
-				$field .= '		<input class="form-check-input ' . $input_class . '" type="radio" name="' . $name . '" id="' . $id . '" value="' . $value . '" ' . $checked . '>';
-				$field .= '		<label class="form-check-label" for="' . $id . '">' . $option_text . '</label>';
-				$field .= '	</div>';
+				$field .= '<div class="' . esc_attr( $div_class ) . '" ' . $custom_attr . '>';
+				$field .= '<input class="form-check-input ' . esc_attr( $input_class ) . '" type="radio" name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" value="' . esc_attr( $option_key ) . '" ' . $checked . '>';
+				$field .= '<label class="form-check-label" for="' . esc_attr( $id ) . '">' . esc_html( $option_text ) . '</label>';
+				$field .= '</div>';
 			}
 		}
 
