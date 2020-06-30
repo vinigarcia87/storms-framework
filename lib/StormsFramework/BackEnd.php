@@ -145,7 +145,7 @@ class BackEnd extends Base\Runner
 				$pages_that_need_heartbeat[] = 'admin.php';
 			}
 
-			if ( ! in_array( $pagenow, $pages_that_need_heartbeat ) ) {
+			if ( ! in_array( $pagenow, $pages_that_need_heartbeat ) && strpos( $_SERVER['HTTP_REFERER'], 'admin.php?page=wc-admin' ) === false ) {
 
 				wp_deregister_script( 'heartbeat' );
 
