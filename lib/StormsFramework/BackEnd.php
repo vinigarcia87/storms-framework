@@ -140,12 +140,17 @@ class BackEnd extends Base\Runner
 			// We need on post and post-new pages
 			$pages_that_need_heartbeat = array( 'post.php', 'post-new.php' );
 
-			// If we are on admin.php?page=wc-admin we also gonna need heartbeat
-			if ( isset( $_GET['page'] ) && $pagenow == 'admin.php' && $_GET['page'] == 'wc-admin' ) {
+			// If we are on admin.php?page=wc-admin or admin.php?page=wc-reports we also gonna need heartbeat
+			if ( isset( $_GET['page'] ) && $pagenow == 'admin.php' && ( $_GET['page'] == 'wc-admin' || $_GET['page'] == 'wc-reports' ) ) {
 				$pages_that_need_heartbeat[] = 'admin.php';
 			}
 
-			if ( ! in_array( $pagenow, $pages_that_need_heartbeat ) && strpos( $_SERVER['HTTP_REFERER'], 'admin.php?page=wc-admin' ) === false ) {
+			// If we are on edit.php?post_type=shop_order or edit.php?post_type=shop_coupon we also gonna need heartbeat
+			if ( isset( $_GET['post_type'] ) && $pagenow == 'edit.php' && ( $_GET['post_type'] == 'shop_order' || $_GET['post_type'] == 'shop_coupon' ) ) {
+				$pages_that_need_heartbeat[] = 'edit.php';
+			}
+
+			if ( ! in_array( $pagenow, $pages_that_need_heartbeat ) && isset( $_SERVER['HTTP_REFERER'] ) && strpos( $_SERVER['HTTP_REFERER'], 'admin.php?page=wc-admin' ) === false ) {
 
 				wp_deregister_script( 'heartbeat' );
 

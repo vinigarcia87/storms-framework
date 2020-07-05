@@ -59,7 +59,7 @@ class Assets extends Base\Runner
 	 * @return bool|string
 	 */
 	public function stylesheet_uri( $stylesheet, $stylesheet_dir ) {
-		return Helper::get_asset_url( '/css/style' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.css' );
+		return Helper::get_asset_url( '/css/style' . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' ) . '.css' );
 	}
 
 	/**

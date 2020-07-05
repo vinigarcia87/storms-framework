@@ -82,11 +82,10 @@ class BrandCustomization extends Base\Runner
 		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
 
 		$meta_tags = '';
-		if ( !is_admin() ) {
+		if ( ! is_admin() ) {
 			$meta_tags .= '<meta name="author" content="' . $brand_name . '" />';
 			$meta_tags .= '<meta name="copyright" content="Copyright ' . wp_strip_all_tags( $copyright ) .'" />';
 		}
-
 		echo $meta_tags;
 	}
 
@@ -186,7 +185,7 @@ class BrandCustomization extends Base\Runner
 		wp_enqueue_script( 'jquery' );
 
 		// Custom login styles
-		wp_register_style('login-style', Helper::get_asset_url('/css/login' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.css'), STORMS_FRAMEWORK_VERSION);
+		wp_register_style('login-style', Helper::get_asset_url('/css/login' . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' ) . '.css'), STORMS_FRAMEWORK_VERSION);
 		wp_enqueue_style( 'login-style' );
 	}
 

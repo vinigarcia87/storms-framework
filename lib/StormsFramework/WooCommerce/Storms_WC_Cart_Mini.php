@@ -52,7 +52,7 @@ class Storms_WC_Cart_Mini extends WC_Widget
 
 	public function frontend_scripts() {
 		wp_enqueue_script('storms-wc-cart-mini-script',
-			\StormsFramework\Helper::get_asset_url( '/js/storms-wc-mini-cart' . ( ( defined( 'WP_DEBUG' ) && WP_DEBUG ) ? '' : '.min' ) . '.js' ),
+			\StormsFramework\Helper::get_asset_url( '/js/storms-wc-mini-cart' . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' ) . '.js' ),
 			array( 'jquery' ), STORMS_FRAMEWORK_VERSION, true );
 
 		// Add WordPress data to a Javascript file
