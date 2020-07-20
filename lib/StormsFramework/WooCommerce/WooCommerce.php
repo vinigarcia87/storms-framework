@@ -119,7 +119,9 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_login_redirect', 'user_redirect_on_login_registration', 10 )
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10 )
 			->add_filter( 'body_class', 'set_intern_login_body_class' )
-			->add_action( 'template_redirect', 'bypass_logout_confirmation' );
+			->add_action( 'template_redirect', 'bypass_logout_confirmation' )
+
+			->add_action( 'woocommerce_init', 'force_non_logged_user_wc_session' );
 
 	}
 
@@ -402,6 +404,24 @@ class WooCommerce extends Base\Runner
 	}
 
 	//</editor-fold>
+
+	/**
+	 * Initiate Woocommerce User session when it's not logged in
+	 */
+	public function force_non_logged_user_wc_session() {
+
+		if( 'yes' === Helper::get_option( 'storms_force_non_logged_user_wc_session', 'no' ) ) {
+
+			if (is_user_logged_in() || is_admin()) {
+				return;
+			}
+
+			if (isset(WC()->session) && !WC()->session->has_session()) {
+				WC()->session->set_customer_session_cookie(true);
+			}
+
+		}
+	}
 
 	//<editor-fold desc="Bootstrap on form fields">
 
