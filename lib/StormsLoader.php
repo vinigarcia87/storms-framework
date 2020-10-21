@@ -85,6 +85,9 @@ function storms_load_extensions() {
 
 			// Registering WooCommerce Mini Cart Widget
 			require_once __DIR__ . '/StormsFramework/WooCommerce/Storms_WC_Cart_Mini.php';
+
+			// Registering WooCommerce User Menu Widget
+			require_once __DIR__ . '/StormsFramework/WooCommerce/Storms_WC_User_Menu.php';
 		}
 	}
 }
