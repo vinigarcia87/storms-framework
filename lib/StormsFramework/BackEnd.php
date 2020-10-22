@@ -224,22 +224,21 @@ class BackEnd extends Base\Runner
     function toolbar_system_environment_alert( $wp_admin_bar ) {
 		global $wp_admin_bar;
 
-        switch( SF_ENV ) {
-            case 'PRD':
+        switch( wp_get_environment_type() ) {
+			case 'production':
                 $env_class = 'production';
                 $env = strtoupper( __( 'production', 'storms' ) );
                 break;
-            case 'TST':
+			case 'staging':
+			case 'testing':
                 $env_class = 'testing';
                 $env = strtoupper( __( 'testing', 'storms' ) );
                 break;
-            case 'DEV':
+			case 'local':
+			case 'development':
                 $env_class = 'development';
                 $env = strtoupper( __( 'development', 'storms' ) );
                 break;
-            default:
-                $env_class = strtolower( SF_ENV );
-                $env = '<strong>' . SF_ENV . '</strong>';
         }
 
         $args = array(

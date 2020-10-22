@@ -49,18 +49,18 @@ class BrandInfo extends Base\Manager
 		}
 
 		$env = '';
-        switch( SF_ENV ) {
-            case 'PRD':
+        switch( wp_get_environment_type() ) {
+			case 'production':
                 $env = '<strong style="color: #92000f;">' . strtoupper( __( 'production', 'storms' ) ) . '</strong>';
                 break;
-            case 'TST':
+			case 'staging':
+			case 'testing':
                 $env = '<strong>' . strtoupper( __( 'testing', 'storms' ) ) . '</strong>';
                 break;
-            case 'DEV':
+			case 'local':
+			case 'development':
                 $env = '<strong>' . strtoupper( __( 'development', 'storms' ) ) . '</strong>';
                 break;
-            default:
-                $env = '<strong>' . SF_ENV . '</strong>';
         }
         $env .= ( (defined( 'WP_DEBUG' ) && WP_DEBUG) ? '<i> - DEBUG está habilitado.</i>' : '' );
 
