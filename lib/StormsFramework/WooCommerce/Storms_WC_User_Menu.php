@@ -78,7 +78,7 @@ class Storms_WC_User_Menu extends WC_Widget
 		}
 
 		$user_logged_in = 0 !== $current_user->ID;
-		$display_name = __( 'Login | Cadastro', 'storms' );
+		$display_name = apply_filters( 'storms_wc_user_menu_not_logged_in_display_name', __( 'Login | Cadastro', 'storms' ) );
 
 		if( $user_logged_in ) {
 			$display_name = esc_html( $current_user->display_name );
