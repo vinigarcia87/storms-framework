@@ -46,6 +46,22 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Get a dynamic sidebar as a string
+	 *
+	 * @param $sidebar_id
+	 * @return false|string
+	 */
+	public static function get_dynamic_sidebar( $sidebar_id ) {
+		ob_start();
+		$out = '';
+		if( dynamic_sidebar( $sidebar_id ) ) {
+			$out = ob_get_contents();
+		}
+		ob_end_clean();
+		return $out;
+	}
+
+	/**
 	 * Debug variables
      * @reminder (new \Exception())->getTraceAsString() to show call stack
      * @see https://stackoverflow.com/a/7039409/1003020

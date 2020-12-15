@@ -131,6 +131,19 @@ a[href*="developed-by"] .wp-menu-image {
   }
 }
 
+.edit-post-header a.edit-post-fullscreen-mode-close.has-icon {
+	background-image: url(../img/storms/logo/TheStormsBlue.png);
+	background-position: center;
+	background-attachment: initial;
+	background-repeat: no-repeat;
+	background-size: 50px auto;
+	background-color: #FFFFFFFF;
+
+	> svg {
+		display: none;
+	}
+}
+
 #wpadminbar {
  	/* System Environment Alert */
 	.system-environment {

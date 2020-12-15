@@ -87,6 +87,9 @@ class FrontEnd extends Base\Runner
 			->add_action( 'widgets_init', 'register_widgets_area_main', 10 )
 			->add_action( 'widgets_init', 'register_widgets_area_footer_1', 15 )
 			->add_action( 'widgets_init', 'register_widgets_area_footer_2', 20 );
+
+		$this->loader
+			->add_filter( 'wp_nav_menu_items', 'add_widget_area_on_menu_item', 10, 2 );
     }
 
 	//<editor-fold desc="FrontEnd optimizations">
@@ -647,6 +650,24 @@ class FrontEnd extends Base\Runner
 
 		}
 
+		if( \StormsFramework\Helper::get_option( 'storms_add_header_menu_item_sidebar', 'yes' ) ) {
+
+			/**
+			 * Register a new widget area on the menu as a menu item
+			 * @source https://wordpress.org/support/topic/insert-a-plugin-or-a-widget-in-the-top-menu/
+			 */
+			register_sidebar(array(
+				'name' => __( 'Header Menu Item Sidebar', 'storms' ),
+				'id' => 'header-menu-item-sidebar',
+				'description' => __('Add widgets here to appear in your menu item region.', 'storms'),
+				'before_widget' => '<li id="%1$s" class="widget %2$s">',
+				'after_widget' => '</li>',
+				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
+				'after_title' => '</' . $widget_title_tag . '>',
+			));
+
+		}
+
 		// Header Menu Right Sidebar
 		if( Helper::get_option( 'storms_add_header_menu_right_sidebar', 'yes' ) ) {
 
@@ -662,7 +683,7 @@ class FrontEnd extends Base\Runner
 
 		}
 
-		// Header Menu Right Sidebar
+		// Header Bottom Sidebar
 		if( Helper::get_option( 'storms_add_header_bottom_sidebar', 'yes' ) ) {
 
 			register_sidebar(array(
@@ -677,6 +698,24 @@ class FrontEnd extends Base\Runner
 
 		}
 
+	}
+
+	/**
+	 * Add a sidebar on menu to act as a menu item
+	 *
+	 * @param $items
+	 * @param $args
+	 * @return string
+	 */
+	public function add_widget_area_on_menu_item( $items, $args ) {
+
+		if( \StormsFramework\Helper::get_option( 'storms_add_header_menu_item_sidebar', 'yes' ) ) {
+
+			$menu_widget_area = \StormsFramework\Helper::get_dynamic_sidebar( 'header-menu-item-sidebar' );
+			return $menu_widget_area . $items;
+
+		}
+		return $items;
 	}
 
 	/**
