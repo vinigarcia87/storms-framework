@@ -809,6 +809,10 @@ a[href*="user-onine"] .wp-menu-image {
   margin-left: 0;
 }
 
+#adminmenu div.wp-menu-name {
+  padding: 8px 0;
+}
+
 
 li.toplevel_page_user-onine a.menu-top,
 .auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
@@ -922,6 +926,16 @@ a[href*="developed-by"] .wp-menu-image {
     overflow: initial;
     text-overflow: initial;
   }
+}
+
+#wpadminbar .system-environment:hover a.ab-item, #wpadminbar .system-environment:focus a.ab-item {
+  font-weight: 700;
+  background-color: initial !important;
+}
+
+#wpadminbar .system-environment a.ab-item:hover, #wpadminbar .system-environment a.ab-item:focus {
+  font-weight: 700;
+  background-color: initial !important;
 }
 
 #wpadminbar .bootstrap-media-breakpoints {

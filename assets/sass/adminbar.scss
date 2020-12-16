@@ -83,6 +83,22 @@
 				text-overflow: initial;
 			}
 		}
+
+		&:hover,
+		&:focus {
+			a.ab-item {
+				font-weight: 700;
+				background-color: initial !important;
+			}
+		}
+
+		a.ab-item {
+			&:hover,
+			&:focus {
+				font-weight: 700;
+				background-color: initial !important;
+			}
+		}
     }
 
 	/* Bootstrap 4 Media Brekpoints */

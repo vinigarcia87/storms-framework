@@ -820,6 +820,16 @@ div#wp-responsive-toggle a:before {
   }
 }
 
+#wpadminbar .system-environment:hover a.ab-item, #wpadminbar .system-environment:focus a.ab-item {
+  font-weight: 700;
+  background-color: initial !important;
+}
+
+#wpadminbar .system-environment a.ab-item:hover, #wpadminbar .system-environment a.ab-item:focus {
+  font-weight: 700;
+  background-color: initial !important;
+}
+
 #wpadminbar .bootstrap-media-breakpoints {
   display: block !important;
 }

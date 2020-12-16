@@ -92,6 +92,12 @@ a[href*="user-onine"] .wp-menu-image {
 	}
 }
 
+#adminmenu {
+	div.wp-menu-name {
+		padding: 8px 0;
+	}
+}
+
 /* user-onine and developed-by menu when using mobile */
  li.toplevel_page_user-onine a.menu-top,
 .auto-fold #adminmenu li.toplevel_page_developed-by a.menu-top {
@@ -199,6 +205,22 @@ a[href*="developed-by"] .wp-menu-image {
 				white-space: initial;
 				overflow: initial;
 				text-overflow: initial;
+			}
+		}
+
+		&:hover,
+		&:focus {
+			a.ab-item {
+				font-weight: 700;
+				background-color: initial !important;
+			}
+		}
+
+		a.ab-item {
+			&:hover,
+			&:focus {
+				font-weight: 700;
+				background-color: initial !important;
 			}
 		}
 	}
