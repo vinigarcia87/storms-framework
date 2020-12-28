@@ -43,7 +43,7 @@ class WooCommerce extends Base\Runner
 		$this->loader
 			->add_action( 'woocommerce_register_form', 'registration_confirm_password_add_field' )
 			->add_filter( 'woocommerce_registration_errors', 'registration_confirm_password_validation', 10, 3 )
-			->add_action( 'woocommerce_checkout_init', 'checkout_confirm_password_add_field', 10, 1 )
+			//->add_action( 'woocommerce_checkout_init', 'checkout_confirm_password_add_field', 10, 1 )
 			->add_action( 'woocommerce_after_checkout_validation', 'checkout_confirm_password_validation', 10, 2 );
 
 		/**
@@ -374,6 +374,12 @@ class WooCommerce extends Base\Runner
 	/**
 	 * Add a confirm password field to the checkout page
 	 * @see https://axlmulat.com/woocommerce/woocommerce-how-to-add-confirm-password-in-registration-and-checkout-page/
+	 *
+	 * TODO This is triggering an error - Must change the implementation to:
+	 * 		https://stackoverflow.com/questions/48168359/enable-confirmation-password-in-woocommerce-checkout-form
+	 * 		Can't test right now 'cause storms theme is forcing register before checkout
+	 *
+	 * @param \WC_Checkout $checkout
 	 */
 	public function checkout_confirm_password_add_field( $checkout ) {
 		if ( get_option( 'woocommerce_registration_generate_password' ) == 'no' ) {
