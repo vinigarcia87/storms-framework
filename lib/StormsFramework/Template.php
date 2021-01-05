@@ -287,7 +287,7 @@ class Template extends Base\Runner
 			} elseif( is_checkout() || is_cart() ) {
 				$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
 
-			} elseif( is_shop() || is_product_category() || is_product_tag() ) {
+			} elseif( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
 				$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
 
 			} elseif( is_woocommerce() ) {

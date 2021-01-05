@@ -660,7 +660,7 @@ class FrontEnd extends Base\Runner
 				'name' => __( 'Header Menu Item Sidebar', 'storms' ),
 				'id' => 'header-menu-item-sidebar',
 				'description' => __('Add widgets here to appear in your menu item region.', 'storms'),
-				'before_widget' => '<li id="%1$s" class="widget %2$s">',
+				'before_widget' => '<li id="%1$s" class="widget %2$s menu-item nav-item dropdown has-megamenu">',
 				'after_widget' => '</li>',
 				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
 				'after_title' => '</' . $widget_title_tag . '>',
@@ -702,17 +702,21 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * Add a sidebar on menu to act as a menu item
+	 * Allows to choose which menus will have the sidebar - defaults to 'all' menus
 	 *
 	 * @param $items
 	 * @param $args
 	 * @return string
 	 */
 	public function add_widget_area_on_menu_item( $items, $args ) {
-
 		if( \StormsFramework\Helper::get_option( 'storms_add_header_menu_item_sidebar', 'yes' ) ) {
+			$menu_slug = ( $args && $args->menu ) ? $args->menu->slug : '';
+			$menu_list = \StormsFramework\Helper::get_option( 'storms_header_menu_item_sidebar_menu_slug_list', 'all' );
 
-			$menu_widget_area = \StormsFramework\Helper::get_dynamic_sidebar( 'header-menu-item-sidebar' );
-			return $menu_widget_area . $items;
+			if( empty( $menu_slug ) || 'all' === $menu_list || in_array( $menu_slug, explode( ',', $menu_list ) ) ) {
+				$menu_widget_area = \StormsFramework\Helper::get_dynamic_sidebar( 'header-menu-item-sidebar' );
+				return $menu_widget_area . $items;
+			}
 
 		}
 		return $items;

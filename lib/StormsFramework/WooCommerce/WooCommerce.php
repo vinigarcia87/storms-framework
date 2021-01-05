@@ -680,7 +680,7 @@ class WooCommerce extends Base\Runner
 
 		if( apply_filters( 'storms_show_product_sidebar', is_product() ) ) {
 			get_sidebar('product');
-		} else if( apply_filters( 'storms_show_shop_sidebar', is_shop() || is_product_category() || is_product_tag() ) ) {
+		} else if( apply_filters( 'storms_show_shop_sidebar', is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) ) {
 			get_sidebar('shop');
 		}
 
@@ -763,7 +763,7 @@ class WooCommerce extends Base\Runner
 		if ( Helper::get_option( 'storms_customize_woo_breadcrumb' , true ) ) {
 			return array(
 				'delimiter' => '',
-				'wrap_before' => '<ol class="breadcrumb woocommerce-breadcrumb" ' . (is_single() ? 'itemprop="breadcrumb"' : '') . '>',
+				'wrap_before' => '<ol class="breadcrumb woocommerce-breadcrumb" ' . ( is_single() ? 'itemprop="breadcrumb"' : '' ) . '>',
 				'wrap_after' => '</ol>',
 				'before' => '<li class="breadcrumb-item">',
 				'after' => '</li>',
