@@ -277,6 +277,143 @@ class Helper extends Base\Manager
 		return $html;
 	}
 
+	//<editor-fold desc="Data creation functions">
+
+	/**
+	 * Create a new product attribute from a label name
+	 * @source https://stackoverflow.com/a/51994543/1003020
+	 *
+	 * @param $label_name
+	 * @param int $attribute_public
+	 * @return \WP_Error
+	 */
+	public static function create_product_attribute( $label_name, $attribute_public = 0 ) {
+		global $wpdb;
+
+		$slug = sanitize_title( $label_name );
+
+		if ( strlen( $slug ) >= 28 ) {
+			return new \WP_Error( 'invalid_product_attribute_slug_too_long', sprintf( __( 'Name "%s" is too long (28 characters max). Shorten it, please.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
+		} elseif ( wc_check_if_attribute_name_is_reserved( $slug ) ) {
+			return new \WP_Error( 'invalid_product_attribute_slug_reserved_name', sprintf( __( 'Name "%s" is not allowed because it is a reserved term. Change it, please.', 'woocommerce' ), $slug ), array( 'status' => 400 ) );
+		} elseif ( taxonomy_exists( wc_attribute_taxonomy_name( $label_name ) ) ) {
+			return new \WP_Error( 'invalid_product_attribute_slug_already_exists', sprintf( __( 'Name "%s" is already in use. Change it, please.', 'woocommerce' ), $label_name ), array( 'status' => 400 ) );
+		}
+
+		$data = array(
+			'attribute_label'   => $label_name,
+			'attribute_name'    => $slug,
+			'attribute_type'    => 'select',
+			'attribute_orderby' => 'menu_order',
+			'attribute_public'  => $attribute_public, // Enable archives ==> (0 or 1)
+		);
+
+		$results = $wpdb->insert( "{$wpdb->prefix}woocommerce_attribute_taxonomies", $data );
+
+		if ( false === $results ) {
+			return new \WP_Error( 'cannot_create_attribute', 'Error on creating attribute taxonomy', array( 'status' => 400 ) );
+		}
+
+		$id = $wpdb->insert_id;
+
+		do_action('woocommerce_attribute_added', $id, $data);
+
+		wp_schedule_single_event( time(), 'woocommerce_flush_rewrite_rules' );
+
+		delete_transient('wc_attribute_taxonomies');
+	}
+
+	/**
+	 * Adiciona um usuario completo - com ID especifico, password sem encriptaçao, meta dados e roles
+	 * Usado para importaçoes e criaçao de usuarios iniciais
+	 *
+	 * Exemplo de array de dados:
+	 * 'data' 		=> [
+	 * 		'ID'					=> 47,
+	 * 		'user_login'           	=> 'laboral',
+	 * 		'user_pass'            	=> '$P$BG.KiZwUd03dHB/pmYh/O3lGCep4NG/',
+	 * 		'user_nicename'        	=> 'laboral',
+	 * 		'user_email'           	=> 'laboral@prosoftin.com.br',
+	 * 		'user_url'             	=> 'http://prosoftin.com.br/',
+	 * 		'user_registered'		=> '2017-07-31 17:42:11',
+	 * 		'user_activation_key'	=> '1501522931:$P$B3I.BFP6NeOwQ62H5AfrbeHMY3sCdJ/',
+	 * 		'display_name'			=> 'Laboral Provensi',
+	 * 	],
+	 * 	'meta_data'	=> [
+	 * 		'first_name'           	=> 'Laboral',
+	 * 		'last_name'            	=> 'Provensi',
+	 * 		'nickname'				=> 'laboral.provensi',
+	 * 		'dexst1629_user_avatar'	=> '10116',
+	 * 	],
+	 * 	'roles'		=> [
+	 * 		'shop_manager',
+	 * 		'administrator',
+	 * 	]
+	 *
+	 * @param $user_info
+	 * @return bool|\WP_User
+	 */
+	public static function create_user( $user_info ) {
+		global $wpdb;
+
+		$user_data = $user_info['data'];
+		if ( false === get_user_by( 'id', $user_data['ID'] ) && username_exists( $user_data['user_login'] ) == null && email_exists( $user_data['user_email'] ) == false ) {
+			return false;
+		}
+
+		$wpdb->insert( $wpdb->users, $user_data );
+		$user_id = (int) $wpdb->insert_id;
+
+		$user = new \WP_User( $user_id );
+
+		$meta_data = $user_info['meta_data'];
+		foreach( $meta_data as $key => $value ) {
+			update_user_meta( $user_id, $key, $value );
+		}
+
+		$roles = $user_info['roles'];
+		$user->remove_role( 'subscriber' );
+		foreach( $roles as $role ) {
+			$user->add_role( $role );
+		}
+
+		return $user;
+	}
+
+	//</editor-fold>
+
+	/**
+	 * Recursively sort an array of taxonomy terms hierarchically. Child categories will be
+	 * placed under a 'children' member of their parent term.
+	 * Source: http://wordpress.stackexchange.com/a/99516/54025
+	 *
+	 * @param array   $cats     taxonomy term objects to sort
+	 * @param array   $into     result array to put them in
+	 * @param integer $parentId the current parent ID to put them in
+	 */
+	public static function sort_terms_hierarchically( array &$cats, array &$into, $parentId = 0 ) {
+
+		/**
+		 * $cat = ( ... ) ? 'category' : 'product_cat';
+		 * $product_categories = get_terms( $cat, $argss );
+		 * $categoryHierarchy = array();
+		 * Helper::sort_terms_hierarchicaly( $product_categories, $categoryHierarchy );
+		 * $product_categories = $categoryHierarchy;
+		 */
+
+		foreach ($cats as $i => $cat) {
+			if ($cat->parent == $parentId) {
+				$into[$cat->term_id] = $cat;
+				unset($cats[$i]);
+			}
+		}
+
+		foreach ($into as $topCat) {
+			$topCat->children = array();
+			Helper::sort_terms_hierarchically( $cats, $topCat->children, $topCat->term_id );
+		}
+	}
+
 	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!
 	 * ======================================================================================= */
@@ -621,36 +758,6 @@ class Helper extends Base\Manager
 		$show = false; // Show all items.
 
 		echo Helper::pagination( $mid, $end, false );
-	}
-
-	/**
-	 * Recursively sort an array of taxonomy terms hierarchically. Child categories will be
-	 * placed under a 'children' member of their parent term.
-	 * Source: http://wordpress.stackexchange.com/a/99516/54025
-	 *
-	 * @param Array   $cats     taxonomy term objects to sort
-	 * @param Array   $into     result array to put them in
-	 * @param integer $parentId the current parent ID to put them in
-	 */
-	public static function sort_terms_hierarchicaly(Array &$cats, Array &$into, $parentId = 0) {
-		/**
-		 * $product_categories = get_terms( $cat, $argss );
-		 * $categoryHierarchy = array();
-		 * storms_sort_terms_hierarchicaly( $product_categories, $categoryHierarchy );
-		 * $product_categories = $categoryHierarchy;
-		 */
-
-		foreach ($cats as $i => $cat) {
-			if ($cat->parent == $parentId) {
-				$into[$cat->term_id] = $cat;
-				unset($cats[$i]);
-			}
-		}
-
-		foreach ($into as $topCat) {
-			$topCat->children = array();
-			storms_sort_terms_hierarchicaly($cats, $topCat->children, $topCat->term_id);
-		}
 	}
 
 	/**
