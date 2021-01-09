@@ -357,7 +357,7 @@ class Helper extends Base\Manager
 		global $wpdb;
 
 		$user_data = $user_info['data'];
-		if ( false === get_user_by( 'id', $user_data['ID'] ) && username_exists( $user_data['user_login'] ) == null && email_exists( $user_data['user_email'] ) == false ) {
+		if ( false !== get_user_by( 'id', $user_data['ID'] ) || username_exists( $user_data['user_login'] ) !== false || email_exists( $user_data['user_email'] ) !== false ) {
 			return false;
 		}
 
