@@ -444,6 +444,30 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Send emails using WooCommerce email style
+	 *
+	 * @param $user_email
+	 * @param $subject
+	 * @param $email_heading
+	 * @param $message
+	 * @param $headers
+	 * @return bool
+	 */
+	public static function send_wc_email( $user_email, $subject, $email_heading, $message, $headers ) {
+		// Load the mailer class
+		$mailer = WC()->mailer();
+
+		// Create a new email
+		$email = new \WC_Email();
+
+		// Wrap the content with the email template and then add styles
+		$message = apply_filters( 'woocommerce_mail_content', $email->style_inline( $mailer->wrap_message( $email_heading, $message ) ) );
+
+		return $mailer->send( $user_email, $subject, $message, $headers );
+		//return wp_mail( $user_email, $subject, $message, $headers );
+	}
+
+	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!
 	 * ======================================================================================= */
 

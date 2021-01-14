@@ -146,7 +146,7 @@ class BrandCustomization extends Base\Runner
 		global $wp_admin_bar;
 
 		$title = 'Storms Websolutions';
-		$link = esc_url( 'http://www.storms.com.br/' );
+		$link = esc_url( 'https://www.storms.com.br/' );
 		$src = Helper::get_asset_url( '/img/storms/logo/cloud_storms.png' );
 		$img = '<img src="' . esc_url( $src ) . '" style="height: 100%;" title="' . $title . '" />';
 
