@@ -62,18 +62,18 @@ class Helper extends Base\Manager
 	}
 
 	/**
-	 * Debug variables
+	 * Debug variables - Print on file or echo
      * @reminder (new \Exception())->getTraceAsString() to show call stack
      * @see https://stackoverflow.com/a/7039409/1003020
 	 */
 	public static function debug( $variable, $title = '', $write_on_file = true ) {
-		$date = (new \DateTime())->format('Y-m-d H:i:s');
-		$title = ($title != '') ? '== ' . $title . ' ===================================' : '';
-		$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
-		if( !$write_on_file ) {
-			echo '<h3>' . $title . '</h3>';
-			echo '<pre style="margin-left: 200px;">' . $content . '</pre>';
+		if( ! $write_on_file ) {
+			echo Helper::get_debug_string( $variable, $title );
 		} else {
+			$date = (new \DateTime())->format('Y-m-d H:i:s');
+			$title = ($title != '') ? '== ' . $title . ' ===================================' : '';
+			$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
+
 			$fp = fopen( WP_CONTENT_DIR . '/storms-framework.log', 'a+' );
 			$e = (new \Exception)->getTrace()[1];
 			$file = isset( $e['file'] ) ? str_replace( str_replace( '/', '', ABSPATH ), '...', $e['file'] ) : 'N/A';
@@ -83,6 +83,22 @@ class Helper extends Base\Manager
 			fwrite( $fp, $log_info . "\t" . $title . PHP_EOL. "\t" . $content . PHP_EOL );
 			fclose( $fp );
 		}
+	}
+
+	/**
+	 * Debug variables - Return as string
+	 * @reminder (new \Exception())->getTraceAsString() to show call stack
+	 * @see https://stackoverflow.com/a/7039409/1003020
+	 */
+	public static function get_debug_string( $variable, $title = '' ) {
+		$date = (new \DateTime())->format('Y-m-d H:i:s');
+		$title = $date . ( ($title != '') ? ' == ' . $title . ' ==' : '' );
+		$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
+
+		$debug_string  = '<h3>' . $title . '</h3>';
+		$debug_string .= '<pre style="margin-left: 50px;">' . $content . '</pre>';
+
+		return $debug_string;
 	}
 
 	/**
