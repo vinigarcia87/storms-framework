@@ -148,15 +148,13 @@ class FrontEnd extends Base\Runner
 		 * Switch default core markup for search form, comment form, and comments to output valid HTML5
 		 * See: http://codex.wordpress.org/Function_Reference/add_theme_support#HTML5
 		 */
-		add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption' ) );
+		add_theme_support( 'html5', array( 'script', 'style', 'search-form', 'comment-form', 'comment-list', 'gallery', 'caption' ) );
 
 		/**
 		 * Enable support for Post Formats.
 		 * See: https://codex.wordpress.org/Post_Formats
 		 */
-		add_theme_support( 'post-formats', array(
-			'aside', 'image', 'video', 'quote', 'link', 'gallery', 'status', 'audio', 'chat'
-		) );
+		add_theme_support( 'post-formats', array( 'aside', 'image', 'video', 'quote', 'link', 'gallery', 'status', 'audio', 'chat' ) );
 
 		// Adds RSS feed links to HTML <head>
 		add_theme_support( 'automatic-feed-links' );

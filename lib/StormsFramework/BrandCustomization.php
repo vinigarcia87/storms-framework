@@ -79,12 +79,12 @@ class BrandCustomization extends Base\Runner
 	 */
 	public function add_brand_meta_tags() {
 		$brand_name = Helper::get_option( 'storms_meta_autor', 'Storms Websolutions' );
-		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
+		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' ' . $brand_name . ' - ' . __( 'All rights reserved', 'storms' ) . '.' );
 
 		$meta_tags = '';
 		if ( ! is_admin() ) {
 			$meta_tags .= '<meta name="author" content="' . $brand_name . '" />';
-			$meta_tags .= '<meta name="copyright" content="Copyright ' . wp_strip_all_tags( $copyright ) .'" />';
+			$meta_tags .= '<meta name="copyright" content="Copyright ' . $copyright .'" />';
 		}
 		echo $meta_tags;
 	}
@@ -118,8 +118,8 @@ class BrandCustomization extends Base\Runner
 	 * Change dashboard and login footer text
 	 */
 	public function change_footer_text() {
-		$brand_name = Helper::get_option( 'storms_meta_autor', 'Storms Websolutions' );
-		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' <strong>' . $brand_name . '</strong> - ' . __( 'All rights reserved', 'storms' ) . '.' );
+		$brand_name = '<strong>' . Helper::get_option( 'storms_meta_autor', 'Storms Websolutions' ) . '</strong>';
+		$copyright = Helper::get_option( 'storms_meta_copyright', '&copy; 2012 - ' . date('Y') . ' ' . __( 'by', 'storms' ) . ' ' . $brand_name . ' - ' . __( 'All rights reserved', 'storms' ) . '.' );
 
 		echo '<p id="footer">' . $copyright . ' </p>';
 	}
