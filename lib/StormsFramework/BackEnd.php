@@ -482,7 +482,11 @@ class BackEnd extends Base\Runner
 	 * Source: https://ausweb.com.au/tutorials/2014/12/01/securing-wordpress-16-wordpress-security-tips-tricks/
 	 */
 	public function login_error_msg( $msg ) {
-		return __( 'The credentials you provided are invalid', 'storms' );
+
+		$lostpassword_url = Helper::is_woocommerce_activated() ? wc_lostpassword_url() : wp_lostpassword_url();
+		$lost_password_link = '<a href="' . esc_url( $lostpassword_url ) . '">' . __( 'Lost your password?' ) .'</a>';
+
+		return __( 'The credentials you provided are invalid', 'storms' ) . '. ' . $lost_password_link;
 	}
 
 	//</editor-fold>
