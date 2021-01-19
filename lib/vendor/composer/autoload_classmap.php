@@ -6,6 +6,9 @@ $vendorDir = dirname(dirname(__FILE__));
 $baseDir = dirname($vendorDir);
 
 return array(
+    'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Detection\\MobileDetect' => $vendorDir . '/mobiledetect/mobiledetectlib/namespaced/Detection/MobileDetect.php',
+    'Mobile_Detect' => $vendorDir . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
     'StormsFramework\\Assets' => $baseDir . '/StormsFramework/Assets.php',
     'StormsFramework\\BackEnd' => $baseDir . '/StormsFramework/BackEnd.php',
     'StormsFramework\\Base\\Loader' => $baseDir . '/StormsFramework/Base/Loader.php',

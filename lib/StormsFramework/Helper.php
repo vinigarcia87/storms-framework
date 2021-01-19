@@ -65,12 +65,17 @@ class Helper extends Base\Manager
 	 * Debug variables - Print on file or echo
      * @reminder (new \Exception())->getTraceAsString() to show call stack
      * @see https://stackoverflow.com/a/7039409/1003020
+	 *
+	 * @param $variable
+	 * @param string $title
+	 * @param bool $write_on_file
+	 * @throws \Exception
 	 */
 	public static function debug( $variable, $title = '', $write_on_file = true ) {
 		if( ! $write_on_file ) {
 			echo Helper::get_debug_string( $variable, $title );
 		} else {
-			$date = (new \DateTime())->format('Y-m-d H:i:s');
+			$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
 			$title = ($title != '') ? '== ' . $title . ' ===================================' : '';
 			$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
 
@@ -89,9 +94,14 @@ class Helper extends Base\Manager
 	 * Debug variables - Return as string
 	 * @reminder (new \Exception())->getTraceAsString() to show call stack
 	 * @see https://stackoverflow.com/a/7039409/1003020
+	 *
+	 * @param $variable
+	 * @param string $title
+	 * @return string
+	 * @throws \Exception
 	 */
 	public static function get_debug_string( $variable, $title = '' ) {
-		$date = (new \DateTime())->format('Y-m-d H:i:s');
+		$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
 		$title = $date . ( ($title != '') ? ' == ' . $title . ' ==' : '' );
 		$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
 
@@ -482,6 +492,32 @@ class Helper extends Base\Manager
 		return $mailer->send( $user_email, $subject, $message, $headers );
 		//return wp_mail( $user_email, $subject, $message, $headers );
 	}
+
+	//<editor-fold desc="Mobile detection functions">
+
+	/**
+	 * Check if the device is mobile
+	 * @see http://mobiledetect.net/
+	 *
+	 * @return bool
+	 */
+	public static function is_mobile() {
+		$mobble_detect = new \Mobile_Detect();
+		return $mobble_detect->isMobile();
+	}
+
+	/**
+	 * Check if the device is a tablet
+	 * @see http://mobiledetect.net/
+	 *
+	 * @return bool
+	 */
+	public static function is_tablet() {
+		$mobble_detect = new \Mobile_Detect();
+		return $mobble_detect->isTablet();
+	}
+
+	//</editor-fold>
 
 	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!

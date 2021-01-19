@@ -20,7 +20,20 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         ),
     );
 
+    public static $prefixesPsr0 = array (
+        'D' => 
+        array (
+            'Detection' => 
+            array (
+                0 => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced',
+            ),
+        ),
+    );
+
     public static $classMap = array (
+        'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'Detection\\MobileDetect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced/Detection/MobileDetect.php',
+        'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
         'StormsFramework\\Assets' => __DIR__ . '/../..' . '/StormsFramework/Assets.php',
         'StormsFramework\\BackEnd' => __DIR__ . '/../..' . '/StormsFramework/BackEnd.php',
         'StormsFramework\\Base\\Loader' => __DIR__ . '/../..' . '/StormsFramework/Base/Loader.php',
@@ -45,6 +58,7 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         return \Closure::bind(function () use ($loader) {
             $loader->prefixLengthsPsr4 = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$prefixLengthsPsr4;
             $loader->prefixDirsPsr4 = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$prefixesPsr0;
             $loader->classMap = ComposerStaticInit8f40bb2486504e76c09afd22340f8db3::$classMap;
 
         }, null, ClassLoader::class);

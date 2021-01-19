@@ -290,7 +290,6 @@ class BackEnd extends Base\Runner
 	public function remove_adminbar_itens() {
 		/** @var \WP_Admin_Bar $wp_admin_bar */
 		global $wp_admin_bar;
-		global $wp_customize;
 
 		$wp_admin_bar->remove_menu('wp-logo');
 		$wp_admin_bar->remove_menu('about');
@@ -308,14 +307,15 @@ class BackEnd extends Base\Runner
 
 		$this->wp_admin_bar_customize_menu( $wp_admin_bar );
 
-        $wp_admin_bar->remove_menu('_options'); 				// Raymond Theme - JWSThemes
-		$wp_admin_bar->remove_menu('backwpup'); 				// BackWPup
-        $wp_admin_bar->remove_menu('wpseo-menu'); 				// Yoast SEO
-        $wp_admin_bar->remove_menu('revslider'); 				// Slider Revolution
-        $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); // Visual Composer
-		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); 	// iThemes Security
-        $wp_admin_bar->remove_menu('autoptimize'); 				// Autoptimize
-        $wp_admin_bar->remove_menu('wphb'); 					// Hummingbird
+        $wp_admin_bar->remove_menu('_options'); 						// Raymond Theme - JWSThemes
+		$wp_admin_bar->remove_menu('backwpup'); 						// BackWPup
+        $wp_admin_bar->remove_menu('wpseo-menu'); 						// Yoast SEO
+        $wp_admin_bar->remove_menu('revslider'); 						// Slider Revolution
+        $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); 		// Visual Composer
+		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); 			// iThemes Security
+        $wp_admin_bar->remove_menu('autoptimize'); 						// Autoptimize
+        $wp_admin_bar->remove_menu('wphb'); 							// Hummingbird
+		$wp_admin_bar->remove_menu('monsterinsights_frontend_button'); 	// Monster Insights
 
 		// wp-admin-bar-top-secondary
 		$wp_admin_bar->remove_menu('search');

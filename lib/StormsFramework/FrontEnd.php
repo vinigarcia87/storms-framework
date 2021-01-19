@@ -64,7 +64,9 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'language_attributes', 'language_attributes' )
 			->add_filter( 'body_class', 'body_class' )
 			->add_filter( 'embed_oembed_html', 'oembed_wrap', 10, 4 )
-			->add_filter( 'embed_googlevideo', 'oembed_wrap', 10, 2 );
+			->add_filter( 'embed_googlevideo', 'oembed_wrap', 10, 2 )
+
+			->add_filter( 'wp_is_mobile', 'wp_is_mobile_exclude_tablets' );
 
 		$this->remove_emojis();
 
@@ -409,6 +411,20 @@ class FrontEnd extends Base\Runner
 	public function oembed_wrap( $cache, $url, $attr = '', $post_ID = '' ) {
 		$classes = apply_filters( 'oembed_wrap_classes', array( 'embed-wrap' ) );
 		return '<div class="' . esc_attr( implode( ' ', $classes ) ) . '">' . $cache . '</div>';
+	}
+
+	/**
+	 * Change wp_is_mobile() function to exclude tablets
+	 *
+	 * @param $is_mobile
+	 * @return bool
+	 */
+	public function wp_is_mobile_exclude_tablets( $is_mobile ) {
+
+		if( $is_mobile && Helper::is_tablet() ) {
+			return false;
+		}
+		return $is_mobile;
 	}
 
 	/**
