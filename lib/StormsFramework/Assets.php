@@ -36,11 +36,8 @@ class Assets extends Base\Runner
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
-			->add_action( 'wp_head', 'jquery_local_fallback', 2 );
-			if( !is_admin() ) {
-				$this->loader
-					->add_filter('script_loader_src', 'jquery_local_fallback', 10, 2);
-			}
+			->add_filter( 'script_loader_src', 'jquery_local_fallback', 1, 2 )
+			->add_filter( 'script_loader_src', 'jquery_fix_passive_listeners', 2, 2 );
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'remove_unused_scripts' )
@@ -104,18 +101,65 @@ class Assets extends Base\Runner
 	 * @link http://wordpress.stackexchange.com/a/12450
 	 */
 	public function jquery_local_fallback( $src, $handle = null ) {
-		static $run_next = false;
 
-		if( $run_next && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
+		if( is_admin() ) {
+			return $src;
+		}
+
+		static $jquery_local_fallback_after_jquery = false;
+
+		if( $jquery_local_fallback_after_jquery && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
 			// Defaults to match the version loaded via CDN
-			$local_jquery = Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' );
-			echo '<script>window.jQuery || document.write(\'<script src="' . $local_jquery .'"><\/script>\')</script>' . "\n";
+			$local_jquery = Helper::get_asset_url( '/js/jquery/jquery.min.js' );
 
-			$run_next = false;
+			?>
+			<script>window.jQuery || document.write('<script src="<?php echo esc_url( $local_jquery ); ?>"><\/script>')</script>
+			<?php
+
+			$jquery_local_fallback_after_jquery = false;
 		}
 
 		if( $handle === 'jquery' ) {
-			$run_next = true;
+			$jquery_local_fallback_after_jquery = true;
+		}
+
+		return $src;
+	}
+
+	/**
+	 * Lighthouse Report flagged: Does not use passive listeners to improve scrolling performance
+	 * Issue occurs on jquery
+	 * Output the fix immediately after jQuery's <script>
+	 * @see https://stackoverflow.com/a/65717663/1003020
+	 */
+	public function jquery_fix_passive_listeners( $src, $handle = null ) {
+		if( is_admin() ) {
+			return $src;
+		}
+
+		static $jquery_fix_passive_listeners_after_jquery = false;
+
+		if( $jquery_fix_passive_listeners_after_jquery ) {
+			?>
+			<script>
+				// Passive event listeners
+				jQuery.event.special.touchstart = {
+					setup: function (_, ns, handle) {
+						this.addEventListener("touchstart", handle, {passive: !ns.includes("noPreventDefault")});
+					}
+				};
+				jQuery.event.special.touchmove = {
+					setup: function (_, ns, handle) {
+						this.addEventListener("touchmove", handle, {passive: !ns.includes("noPreventDefault")});
+					}
+				};
+			</script>
+			<?php
+			$jquery_fix_passive_listeners_after_jquery = false;
+		}
+
+		if( 'jquery' === $handle ) {
+			$jquery_fix_passive_listeners_after_jquery = true;
 		}
 
 		return $src;
