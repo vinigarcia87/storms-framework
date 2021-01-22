@@ -304,14 +304,17 @@ class Helper extends Base\Manager
 	}
 
 	/**
-	 * @param $from
-	 * @param $to
+	 * Get how many working days are between two dates
+	 * It can get an array of holidays to take in consideration
+	 *
+	 * @param \DateTime|string $from
+	 * @param \DateTime|string $to
 	 * @param array $holidays
 	 * @return int
+	 * @throws \Exception
 	 */
 	public static function get_number_of_working_days( $from, $to, $holidays = [] ) {
-		$workingDays = [ 1, 2, 3, 4, 5 ]; // date format = N ( 1 = Monday, ... )
-		//$holidayDays = [ '*-12-25', '*-01-01', '2013-12-23' ]; // variable and fixed holidays
+		$working_days = [ 1, 2, 3, 4, 5 ]; // date format = N ( 1 = Monday, ... )
 
 		if( ! ( $from instanceof \DateTime ) ) {
 			$from = new \DateTime( $from );
@@ -320,19 +323,17 @@ class Helper extends Base\Manager
 			$to = new \DateTime( $to );
 		}
 
-		$to->modify( '+1 day' );
-		$interval = new \DateInterval( 'P1D' );
-		$periods = new \DatePeriod( $from, $interval, $to );
+		$holidays = apply_filters( 'storms_number_of_working_days_holidays', $holidays );
+
+		$periods = new \DatePeriod( $from, ( new \DateInterval( 'P1D' ) ), $to->modify( '+1 day' ) );
 
 		$days = 0;
+		/** @var \DateTime $period */
 		foreach ( $periods as $period ) {
-			if( ! in_array( $period->format( 'N' ), $workingDays ) ) {
+			if( ! in_array( $period->format( 'N' ), $working_days ) ) {
 				continue;
 			}
 			if( in_array( $period->format( 'Y-m-d' ), $holidays ) ) {
-				continue;
-			}
-			if( in_array( $period->format( '*-m-d' ), $holidays ) ) {
 				continue;
 			}
 			$days++;
@@ -341,7 +342,11 @@ class Helper extends Base\Manager
 	}
 
 	/**
-	 * @param $from
+	 * Get the next X working day
+	 * Passing $next_days to select how many working days return after the initial $from date
+	 * It can get an array of holidays to take in consideration
+	 *
+	 * @param \DateTime|string $from
 	 * @param int $next_days
 	 * @param array $holidays
 	 * @return \DateTime
@@ -352,17 +357,26 @@ class Helper extends Base\Manager
 		if( ! ( $from instanceof \DateTime ) ) {
 			$from = new \DateTime( $from );
 		}
-		$nextBusinessDay = $from->format( 'Y-m-d' );
+		$next_working_day = $from->format( 'Y-m-d' );
 
-		$days = 0;
-		do {
+		$holidays = apply_filters( 'storms_next_working_day_holidays', $holidays );
+
+		$j = 0;
+		while ( $j++ < $next_days ) {
+
 			$i = 0;
 			do {
-				$nextBusinessDay = date( 'Y-m-d', strtotime( $nextBusinessDay . ' +' . ++$i . ' Weekday' ) );
-			} while( in_array( $nextBusinessDay, $holidays ) );
-		} while( ++$days < $next_days );
+				$next_working_day = date( 'Y-m-d', strtotime( $next_working_day . ' +' . ++$i . ' Weekday' ) );
 
-		return new \DateTime( $nextBusinessDay );
+				$is_holiday = in_array( $next_working_day, $holidays );
+				if( $is_holiday ) {
+					$i = 0;
+				}
+			} while( $is_holiday );
+
+		}
+
+		return new \DateTime( $next_working_day );
 	}
 
 	//<editor-fold desc="Data creation functions">
