@@ -303,6 +303,68 @@ class Helper extends Base\Manager
 		return $html;
 	}
 
+	/**
+	 * @param $from
+	 * @param $to
+	 * @param array $holidays
+	 * @return int
+	 */
+	public static function get_number_of_working_days( $from, $to, $holidays = [] ) {
+		$workingDays = [ 1, 2, 3, 4, 5 ]; // date format = N ( 1 = Monday, ... )
+		//$holidayDays = [ '*-12-25', '*-01-01', '2013-12-23' ]; // variable and fixed holidays
+
+		if( ! ( $from instanceof \DateTime ) ) {
+			$from = new \DateTime( $from );
+		}
+		if( ! ( $to instanceof \DateTime ) ) {
+			$to = new \DateTime( $to );
+		}
+
+		$to->modify( '+1 day' );
+		$interval = new \DateInterval( 'P1D' );
+		$periods = new \DatePeriod( $from, $interval, $to );
+
+		$days = 0;
+		foreach ( $periods as $period ) {
+			if( ! in_array( $period->format( 'N' ), $workingDays ) ) {
+				continue;
+			}
+			if( in_array( $period->format( 'Y-m-d' ), $holidays ) ) {
+				continue;
+			}
+			if( in_array( $period->format( '*-m-d' ), $holidays ) ) {
+				continue;
+			}
+			$days++;
+		}
+		return $days;
+	}
+
+	/**
+	 * @param $from
+	 * @param int $next_days
+	 * @param array $holidays
+	 * @return \DateTime
+	 * @throws \Exception
+	 */
+	public static function get_next_working_day( $from, $next_days = 1, $holidays = [] ) {
+
+		if( ! ( $from instanceof \DateTime ) ) {
+			$from = new \DateTime( $from );
+		}
+		$nextBusinessDay = $from->format( 'Y-m-d' );
+
+		$days = 0;
+		do {
+			$i = 0;
+			do {
+				$nextBusinessDay = date( 'Y-m-d', strtotime( $nextBusinessDay . ' +' . ++$i . ' Weekday' ) );
+			} while( in_array( $nextBusinessDay, $holidays ) );
+		} while( ++$days < $next_days );
+
+		return new \DateTime( $nextBusinessDay );
+	}
+
 	//<editor-fold desc="Data creation functions">
 
 	/**
