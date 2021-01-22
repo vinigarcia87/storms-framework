@@ -596,6 +596,35 @@ class Helper extends Base\Manager
 	//</editor-fold>
 
 	/**
+	 * Fragment caching that takes the output of a code block and stores it so for a predetermined amount of time
+	 * @source https://css-tricks.com/wordpress-fragment-caching-revisited/
+	 *
+	 * @param string $key 			Identifies the fragment - adds a prefix to avoid colliding with other transients
+	 * @param mixed $callback		Function which creates the output
+	 * @param array $callback_args	Function arguments. Defaults to []
+	 * @param float|int $ttl    	Time in seconds for the cache to live. Defaults to DAY_IN_SECONDS
+	 */
+	public static function fragment_cache( $key, $callback, $callback_args = [], $ttl = DAY_IN_SECONDS ) {
+
+		// Prefix the item key
+		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
+
+		// Try to find the item on cache
+		$output = get_transient( $key );
+		if ( empty( $output ) ) {
+
+			// Call the function to create the item
+			ob_start();
+			call_user_func_array( $callback, $callback_args );
+			$output = ob_get_clean();
+
+			// Save the item on cache
+			set_transient( $key, $output, $ttl );
+		}
+		echo $output;
+	}
+
+	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!
 	 * ======================================================================================= */
 
