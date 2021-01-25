@@ -595,8 +595,10 @@ class Helper extends Base\Manager
 
 	//</editor-fold>
 
+	//<editor-fold desc="Cache Fragment functions">
+
 	/**
-	 * Fragment caching that takes the output of a code block and stores it so for a predetermined amount of time
+	 * Print the Fragment cached
 	 * @source https://css-tricks.com/wordpress-fragment-caching-revisited/
 	 *
 	 * @param string $key 			Identifies the fragment - adds a prefix to avoid colliding with other transients
@@ -605,6 +607,20 @@ class Helper extends Base\Manager
 	 * @param float|int $ttl    	Time in seconds for the cache to live. Defaults to DAY_IN_SECONDS
 	 */
 	public static function fragment_cache( $key, $callback, $callback_args = [], $ttl = DAY_IN_SECONDS ) {
+		echo Helper::get_fragment_cache( $key, $callback, $callback_args, $ttl );
+	}
+
+	/**
+	 * Fragment caching that takes the output of a code block and stores it so for a predetermined amount of time
+	 * @source https://css-tricks.com/wordpress-fragment-caching-revisited/
+	 *
+	 * @param string $key 			Identifies the fragment - adds a prefix to avoid colliding with other transients
+	 * @param mixed $callback		Function which creates the output
+	 * @param array $callback_args	Function arguments. Defaults to []
+	 * @param float|int $ttl    	Time in seconds for the cache to live. Defaults to DAY_IN_SECONDS
+	 * @return mixed|string|string[]|null
+	 */
+	public static function get_fragment_cache( $key, $callback, $callback_args = [], $ttl = DAY_IN_SECONDS ) {
 
 		// Prefix the item key
 		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
@@ -612,17 +628,46 @@ class Helper extends Base\Manager
 		// Try to find the item on cache
 		$output = get_transient( $key );
 		if ( empty( $output ) ) {
-
 			// Call the function to create the item
 			ob_start();
 			call_user_func_array( $callback, $callback_args );
 			$output = Helper::minify_html( ob_get_clean() );
 
-			// Save the item on cache
-			set_transient( $key, $output, $ttl );
+			// Avoid save a empty transient
+			if( ! empty( $output ) ) {
+				// Save the item on cache
+				set_transient( $key, $output, $ttl );
+			}
 		}
-		echo $output;
+		return $output;
 	}
+
+	/**
+	 * Check is a cached fragment exists
+	 *
+	 * @param $key
+	 * @return bool
+	 */
+	public static function is_fragment_cache( $key ) {
+		// Prefix the item key
+		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
+
+		return ! empty( get_transient( $key ) );
+	}
+
+	/**
+	 * Remove a cached fragment
+	 *
+	 * @param $key
+	 */
+	public static function remove_fragment_cache( $key ) {
+		// Prefix the item key
+		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
+
+		delete_transient( $key );
+	}
+
+	//</editor-fold>
 
 	//<editor-fold desc="HTML / CSS / Javascript fragment minifier functions">
 
