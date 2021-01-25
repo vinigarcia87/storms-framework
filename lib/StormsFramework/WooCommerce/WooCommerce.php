@@ -183,24 +183,24 @@ class WooCommerce extends Base\Runner
 			wp_deregister_script('selectWoo');
 		}
 
-        // Dequeue scripts and styles
-		if ( ! is_front_page() && ( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) ) {
+		// Dequeue WooCommerce styles
+		wp_dequeue_style( 'woocommerce-layout' );
+		wp_dequeue_style( 'woocommerce-general' );
+		wp_dequeue_style( 'woocommerce-smallscreen' );
 
-			// Dequeue WooCommerce styles
-			wp_dequeue_style( 'woocommerce-layout' );
-			wp_dequeue_style( 'woocommerce-general' );
-			wp_dequeue_style( 'woocommerce-smallscreen' );
-
-			// Dequeue WooCommerce scripts
-			wp_dequeue_script('wc-cart-fragments');
-			wp_dequeue_script('woocommerce');
-			wp_dequeue_script('wc-add-to-cart');
-
-			wp_deregister_script( 'js-cookie' );
+		// Dequeue scripts
+		if( ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
+			wp_dequeue_script( 'woocommerce' );
 			wp_dequeue_script( 'js-cookie' );
+		}
 
+        /*
+		if ( ! is_front_page() && ! is_woocommerce() && ! is_cart() && ! is_checkout() ) {
+			// Dequeue WooCommerce scripts
+			wp_dequeue_script( 'wc-cart-fragments' );
+			wp_dequeue_script( 'wc-add-to-cart' );
         }
-
+        */
     }
 
     /**

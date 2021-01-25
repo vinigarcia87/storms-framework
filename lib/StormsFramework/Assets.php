@@ -37,11 +37,13 @@ class Assets extends Base\Runner
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
 			->add_filter( 'script_loader_src', 'jquery_local_fallback', 1, 2 )
-			->add_filter( 'script_loader_src', 'jquery_fix_passive_listeners', 2, 2 );
+			->add_filter( 'script_loader_src', 'jquery_fix_passive_listeners', 2, 2 )
+			->add_filter( 'script_loader_tag', 'preload_jquery', 10, 3 );
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'remove_unused_scripts' )
-			->add_action( 'wp_enqueue_scripts', 'frontend_scripts' );
+			->add_action( 'wp_enqueue_scripts', 'frontend_scripts' )
+			->add_action( 'wp_enqueue_scripts', 'remove_gutenberg_scripts_and_styles', 999 );
 
 	}
 
@@ -113,7 +115,7 @@ class Assets extends Base\Runner
 			$local_jquery = Helper::get_asset_url( '/js/jquery/jquery.min.js' );
 
 			?>
-			<script>window.jQuery || document.write('<script src="<?php echo esc_url( $local_jquery ); ?>"><\/script>')</script>
+			<script>window.jQuery || document.write('<script  rel="preload" src="<?php echo esc_url( $local_jquery ); ?>"><\/script>')</script>
 			<?php
 
 			$jquery_local_fallback_after_jquery = false;
@@ -166,6 +168,27 @@ class Assets extends Base\Runner
 	}
 
 	/**
+	 * Add rel="preload" to jQuery
+	 *
+	 * @param $tag
+	 * @param $handle
+	 * @param $src
+	 * @return mixed
+	 */
+	function preload_jquery( $tag, $handle, $src ) {
+
+		if ( is_admin() ) {
+			return $tag;
+		}
+
+		if( 'jquery' === $handle ) {
+			return str_replace( '<script', '<script rel="preload"', $tag );
+		}
+
+		return $tag;
+	}
+
+	/**
 	 * We remove some well-know plugin's scripts, so you can add them manually only on the pages you need
 	 * Scripts that we remove are: jquery-form, contact-form-7, newsletter-subscription, wp-embed
 	 */
@@ -186,6 +209,21 @@ class Assets extends Base\Runner
 		if ( is_singular() && comments_open() && Helper::get_option( 'storms_thread_comments' ) ) {
 			wp_enqueue_script( 'comment-reply' );
 		}
+	}
+
+	// DEQUEUE GUTENBERG STYLES FOR FRONT
+
+	/**
+	 * Dequeue Gutenberg styles for front
+	 */
+	function remove_gutenberg_scripts_and_styles() {
+
+		wp_dequeue_script('wp-util');
+		wp_dequeue_script('underscore');
+
+		wp_dequeue_style('wp-block-library');
+		wp_dequeue_style('wc-block-style');
+		wp_dequeue_style('wp-block-library-theme');
 	}
 
 	//</editor-fold>
