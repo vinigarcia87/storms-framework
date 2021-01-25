@@ -36,7 +36,8 @@ class BackEnd extends Base\Runner
 				->add_filter( 'admin_title', 'change_admin_title', 10, 2 )
 				->add_action( 'admin_head', 'set_admin_page_title' )
 				->add_action( 'admin_menu', 'remove_links_from_menu' )
-				->add_action( '_admin_menu', 'remove_appearance_editor' );
+				->add_action( '_admin_menu', 'remove_appearance_editor' )
+				->add_filter( 'image_send_to_editor', 'add_srcset_and_sizes_to_tinymce_img_markup', 10, 9 );
 
 			$this->loader
 				->add_filter( 'heartbeat_settings', 'optimize_heartbeat_settings' )
@@ -167,6 +168,26 @@ class BackEnd extends Base\Runner
 		if( 'yes' === Helper::get_option( 'storms_stop_heartbeat', 'no' ) ) {
 			wp_deregister_script('heartbeat');
 		}
+	}
+
+	/**
+	 * Change the image markup to include srcset and sizes
+	 * when using tinyMCE editor
+	 *
+	 * @param $html
+	 * @param $id
+	 * @param $alt
+	 * @param $title
+	 * @param $align
+	 * @param $url
+	 * @param $size
+	 * @return string
+	 * @throws \Exception
+	 */
+	public function add_srcset_and_sizes_to_tinymce_img_markup( $html, $id, $caption, $title, $align, $url, $size, $alt, $rel ) {
+		//$metadata = wp_get_attachment_metadata( $id );
+		//$url = wp_get_attachment_url( $id );
+		return wp_filter_content_tags( $html );
 	}
 
 	/**
