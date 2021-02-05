@@ -899,6 +899,7 @@ class WooCommerce extends Base\Runner
 		$is_cross_sells = false;
 		$is_up_sells = false;
 		$recent_products = false;
+		$featured_products = false;
 		$sale_products = false;
 		switch ( $woocommerce_loop['name'] ) {
 			// Verificamos se este eh um loop de products
@@ -910,6 +911,11 @@ class WooCommerce extends Base\Runner
 			// Verificamos se este eh um loop de related products
 			case 'related':
 				$is_related = true;
+				break;
+
+			// Verificamos se este eh um loop de featured products
+			case 'featured_products':
+				$featured_products = true;
 				break;
 
 			// Verificamos se este eh um loop de cross-sells
@@ -938,7 +944,7 @@ class WooCommerce extends Base\Runner
 		$classes[] = $woocommerce_loop['name'];
 
 		// Returns true when on a products list
-		if( $is_products || $is_related || $is_cross_sells || $is_up_sells || $recent_products || $sale_products ) {
+		if( $is_products || $is_related || $featured_products || $is_cross_sells || $is_up_sells || $recent_products || $sale_products ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
