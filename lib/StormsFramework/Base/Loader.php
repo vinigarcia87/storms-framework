@@ -22,7 +22,7 @@ class Loader
 
     protected $filters;
 
-    public function __construct($component) {
+    public function __construct( $component ) {
 
         $this->actions = array();
         $this->filters = array();

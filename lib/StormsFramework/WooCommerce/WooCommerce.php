@@ -123,6 +123,12 @@ class WooCommerce extends Base\Runner
 
 			->add_action( 'woocommerce_init', 'force_non_logged_user_wc_session' );
 
+		$this->loader
+			->add_action( 'init', 'register_custom_order_status' )
+			->add_filter('wc_order_statuses', 'register_custom_orders_status')
+			->add_filter( 'woocommerce_admin_order_actions', 'add_custom_order_status_buttons_to_order_admin_actions', 10, 3 )
+			->add_action( 'current_screen', 'add_style_for_custom_order_status_on_orders_admin_page' );
+
 	}
 
 	//<editor-fold desc="Styles and definitions">
@@ -1049,6 +1055,144 @@ class WooCommerce extends Base\Runner
 			echo '</div><div class="st-grid-row row">';
 		}
 
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="Custom Order Status">
+
+	/**
+	 * Return a list of new custom order status to be added
+	 * Status slug can only be a maximum of 20 characters - WooCommerce status are always prefixed with wc-
+	 * @source: https://jilt.com/blog/woocommerce-custom-order-status-2/
+	 *
+	 * @return array
+	 */
+	private function get_custom_order_status() {
+		return apply_filters( 'storms_wc_custom_order_status_list', [] );
+	}
+
+	/**
+	 * Registering our custom status as a post status in WordPress
+	 * @source: https://www.sellwithwp.com/woocommerce-custom-order-status-2/
+	 */
+	public function register_custom_order_status() {
+
+		$custom_order_status_list = $this->get_custom_order_status();
+
+		if( ! empty( $custom_order_status_list ) ) {
+			foreach( $custom_order_status_list as $custom_status ) {
+				$slug = $custom_status['slug'];
+				$label = $custom_status['label'];
+
+				register_post_status( $slug, array(
+					'label' 					=> $label,
+					'public' 					=> true,
+					'exclude_from_search' 		=> false,
+					'show_in_admin_all_list' 	=> true,
+					'show_in_admin_status_list' => true,
+					'label_count' 				=> _n_noop($label . ' <span class="count">(%s)</span>', $label . ' <span class="count">(%s)</span>')
+				) );
+			}
+		}
+	}
+
+	/**
+	 * Add new status to list of WC Order statuses
+	 * source: https://www.sellwithwp.com/woocommerce-custom-order-status-2/
+	 *
+	 * @param $order_statuses
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function register_custom_orders_status( $order_statuses ) {
+
+		$new_order_statuses = array();
+
+		$custom_order_status_list = $this->get_custom_order_status();
+
+		if( ! empty( $custom_order_status_list ) ) {
+
+			foreach( $order_statuses as $key => $status ) {
+
+				$new_order_statuses[$key] = $status;
+
+				// Add new order status after processing
+				if( 'wc-processing' === $key ) {
+					foreach( $custom_order_status_list as $custom_status ) {
+						$slug = $custom_status['slug'];
+						$label = $custom_status['label'];
+
+						$new_order_statuses[$slug] = $label;
+					}
+				}
+			}
+		}
+		return $new_order_statuses;
+	}
+
+	/**
+	 * Add Button Actions in Order list
+	 *
+	 * @param array $actions
+	 * @param \WC_Order $the_order
+	 * @return array
+	 */
+	public function add_custom_order_status_buttons_to_order_admin_actions( $actions, $the_order ) {
+
+		$custom_order_status_list = $this->get_custom_order_status();
+
+		if( ! empty( $custom_order_status_list ) ) {
+
+			$key = 0;
+			do {
+				// Se for o primeiro item da nossa lista custom, faremos ele aparecer depois do 'processing'
+				$action_anterior = $key > 0 ? str_replace( 'wc-', '', $custom_order_status_list[$key - 1]['slug'] ) : 'processing';
+				if( $the_order->has_status( [ $action_anterior ] ) ) {
+
+					// Removemos outros passos, para garantir que nosso custom status seja o unico valido
+					$actions = [];
+
+					// Se for o ultimo item da nossa lista custom, faremos que o proximo passo seja o 'completed'
+					$action = '';
+					if( $key < count( $custom_order_status_list ) ) {
+						$slug = $custom_order_status_list[$key]['slug'];
+						$label = $custom_order_status_list[$key]['label'];
+
+						$action = str_replace( 'wc-', '', $slug );
+					} else if( $key == count( $custom_order_status_list ) ) {
+						$action = 'complete';
+						$label = __( 'Complete', 'woocommerce' );
+					}
+
+					if( ! empty( $action ) ) {
+						$actions[$action] = array(
+							'url'    => wp_nonce_url( admin_url( 'admin-ajax.php?action=woocommerce_mark_order_status&status=' . $action . '&order_id=' . $the_order->get_id() ), 'woocommerce-mark-order-status' ),
+							'name'   => $label,
+							'action' => $action,
+						);
+					}
+				}
+
+				$key++;
+			} while( $key <= count( $custom_order_status_list ) );
+		}
+		return $actions;
+	}
+
+	/**
+	 * Add a style for custom order status action buttons and status alert box on woocommerce orders page
+	 */
+	function add_style_for_custom_order_status_on_orders_admin_page() {
+		$current_screen = get_current_screen();
+
+		if( 'edit' == $current_screen->base && 'shop_order' == $current_screen->post_type ) {
+
+			echo '<style>';
+			echo apply_filters( 'storms_wc_custom_order_status_style', '' );
+			echo '</style>';
+
+		}
 	}
 
 	//</editor-fold>

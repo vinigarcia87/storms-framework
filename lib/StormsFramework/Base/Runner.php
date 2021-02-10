@@ -21,6 +21,9 @@ use StormsFramework\Base;
 
 class Runner extends Manager
 {
+	/**
+	 * @var Base\Loader
+	 */
     protected $loader;
 
 	/**
@@ -33,6 +36,12 @@ class Runner extends Manager
 	/**
 	 * Armazena o slug do plugin carregado, sua versao e sua instancia
 	 * Executa o carregamento do Loader e os hooks definidos
+	 *
+	 * Runner constructor.
+	 * @param $plugin_slug
+	 * @param $version
+	 * @param $component
+	 * @throws \Exception
 	 */
     public function __construct( $plugin_slug, $version, $component ) {
         parent::__construct( $plugin_slug, $version, $component );
@@ -45,13 +54,16 @@ class Runner extends Manager
 	 * Load Base\Loader class
 	 */
     private function load_dependencies() {
-		if(empty($this->loader))
-			$this->loader = new Base\Loader($this->component);
+		if( empty( $this->loader ) ) {
+			$this->loader = new Base\Loader( $this->component );
+		}
     }
 
 	/**
 	 * Define os hooks da classe de customizacao
 	 * Este metodo deve ser sobreescrito na classe que extende essa base
+	 *
+	 * @throws \Exception
 	 */
     public function define_hooks() {
 		throw new \Exception( '\'' . __METHOD__ . '\' Not implemented for \'' . get_class( $this->component ) .'\'' );
