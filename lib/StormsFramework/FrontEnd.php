@@ -372,12 +372,12 @@ class FrontEnd extends Base\Runner
         }
 
         // Remove the default version parameter from resources
-	    $src = esc_url( remove_query_arg( 'ver', $src ) );
+	    $src = remove_query_arg( 'ver', $src );
 
 		// Apply a versioning number based on modification time of functions.php
 	    if( Helper::get_option( 'storms_timestamp_assets', 'yes' ) ) {
             $ver = filemtime( get_stylesheet_directory() . '/functions.php' );
-            $src = esc_url( add_query_arg( [ 'ver' => $ver ], $src ) );
+            $src = add_query_arg( [ 'ver' => $ver ], $src );
         }
 
         return $src;
