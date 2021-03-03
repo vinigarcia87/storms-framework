@@ -63,6 +63,12 @@ class BackEnd extends Base\Runner
 		$this->loader
 			->add_filter( 'login_redirect', 'login_redirect', 10, 3 )
 			->add_filter( 'login_errors', 'login_error_msg' );
+
+		// Disable XML-RPC
+		// @see https://kinsta.com/pt/blog/xmlrpc-php/
+		add_filter( 'xmlrpc_enabled', '__return_null' );
+		$this->loader
+			->add_filter( 'bloginfo_url', 'remove_pingback_url', 10, 2 );
     }
 
 	//<editor-fold desc="Admin modifications">
@@ -512,4 +518,19 @@ class BackEnd extends Base\Runner
 
 	//</editor-fold>
 
+	/**
+	 * Removes the pingback header
+	 *
+	 * @param string $output
+	 * @param string $show
+	 * @return string
+	 */
+	function remove_pingback_url( $output, $show ) {
+
+		if ( $show == 'pingback_url' ) {
+			$output = '';
+		}
+
+		return $output;
+	}
 }

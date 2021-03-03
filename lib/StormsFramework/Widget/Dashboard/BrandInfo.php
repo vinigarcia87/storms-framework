@@ -64,8 +64,13 @@ class BrandInfo extends Base\Manager
         }
         $env .= ( (defined( 'WP_DEBUG' ) && WP_DEBUG) ? '<i> - DEBUG está habilitado.</i>' : '' );
 
+        // Last modified date of child theme functions.php
+		date_default_timezone_set( 'America/Sao_Paulo' );
+		$ver_date = date( 'Y-m-d H:i:s', filemtime( get_stylesheet_directory() . '/functions.php' ) );
+
 		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . ' ' .
-							( '' == STORMS_SYSTEM_COMMIT ? '<br>' : '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' ) .
+							'<small>' . '@ ' . $ver_date . '</small><br>' .
+							// ( '' == STORMS_SYSTEM_COMMIT ? '<br>' : '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' ) .
 			                __( 'System environment', 'storms' ) . ': ' . $env . '<br><br>' .
 							__( 'PHP version', 'storms' ) . ': ' . phpversion() . '<br>' .
 							__( 'Wordpress version', 'storms' ) . ': ' . $wp_version . '<br>' .

@@ -37,14 +37,7 @@ class FrontEnd extends Base\Runner
 
 		$this->remove_oembed();
 
-		/**
-		 * Set X-Frame-Options Header in Wordpress
-		 * The X-Frame-Options HTTP response header can be used to indicate whether or not a browser
-		 * should be allowed to render a page in a <frame>, <iframe>, <embed> or <object>. Sites can
-		 * use this to avoid click-jacking attacks, by ensuring that their content is not embedded into other sites
-		 * @see https://stackoverflow.com/a/44573750/1003020
-		 */
-		add_action( 'send_headers', 'send_frame_options_header', 10, 0 );
+		$this->loader->add_action( 'send_headers', 'http_header_security', 10, 0 );
 
 		// Links and tags cleanup
 		$this->loader
@@ -259,6 +252,75 @@ class FrontEnd extends Base\Runner
 	}
 
 	//</editor-fold>
+
+	/**
+	 * Harden and improve WordPress security
+	 * @see https://digital.com/wordpress-hosting/security/
+	 * @see https://scotthelme.co.uk/hardening-your-http-response-headers/
+	 */
+	public function http_header_security() {
+
+		/**
+		 * Content Security Policy (CSP)
+		 * CSP helps mitigate XSS attacks by whitelisting the allowed sources of content such as scripts, styles, and images.
+		 * A content security policy can prevent the browser from loading malicious assets.
+		 * Unfortunately there isn’t an one size fit all approach to CSP’s. Before you create your CSP you need to evaluate the
+		 * resources you’re actually loading. Once you think you have a handle on how resources are loading you can set up a
+		 * policy based on those requirements.
+		 * @see https://scotthelme.co.uk/content-security-policy-an-introduction/
+		 * @see https://blog.sucuri.net/2018/04/content-security-policy.html
+		 */
+		//header("Content-Security-Policy: default-src 'self' 'unsafe-inline' 'unsafe-eval' https: data:");
+
+		/**
+		 * Set X-Frame-Options Header
+		 * The X-Frame-Options HTTP response header can be used to indicate whether or not a browser
+		 * should be allowed to render a page in a <frame>, <iframe>, <embed> or <object>. Sites can
+		 * use this to avoid click-jacking attacks, by ensuring that their content is not embedded into other sites
+		 * @see https://stackoverflow.com/a/44573750/1003020
+		 */
+		send_frame_options_header();
+
+		/**
+		 * X-XSS-Protection and X-Content-Type-Options
+		 * The X-XSS-Protection helps mitigate Cross-site scripting (XSS) attacks and X-Content-Type-Options header instructs
+		 * IE not to sniff mime types, preventing attacks related to mime-sniffing.
+		 */
+		header('X-XSS-Protection: 1; mode=block');
+		header('X-Content-Type-Options: nosniff');
+
+		/**
+		 * HTTP Strict Transport Security (HSTS)
+		 * HSTS is a way for the server to instruct the browser that the browser should only communicate with the server
+		 * over HTTPS.
+		 */
+		header('Strict-Transport-Security:max-age=31536000; includeSubdomains; preload');
+
+		/**
+		 * Referrer Policy
+		 * Allows a site to control how much information the browser includes with navigations away from a document and
+		 * should be set by all sites.
+		 * @see https://scotthelme.co.uk/a-new-security-header-referrer-policy/
+		 */
+		header('Referrer-Policy: no-referrer-when-downgrade');
+
+		/**
+		 * Permissions Policy
+		 * Allows a site to control which features and APIs can be used in the browser
+		 */
+		//header('permissions-policy: accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()');
+
+		/**
+		 * Implement Cookie with HTTPOnly and Secure flag in WordPress
+		 * This instructs the browser to trust the cookie only by the server and that cookie is accessible over secure SSL channels.
+		 * @see https://geekflare.com/wordpress-x-frame-options-httponly-cookie/
+		 */
+		@ini_set('session.cookie_httponly', true);
+		@ini_set('session.cookie_secure', true);
+		@ini_set('session.use_only_cookies', true);
+		@ini_set( 'session.cookie_samesite', 'None' );
+
+	}
 
 	//<editor-fold desc="Styles, links and tags cleanup">
 
