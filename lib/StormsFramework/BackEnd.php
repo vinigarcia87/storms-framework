@@ -434,6 +434,12 @@ class BackEnd extends Base\Runner
 				'context' => 'normal'
 			),
 
+			// Yoast SEO widget
+			'wpseo-dashboard-overview' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
+
 			// YITH widgets
 			'yith_dashboard_products_news' => array(
 				'page'    => 'dashboard',
