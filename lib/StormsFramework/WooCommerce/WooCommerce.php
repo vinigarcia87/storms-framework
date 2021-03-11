@@ -854,8 +854,8 @@ class WooCommerce extends Base\Runner
 	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
 	 */
     public function related_products_on_product_page_args( $args ) {
-		$args['posts_per_page'] = 3; // 3 related products
-		$args['columns'] = apply_filters( 'woocommerce_related_products_columns', 3 ); // Default: arranged in 3 columns
+		$args['posts_per_page'] = Helper::get_option( 'storms_related_products_limit', 3 ); // 3 related products
+		$args['columns'] = apply_filters( 'woocommerce_related_products_columns', Helper::get_option( 'storms_related_products_columns', 3 ) ); // Default: arranged in 3 columns
 		return $args;
 	}
 
@@ -863,8 +863,8 @@ class WooCommerce extends Base\Runner
 	 * Change number of upsell products on product page
 	 */
 	public function upsell_on_product_page_args( $args ) {
-		$args['posts_per_page'] = 3; // 3 related products
-		$args['columns'] = apply_filters( 'woocommerce_upsells_columns', 3 ); // Default: arranged in 3 columns
+		$args['posts_per_page'] = Helper::get_option( 'storms_upsells_limit', 3 ); // 3 related products
+		$args['columns'] = apply_filters( 'woocommerce_upsells_columns', Helper::get_option( 'storms_upsells_columns', 3 ) ); // Default: arranged in 3 columns
 		return $args;
 	}
 
@@ -875,7 +875,7 @@ class WooCommerce extends Base\Runner
      * @return int
      */
     public function cross_sells_limit( $limit ) {
-        return 3; // @TODO Make this customizable
+        return Helper::get_option( 'storms_cross_sells_limit', 3 );
     }
 
     /**
@@ -885,7 +885,7 @@ class WooCommerce extends Base\Runner
      * @return int
      */
     public function cross_sells_columns( $columns ) {
-        return 3; // @TODO Make this customizable
+        return Helper::get_option( 'storms_cross_sells_columns', 3 );
     }
 
 	/**
