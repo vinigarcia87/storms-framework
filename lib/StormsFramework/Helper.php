@@ -17,6 +17,7 @@
 
 namespace StormsFramework;
 
+use PHPMailer\PHPMailer\Exception;
 use StormsFramework\Base;
 
 class Helper extends Base\Manager
@@ -69,13 +70,17 @@ class Helper extends Base\Manager
 	 * @param $variable
 	 * @param string $title
 	 * @param bool $write_on_file
-	 * @throws \Exception
 	 */
 	public static function debug( $variable, $title = '', $write_on_file = true ) {
 		if( ! $write_on_file ) {
 			echo Helper::get_debug_string( $variable, $title );
 		} else {
-			$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
+			$date = '****-**-** **:**:**';
+			try {
+				$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
+			} catch( \Exception $e ) {
+				// Nothing to do...
+			}
 			$title = ($title != '') ? '== ' . $title . ' ===================================' : '';
 			$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
 
@@ -98,10 +103,14 @@ class Helper extends Base\Manager
 	 * @param $variable
 	 * @param string $title
 	 * @return string
-	 * @throws \Exception
 	 */
 	public static function get_debug_string( $variable, $title = '' ) {
-		$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
+		$date = '****-**-** **:**:**';
+		try {
+			$date = (new \DateTime( 'now', new \DateTimeZone( 'America/Sao_Paulo' ) ))->format( 'Y-m-d H:i:s' );
+		} catch( \Exception $e ) {
+			// Nothing to do...
+		}
 		$title = $date . ( ($title != '') ? ' == ' . $title . ' ==' : '' );
 		$content = ( !is_scalar( $variable ) ) ? print_r( $variable, true ) : $variable;
 
@@ -378,6 +387,66 @@ class Helper extends Base\Manager
 
 		return new \DateTime( $next_working_day );
 	}
+
+	//<editor-fold desc="Data creation functions">
+
+	public static $storms_shop_information = [];
+
+	public static function save_shop_information( $shop_information ) {
+		update_option( 'storms_shop_information', [
+			'address'		=> $shop_information['address'],
+			'contact'		=> $shop_information['contact'],
+			'working_hours'	=> $shop_information['working_hours'],
+			'social_media'	=> $shop_information['social_media'],
+		] );
+		Helper::$storms_shop_information = get_option( 'storms_shop_information' );
+	}
+
+	public static function get_shop_info( $info ) {
+		if( empty( Helper::$storms_shop_information ) ) {
+			Helper::$storms_shop_information = get_option('storms_shop_information');
+		}
+		return Helper::$storms_shop_information[$info] ?? [];
+	}
+
+	public static function get_shop_info_item( $info, $item ) {
+		$shop_info = Helper::get_shop_info( $info );
+		return empty( $shop_info ) ? '' : $shop_info[$item];
+	}
+
+	public static function get_shop_address() {
+		return Helper::get_shop_info( 'address' );
+	}
+
+	public static function get_shop_address_item( $item ) {
+		return Helper::get_shop_info_item( 'address', $item );
+	}
+
+	public static function get_shop_contact() {
+		return Helper::get_shop_info( 'contact' );
+	}
+
+	public static function get_shop_contact_item( $item ) {
+		return Helper::get_shop_info_item( 'contact', $item );
+	}
+
+	public static function get_shop_working_hours() {
+		return Helper::get_shop_info( 'working_hours' );
+	}
+
+	public static function get_shop_working_hours_item( $item ) {
+		return Helper::get_shop_info_item( 'working_hours', $item );
+	}
+
+	public static function get_shop_social_media() {
+		return Helper::get_shop_info( 'social_media' );
+	}
+
+	public static function get_shop_social_media_item( $item ) {
+		return Helper::get_shop_info_item( 'social_media', $item );
+	}
+
+	//</editor-fold>
 
 	//<editor-fold desc="Data creation functions">
 
