@@ -88,8 +88,8 @@ class StormsApi extends Base\Runner
 			do_action( 'storms_api_' . $api_request );
 
 			// Done, clear buffer and exit.
-			//ob_end_clean();
-			//die( '-1' );
+			ob_end_clean();
+			die( '-1' );
 		}
 	}
 
