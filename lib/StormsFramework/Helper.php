@@ -664,6 +664,23 @@ class Helper extends Base\Manager
 
 	//</editor-fold>
 
+	/**
+	 * Wrapper for nocache_headers which also disables page caching.
+	 */
+	public static function nocache_headers() {
+		if ( ! defined( 'DONOTCACHEPAGE' ) ) {
+			define( 'DONOTCACHEPAGE', true );
+		}
+		if ( ! defined( 'DONOTCACHEOBJECT' ) ) {
+			define( 'DONOTCACHEOBJECT', true );
+		}
+		if ( ! defined( 'DONOTCACHEDB' ) ) {
+			define( 'DONOTCACHEDB', true );
+		}
+
+		nocache_headers();
+	}
+
 	//<editor-fold desc="Cache Fragment functions">
 
 	/**

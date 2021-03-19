@@ -12,12 +12,38 @@
  * This code creates the shop cart as a shortcode or widget
  */
 
+namespace StormsFramework\WooCommerce;
+
+use StormsFramework\Helper;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Storms_WC_Cart_Mini extends WC_Widget
+class Storms_WC_Cart_Mini extends \WC_Widget
 {
+	public function register_widget() {
+		register_widget( '\StormsFramework\WooCommerce\Storms_WC_Cart_Mini' );
+
+		add_filter( 'woocommerce_add_to_cart_fragments', array( '\StormsFramework\WooCommerce\Storms_WC_Cart_Mini', 'wc_cart_mini_ajax_fragments' ), 10 );
+	}
+
+	public static function wc_cart_mini_ajax_fragments( $fragments ) {
+		if ( ! defined('WOOCOMMERCE_CART') ) {
+			define( 'WOOCOMMERCE_CART', true );
+		}
+
+		// Select the html element to be replaced with the updated cart
+		ob_start();
+		the_widget( '\StormsFramework\WooCommerce\Storms_WC_Cart_Mini', [ 'wrap_widget' => 'no' ] );
+		$fragments['div.storms-cart-contents'] = Helper::minify_html( ob_get_clean() );
+
+		ob_start();
+		the_widget( '\StormsFramework\WooCommerce\Storms_WC_Cart_Mini', [  'wrap_widget' => 'no' , 'show_products_list' => 'no' ] );
+		$fragments['div.storms-cart-contents-no-list'] = Helper::minify_html( ob_get_clean() );
+
+		return $fragments;
+	}
 
 	/**
 	 * Constructor
@@ -58,7 +84,7 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		// Add WordPress data to a Javascript file
 		wp_localize_script( 'storms-wc-cart-mini-script', 'storms_wc_mini_cart_vars', [
 			'ajax_url' => admin_url( 'admin-ajax.php' ),
-			'wc_ajax_url' => WC_AJAX::get_endpoint( "%%endpoint%%" ),
+			'wc_ajax_url' => \WC_AJAX::get_endpoint( "%%endpoint%%" ),
 			'debug_mode' => defined( 'WP_DEBUG' ) && WP_DEBUG,
 		] );
 	}
@@ -88,7 +114,7 @@ class Storms_WC_Cart_Mini extends WC_Widget
 		// Make sure cart is loaded!
 		// @see https://wordpress.org/support/topic/activation-breaks-customise?replies=10#post-7908988
 		if ( empty( $woocommerce->cart ) ) {
-			$woocommerce->cart = new WC_Cart();
+			$woocommerce->cart = new \WC_Cart();
 		}
 
 		// $woocommerce->cart->get_cart_total() is not a display function,
@@ -143,61 +169,3 @@ class Storms_WC_Cart_Mini extends WC_Widget
 	}
 
 }
-
-/**
- * Minify html output
- * @see https://stackoverflow.com/a/48123642/1003020
- * @param $html
- * @return string|string[]|null
- */
-function storms_minify_html( $html ) {
-	$search = array(
-		'/(\n|^)(\x20+|\t)/',
-		'/(\n|^)\/\/(.*?)(\n|$)/',
-		'/\n/',
-		'/\<\!--.*?-->/',
-		'/(\x20+|\t)/', 	// Delete multispace (Without \n)
-		'/\>\s+\</', 		// strip whitespaces between tags
-		'/(\"|\')\s+\>/', 	// strip whitespaces between quotation ("') and end tags
-		'/=\s+(\"|\')/'); 	// strip whitespaces between = "'
-
-	$replace = array( "\n", "\n", " ", "", " ", "><", "$1>", "=$1" );
-
-	/*
-	$search = array(
-		'/\>[^\S ]+/s',     // strip whitespaces after tags, except space
-		'/[^\S ]+\</s',     // strip whitespaces before tags, except space
-		'/(\s)+/s',         // shorten multiple whitespace sequences
-		'/<!--(.|\s)*?-->/' // Remove HTML comments
-	);
-
-	$replace = array( '>', '<', '\\1', '' );
-	*/
-
-	$html = preg_replace( $search, $replace, $html );
-	return $html;
-}
-
-function storms_wc_cart_mini_ajax_fragments( $fragments )
-{
-	if ( ! defined('WOOCOMMERCE_CART') ) {
-		define( 'WOOCOMMERCE_CART', true );
-	}
-
-	// Select the html element to be replaced with the updated cart
-	ob_start();
-	the_widget( 'Storms_WC_Cart_Mini', [ 'wrap_widget' => 'no' ] );
-	$fragments['div.storms-cart-contents'] = storms_minify_html( ob_get_clean() );
-
-	ob_start();
-	the_widget( 'Storms_WC_Cart_Mini', [  'wrap_widget' => 'no' , 'show_products_list' => 'no' ] );
-	$fragments['div.storms-cart-contents-no-list'] = storms_minify_html( ob_get_clean() );
-
-	return $fragments;
-}
-add_filter( 'woocommerce_add_to_cart_fragments', 'storms_wc_cart_mini_ajax_fragments', 10 );
-
-function storms_register_wc_cart_mini() {
-	register_widget('Storms_WC_Cart_Mini');
-}
-add_action( 'widgets_init', 'storms_register_wc_cart_mini' );

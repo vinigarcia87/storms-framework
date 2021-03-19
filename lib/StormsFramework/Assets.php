@@ -195,7 +195,7 @@ class Assets extends Base\Runner
 	public function remove_unused_scripts() {
 		// We remove some know plugin's scripts, so you can add them only on the pages you need
 		wp_deregister_script( 'jquery-form' );
-		//wp_deregister_script('contact-form-7');
+		//wp_deregister_script( 'contact-form-7' );
 		wp_deregister_script( 'newsletter-subscription' );
 		wp_deregister_script( 'wp-embed' ); // https://codex.wordpress.org/Embeds
 	}
@@ -220,6 +220,10 @@ class Assets extends Base\Runner
 
 		wp_dequeue_script('wp-util');
 		wp_dequeue_script('underscore');
+
+		//wp_deregister_script('hoverintent-js'); // Needed by admin-bar - Only used for users that have admin-bar
+
+		//wp_deregister_script('wp-api-fetch'); // Need by contact-form-7
 
 		wp_dequeue_style('wp-block-library');
 		wp_dequeue_style('wc-block-style');

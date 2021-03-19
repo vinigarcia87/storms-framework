@@ -71,7 +71,7 @@ function storms_load_extensions() {
 			}
 
 			if ( $support_bootstrap ) {
-				(new Bootstrap\Bootstrap)->run();
+				(new Bootstrap\Bootstrap())->run();
 			}
 		}
 	}
@@ -81,15 +81,17 @@ function storms_load_extensions() {
 			// Declare WooCommerce support
 			add_theme_support( 'woocommerce' );
 
-			(new WooCommerce\WooCommerce)->run();
+			(new WooCommerce\WooCommerce())->run();
 
 			// Registering WooCommerce Mini Cart Widget
-			require_once __DIR__ . '/StormsFramework/WooCommerce/Storms_WC_Cart_Mini.php';
+			add_action( 'widgets_init', array( new WooCommerce\Storms_WC_Cart_Mini(), 'register_widget' ) );
 
 			// Registering WooCommerce User Menu Widget
-			require_once __DIR__ . '/StormsFramework/WooCommerce/Storms_WC_User_Menu.php';
+			add_action( 'widgets_init', array( new WooCommerce\Storms_WC_User_Menu(), 'register_widget' ) );
 		}
 	}
+
+	(new \StormsFramework\StormsApi())->run();
 }
 add_action( 'after_setup_theme', 'storms_load_extensions', 14 );
 

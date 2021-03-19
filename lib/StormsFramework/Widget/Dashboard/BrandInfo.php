@@ -70,7 +70,6 @@ class BrandInfo extends Base\Manager
 
 		$brand_extra_info = '<p>' . __( 'System version', 'storms' ) . ': ' . STORMS_SYSTEM_VERSION . ' ' .
 							'<small>' . '@ ' . $ver_date . '</small><br>' .
-							// ( '' == STORMS_SYSTEM_COMMIT ? '<br>' : '<small>Commit #' . STORMS_SYSTEM_COMMIT . '</small><br>' ) .
 			                __( 'System environment', 'storms' ) . ': ' . $env . '<br><br>' .
 							__( 'PHP version', 'storms' ) . ': ' . phpversion() . '<br>' .
 							__( 'Wordpress version', 'storms' ) . ': ' . $wp_version . '<br>' .

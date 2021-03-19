@@ -12,12 +12,19 @@
  * This code creates a user menu as a shortcode or widget
  */
 
+namespace StormsFramework\WooCommerce;
+
+use StormsFramework\Widget\Storms_Widget;
+
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-class Storms_WC_User_Menu extends WC_Widget
+class Storms_WC_User_Menu extends Storms_Widget
 {
+	public function register_widget() {
+		register_widget( '\StormsFramework\WooCommerce\Storms_WC_User_Menu' );
+	}
 
 	/**
 	 * Constructor
@@ -73,7 +80,7 @@ class Storms_WC_User_Menu extends WC_Widget
 
 		$current_user = wp_get_current_user();
 
-		if ( ! ( $current_user instanceof WP_User ) ) {
+		if ( ! ( $current_user instanceof \WP_User ) ) {
 			return;
 		}
 
@@ -129,8 +136,3 @@ class Storms_WC_User_Menu extends WC_Widget
 	}
 
 }
-
-function storms_register_wc_user_menu() {
-	register_widget('Storms_WC_User_Menu');
-}
-add_action( 'widgets_init', 'storms_register_wc_user_menu' );
