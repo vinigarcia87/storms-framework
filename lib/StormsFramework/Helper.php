@@ -398,6 +398,7 @@ class Helper extends Base\Manager
 			'contact'		=> $shop_information['contact'],
 			'working_hours'	=> $shop_information['working_hours'],
 			'social_media'	=> $shop_information['social_media'],
+			'others'		=> $shop_information['others'],
 		] );
 		Helper::$storms_shop_information = get_option( 'storms_shop_information' );
 	}
@@ -444,6 +445,14 @@ class Helper extends Base\Manager
 
 	public static function get_shop_social_media_item( $item ) {
 		return Helper::get_shop_info_item( 'social_media', $item );
+	}
+
+	public static function get_shop_others() {
+		return Helper::get_shop_info( 'others' );
+	}
+
+	public static function get_shop_others_item( $item ) {
+		return Helper::get_shop_info_item( 'others', $item );
 	}
 
 	//</editor-fold>
