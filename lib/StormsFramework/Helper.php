@@ -412,7 +412,7 @@ class Helper extends Base\Manager
 
 	public static function get_shop_info_item( $info, $item ) {
 		$shop_info = Helper::get_shop_info( $info );
-		return empty( $shop_info ) ? '' : $shop_info[$item];
+		return ( empty( $shop_info ) || !isset( $shop_info[$item] ) ) ? '' : $shop_info[$item];
 	}
 
 	public static function get_shop_address() {
