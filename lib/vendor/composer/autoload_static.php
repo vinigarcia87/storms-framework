@@ -34,7 +34,6 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
         'Detection\\MobileDetect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/namespaced/Detection/MobileDetect.php',
         'Mobile_Detect' => __DIR__ . '/..' . '/mobiledetect/mobiledetectlib/Mobile_Detect.php',
-        'StormsFramework\\Assets' => __DIR__ . '/../..' . '/StormsFramework/Assets.php',
         'StormsFramework\\BackEnd' => __DIR__ . '/../..' . '/StormsFramework/BackEnd.php',
         'StormsFramework\\Base\\Loader' => __DIR__ . '/../..' . '/StormsFramework/Base/Loader.php',
         'StormsFramework\\Base\\Manager' => __DIR__ . '/../..' . '/StormsFramework/Base/Manager.php',
@@ -47,9 +46,13 @@ class ComposerStaticInit8f40bb2486504e76c09afd22340f8db3
         'StormsFramework\\Configuration' => __DIR__ . '/../..' . '/StormsFramework/Configuration.php',
         'StormsFramework\\FrontEnd' => __DIR__ . '/../..' . '/StormsFramework/FrontEnd.php',
         'StormsFramework\\Helper' => __DIR__ . '/../..' . '/StormsFramework/Helper.php',
+        'StormsFramework\\StormsApi' => __DIR__ . '/../..' . '/StormsFramework/StormsApi.php',
         'StormsFramework\\Template' => __DIR__ . '/../..' . '/StormsFramework/Template.php',
         'StormsFramework\\Widget\\Dashboard\\BrandInfo' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/BrandInfo.php',
         'StormsFramework\\Widget\\Dashboard\\SystemErrors' => __DIR__ . '/../..' . '/StormsFramework/Widget/Dashboard/SystemErrors.php',
+        'StormsFramework\\Widget\\Storms_Widget' => __DIR__ . '/../..' . '/StormsFramework/Widget/Storms_Widget.php',
+        'StormsFramework\\WooCommerce\\Storms_WC_Cart_Mini' => __DIR__ . '/../..' . '/StormsFramework/WooCommerce/Storms_WC_Cart_Mini.php',
+        'StormsFramework\\WooCommerce\\Storms_WC_User_Menu' => __DIR__ . '/../..' . '/StormsFramework/WooCommerce/Storms_WC_User_Menu.php',
         'StormsFramework\\WooCommerce\\WooCommerce' => __DIR__ . '/../..' . '/StormsFramework/WooCommerce/WooCommerce.php',
     );
 

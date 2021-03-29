@@ -21,6 +21,8 @@ use StormsFramework\Base;
 
 class FrontEnd extends Base\Runner
 {
+	private $jquery_version = '3.4.1';
+
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
     }
@@ -62,6 +64,28 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'wp_is_mobile', 'wp_is_mobile_exclude_tablets' );
 
 		$this->remove_emojis();
+
+		$this->loader
+			->add_filter( 'stylesheet_uri', 'stylesheet_uri', 10, 2 )
+			->add_action( 'wp_enqueue_scripts', 'enqueue_main_style', 10 )
+			->add_action( 'wp_enqueue_scripts', 'remove_unused_styles', 10 );
+
+		$this->loader
+			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
+			->add_filter( 'script_loader_src', 'jquery_local_fallback', 1, 2 )
+			->add_filter( 'script_loader_src', 'jquery_fix_passive_listeners', 2, 2 )
+			->add_filter( 'script_loader_tag', 'preload_jquery', 10, 3 );
+
+		$this->loader
+			->add_action( 'wp_enqueue_scripts', 'remove_unused_scripts' )
+			->add_action( 'wp_enqueue_scripts', 'frontend_scripts' )
+			->add_action( 'wp_enqueue_scripts', 'remove_gutenberg_scripts_and_styles', 999 );
+
+		$this->loader
+			->add_filter( 'wp_resource_hints', 'prefetch_dns', 10, 2 )
+			->add_action( 'wp_head', 'preload_scripts', 2 )
+			->add_filter( 'script_loader_tag', 'defer_async_scripts', 10, 3 )
+			->add_filter( 'style_loader_tag', 'defer_async_styles', 10, 4 );
 
 		$this->loader
 			->add_filter( 'wp_head', 'remove_wp_widget_recent_comments_style', 1 )
@@ -251,8 +275,6 @@ class FrontEnd extends Base\Runner
 		remove_action('wp_head', 'wp_oembed_add_host_js');
 	}
 
-	//</editor-fold>
-
 	/**
 	 * Harden and improve WordPress security
 	 * @see https://digital.com/wordpress-hosting/security/
@@ -322,6 +344,318 @@ class FrontEnd extends Base\Runner
 
 	}
 
+	//</editor-fold>
+
+	//<editor-fold desc="Scripts and Styles">
+
+	/**
+	 * Custom stylesheet URI
+	 * get_stylesheet_uri() return assets/css/style.min.css
+	 *
+	 * @param $stylesheet
+	 * @param $stylesheet_dir
+	 * @return bool|string
+	 */
+	public function stylesheet_uri( $stylesheet, $stylesheet_dir ) {
+		return Helper::get_asset_url( '/css/style' . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' ) . '.css' );
+	}
+
+	/**
+	 * Register and load main theme stylesheet
+	 */
+	public function enqueue_main_style() {
+		// Default Theme Style
+		wp_enqueue_style( 'main-style-theme', get_stylesheet_uri(), array(), STORMS_FRAMEWORK_VERSION, 'all' );
+	}
+
+	/**
+	 * We remove some well-know plugin's styles, so you can add them manually only on the pages you need
+	 * Styles that we remove are: contact-form-7, newsletter-subscription, newsletter_enqueue_style
+	 */
+	public function remove_unused_styles() {
+		//wp_deregister_style( 'contact-form-7' );
+		wp_deregister_style( 'newsletter-subscription' );
+		add_filter( 'newsletter_enqueue_style', '__return_false' );
+	}
+
+	/**
+	 * Enqueue jQuery scripts
+	 */
+	public function jquery_scripts() {
+		// http://jquery.com/
+		wp_deregister_script( 'jquery' ); // Remove o jquery padrao do wordpress
+		if( Helper::get_option( 'storms_load_jquery', 'yes' ) ) {
+
+			// Decide se carrega jquery externo ou interno
+			if( !is_admin() && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
+				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, $this->jquery_version, false);
+			}
+			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
+
+			wp_enqueue_script('jquery');
+		}
+	}
+
+	/**
+	 * Output the local fallback immediately after jQuery's <script>
+	 * Only if external jquery is been used
+	 * @link http://wordpress.stackexchange.com/a/12450
+	 */
+	public function jquery_local_fallback( $src, $handle = null ) {
+
+		if( is_admin() ) {
+			return $src;
+		}
+
+		static $jquery_local_fallback_after_jquery = false;
+
+		if( $jquery_local_fallback_after_jquery && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
+			// Defaults to match the version loaded via CDN
+			$local_jquery = Helper::get_asset_url( '/js/jquery/jquery.min.js' );
+
+			?>
+			<script>window.jQuery || document.write('<script  rel="preload" src="<?php echo esc_url( $local_jquery ); ?>"><\/script>')</script>
+			<?php
+
+			$jquery_local_fallback_after_jquery = false;
+		}
+
+		if( $handle === 'jquery' ) {
+			$jquery_local_fallback_after_jquery = true;
+		}
+
+		return $src;
+	}
+
+	/**
+	 * Lighthouse Report flagged: Does not use passive listeners to improve scrolling performance
+	 * Issue occurs on jquery
+	 * Output the fix immediately after jQuery's <script>
+	 * @see https://stackoverflow.com/a/65717663/1003020
+	 */
+	public function jquery_fix_passive_listeners( $src, $handle = null ) {
+		if( is_admin() ) {
+			return $src;
+		}
+
+		static $jquery_fix_passive_listeners_after_jquery = false;
+
+		if( $jquery_fix_passive_listeners_after_jquery ) {
+			?>
+			<script>
+				// Passive event listeners
+				jQuery.event.special.touchstart = {
+					setup: function (_, ns, handle) {
+						this.addEventListener("touchstart", handle, {passive: !ns.includes("noPreventDefault")});
+					}
+				};
+				jQuery.event.special.touchmove = {
+					setup: function (_, ns, handle) {
+						this.addEventListener("touchmove", handle, {passive: !ns.includes("noPreventDefault")});
+					}
+				};
+			</script>
+			<?php
+			$jquery_fix_passive_listeners_after_jquery = false;
+		}
+
+		if( 'jquery' === $handle ) {
+			$jquery_fix_passive_listeners_after_jquery = true;
+		}
+
+		return $src;
+	}
+
+	/**
+	 * Add rel="preload" to jQuery
+	 *
+	 * @param $tag
+	 * @param $handle
+	 * @param $src
+	 * @return mixed
+	 */
+	function preload_jquery( $tag, $handle, $src ) {
+
+		if ( is_admin() ) {
+			return $tag;
+		}
+
+		if( 'jquery' === $handle ) {
+			return str_replace( '<script', '<script rel="preload"', $tag );
+		}
+
+		return $tag;
+	}
+
+	/**
+	 * We remove some well-know plugin's scripts, so you can add them manually only on the pages you need
+	 * Scripts that we remove are: jquery-form, contact-form-7, newsletter-subscription, wp-embed
+	 */
+	public function remove_unused_scripts() {
+		// We remove some know plugin's scripts, so you can add them only on the pages you need
+		wp_deregister_script( 'jquery-form' );
+		//wp_deregister_script( 'contact-form-7' );
+		wp_deregister_script( 'newsletter-subscription' );
+		wp_deregister_script( 'wp-embed' ); // https://codex.wordpress.org/Embeds
+	}
+
+	/**
+	 * Register main theme script
+	 * Adjust Thread comments WordPress script to load only on specific pages
+	 */
+	public function frontend_scripts() {
+		// Load Thread comments WordPress script
+		if ( is_singular() && comments_open() && Helper::get_option( 'storms_thread_comments' ) ) {
+			wp_enqueue_script( 'comment-reply' );
+		}
+	}
+
+	// DEQUEUE GUTENBERG STYLES FOR FRONT
+
+	/**
+	 * Dequeue Gutenberg styles for front
+	 */
+	function remove_gutenberg_scripts_and_styles() {
+
+		wp_dequeue_script('wp-util');
+		wp_dequeue_script('underscore');
+
+		//wp_deregister_script('hoverintent-js'); // Needed by admin-bar - Only used for users that have admin-bar
+
+		//wp_deregister_script('wp-api-fetch'); // Need by contact-form-7
+
+		wp_dequeue_style('wp-block-library');
+		wp_dequeue_style('wc-block-style');
+		wp_dequeue_style('wp-block-library-theme');
+	}
+
+	//</editor-fold>
+
+	//<editor-fold desc="Prefetch, Defer, Async Scripts and Styles">
+
+	/**
+	 * Prefetch DNS Requests
+	 * Speeds up web pages by pre-resolving DNS. In essence it tells a browser it should resolve the DNS of a specific domain prior to it being explicitly called
+	 *
+	 * @param array  $hints          URLs to print for resource hints.
+	 * @param string $relation_type  The relation type the URLs are printed for, e.g. 'preconnect' or 'prerender'.
+	 *
+	 * @see https://make.wordpress.org/core/2016/07/06/resource-hints-in-4-6/
+	 *
+	 * @return array
+	 */
+	function prefetch_dns( $hints, $relation_type ) {
+		$urls = apply_filters( 'storms_prefetch_dns', [
+			'//fonts.googleapis.com',
+			'//fonts.gstatic.com',
+			'//ajax.googleapis.com',
+			'//apis.google.com',
+			'//google-analytics.com',
+			'//www.google-analytics.com',
+			'//ssl.google-analytics.com',
+			'//youtube.com',
+			'//s.gravatar.com',
+			'//www.googletagmanager.com',
+			'//www.googletagservices.com',
+			'//googleads.g.doubleclick.net',
+			'//maps.googleapis.com',
+			'//maps.gstatic.com',
+		] );
+
+		// If not urls set, return default WP hints array.
+		if ( ! is_array( $urls ) || empty( $urls ) ) {
+			return $hints;
+		}
+
+		$urls = array_map( 'esc_url', $urls );
+
+		if ( 'dns-prefetch' === $relation_type ) {
+			foreach ( $urls as $url ) {
+				$hints[] = $url;
+			}
+		}
+
+		return $hints;
+	}
+
+	/**
+	 * Preload de scripts para melhorar desempenho
+	 * @source https://www.freecodecamp.org/news/web-fonts-in-2018-f191a48367e8/
+	 */
+	function preload_scripts() {
+		echo '<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0">';
+	}
+
+	/**
+	 * Defer / async on selected scripts
+	 * @see https://stackoverflow.com/a/53884237
+	 * @see https://kinsta.com/pt/blog/adiar-a-analise-de-aviso-do-javascript/
+	 * @see https://stackoverflow.com/a/40553706/1003020
+	 *
+	 * @param $url
+	 * @return mixed
+	 */
+	function defer_async_scripts( $tag, $handle, $src ) {
+
+		if ( is_admin() ) {
+			return $tag;
+		}
+
+		$modifiers = [];
+
+		// Scripts to defer
+		$scripts_defer = apply_filters( 'storms_defer_scripts', [] );
+		if ( in_array( $handle, $scripts_defer ) ) {
+			$modifiers[] = 'defer';
+		}
+
+		// Scripts to async
+		$scripts_async = apply_filters( 'storms_async_scripts', [] );
+		if ( in_array( $handle, $scripts_async ) ) {
+			$modifiers[] = 'async';
+		}
+
+		return str_replace( '<script', '<script ' . implode( ' ', $modifiers ), $tag );
+	}
+
+	/**
+	 * Defer / async on selected styles
+	 * @see https://stackoverflow.com/a/53884237
+	 * @see https://kinsta.com/pt/blog/adiar-a-analise-de-aviso-do-javascript/
+	 * @see https://stackoverflow.com/a/40553706/1003020
+	 *
+	 * @param $url
+	 * @return mixed
+	 */
+	function defer_async_styles( $tag, $handle, $href, $media ) {
+
+		if ( is_admin() ) {
+			return $tag;
+		}
+
+		$modifiers = [];
+
+		// Scripts to defer
+		$scripts_defer = apply_filters( 'storms_defer_styles', [] );
+		if ( in_array( $handle, $scripts_defer ) ) {
+			$modifiers[] = 'defer';
+		}
+
+		// Scripts to async
+		$scripts_async = apply_filters( 'storms_async_styles', [] );
+		if ( in_array( $handle, $scripts_async ) ) {
+			$modifiers[] = 'async';
+		}
+
+		if( empty( $modifiers ) ) {
+			return $tag;
+		}
+
+		return str_replace( '<link', '<link ' . implode( ' ', $modifiers ) . ' ', $tag );
+	}
+
+	//</editor-fold>
+
 	//<editor-fold desc="Styles, links and tags cleanup">
 
 	/**
@@ -369,12 +703,13 @@ class FrontEnd extends Base\Runner
 	 * Clean up output of stylesheet <link> tags
 	 */
 	public function clean_style_tag( $input ) {
-		if( ! is_admin() ) {
-			preg_match_all( "!<link rel='stylesheet'\s?(id='[^']+')?\s+href='(.*)' type='text/css' media='(.*)' />!", $input, $matches );
-			// Only display media if it is meaningful
-			$media = $matches[3][0] !== '' && $matches[3][0] !== 'all' ? ' media="' . $matches[3][0] . '"' : '';
-			return '<link rel="stylesheet" href="' . $matches[2][0] . '"' . $media . '>' . "\n";
+		if( is_admin() ) {
+			return $input;
 		}
+
+		$input = str_replace( "media='all' ", '', $input );
+		$input = str_replace( "type='text/css' ", '', $input );
+
 		return $input;
 	}
 
@@ -382,21 +717,24 @@ class FrontEnd extends Base\Runner
 	 * Clean up output of <script> tags
 	 */
 	public function clean_script_tag( $input ) {
-		if( !is_admin() ) {
-			$input = str_replace( "type='text/javascript' ", '', $input );
-			return str_replace( "'", '"', $input );
+		if( is_admin() ) {
+			return $input;
 		}
+
+		$input = str_replace( "type='text/javascript' ", '', $input );
 		return $input;
+
 	}
 
 	/**
 	 * Remove unnecessary self-closing tags
 	 */
 	public function remove_self_closing_tags( $input ) {
-		if( !is_admin() ) {
-			return str_replace( ' />', '>', $input );
+		if( is_admin() ) {
+			return $input;
 		}
-		return $input;
+
+		return str_replace( ' />', '>', $input );
 	}
 
 	/**

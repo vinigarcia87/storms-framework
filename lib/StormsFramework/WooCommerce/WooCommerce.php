@@ -261,6 +261,7 @@ class WooCommerce extends Base\Runner
 
 				// Redirect to the selected page
 				wp_redirect( $login_page );
+
 				// Stop execution to prevent the page loading for any reason
 				exit();
 			}
@@ -275,9 +276,15 @@ class WooCommerce extends Base\Runner
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
 		if( !is_user_logged_in() && is_checkout() && 'yes' === Helper::get_option( 'storms_force_login_registration_page_on_checkout', 'yes' ) ) {
+
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
+
+			// Redirect to the selected page
 			wp_redirect( $login_page );
+
+			// Stop execution to prevent the page loading for any reason
+			exit();
 		}
 	}
 

@@ -24,7 +24,6 @@ function storms_load_extensions() {
 	$support_backend = current_theme_supports( 'style-backend' );
 	$support_brand_customization = current_theme_supports( 'brand-customization' );
 	$support_frontend = current_theme_supports( 'style-frontend' );
-	$support_layout = current_theme_supports( 'style-layout' );
 	$support_theme_layouts = current_theme_supports( 'theme-layouts' );
 	$support_bootstrap = current_theme_supports( 'use-bootstrap' );
 	$support_woocomerce = current_theme_supports( 'use-woocommerce' );
@@ -39,40 +38,36 @@ function storms_load_extensions() {
 	if ( $support_frontend ) {
 		(new \StormsFramework\FrontEnd())->run();
 
-		if( $support_layout ) {
-			(new \StormsFramework\Assets())->run();
+		if ( $support_theme_layouts ) {
+			(new \StormsFramework\Template())->run();
 
-			if ( $support_theme_layouts ) {
-				(new \StormsFramework\Template())->run();
-
-				// Enable theme layouts
-				add_theme_support('theme-layouts',
-					array(
-						'1c'   => array(
-							'title'         => __('1 Column', 'storms'),
-							'thumbnail'     => '',
-							'hide-sidebars' => array( 'main-sidebar', 'shop-sidebar' )
-						),
-						'2c-l' => array(
-							'title'         => __('2 Columns: Content / Sidebar', 'storms'),
-							'thumbnail'     => '',
-						),
-						'2c-r' => array(
-							'title'         => __('2 Columns: Sidebar / Content', 'storms'),
-							'thumbnail'     => '',
-						),
+			// Enable theme layouts
+			add_theme_support('theme-layouts',
+				array(
+					'1c'   => array(
+						'title'         => __('1 Column', 'storms'),
+						'thumbnail'     => '',
+						'hide-sidebars' => array( 'main-sidebar', 'shop-sidebar' )
 					),
-					array(
-						'default' => 'default',
-						'post_meta' => true,
-						'customizer' => true
-					)
-				);
-			}
+					'2c-l' => array(
+						'title'         => __('2 Columns: Content / Sidebar', 'storms'),
+						'thumbnail'     => '',
+					),
+					'2c-r' => array(
+						'title'         => __('2 Columns: Sidebar / Content', 'storms'),
+						'thumbnail'     => '',
+					),
+				),
+				array(
+					'default' => 'default',
+					'post_meta' => true,
+					'customizer' => true
+				)
+			);
+		}
 
-			if ( $support_bootstrap ) {
-				(new Bootstrap\Bootstrap())->run();
-			}
+		if ( $support_bootstrap ) {
+			(new Bootstrap\Bootstrap())->run();
 		}
 	}
 	if ( $support_woocomerce ) {
