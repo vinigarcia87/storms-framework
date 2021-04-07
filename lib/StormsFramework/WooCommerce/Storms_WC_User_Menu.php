@@ -60,7 +60,7 @@ class Storms_WC_User_Menu extends Storms_Widget
 	public function frontend_scripts() {
 		wp_enqueue_script('storms-wc-user-menu-script',
 			\StormsFramework\Helper::get_asset_url( '/js/storms-wc-user-menu' . ( ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min' ) . '.js' ),
-			array( 'jquery' ), STORMS_FRAMEWORK_VERSION, true );
+			array(), STORMS_FRAMEWORK_VERSION, true );
 	}
 
 	/**
