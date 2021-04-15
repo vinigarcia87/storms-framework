@@ -546,20 +546,20 @@ class FrontEnd extends Base\Runner
 	 */
 	function prefetch_dns( $hints, $relation_type ) {
 		$urls = apply_filters( 'storms_prefetch_dns', [
-			'//fonts.googleapis.com',
-			'//fonts.gstatic.com',
-			'//ajax.googleapis.com',
-			'//apis.google.com',
-			'//google-analytics.com',
-			'//www.google-analytics.com',
-			'//ssl.google-analytics.com',
-			'//youtube.com',
-			'//s.gravatar.com',
-			'//www.googletagmanager.com',
-			'//www.googletagservices.com',
-			'//googleads.g.doubleclick.net',
-			'//maps.googleapis.com',
-			'//maps.gstatic.com',
+//			[ 'href' => '//fonts.googleapis.com',        'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//fonts.gstatic.com',           'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//ajax.googleapis.com',         'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//apis.google.com',             'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//google-analytics.com',        'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//www.google-analytics.com',    'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//ssl.google-analytics.com',    'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//youtube.com',                 'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//s.gravatar.com',              'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//www.googletagmanager.com',    'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//www.googletagservices.com',   'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//googleads.g.doubleclick.net', 'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//maps.googleapis.com',         'crossorigin' => 'crossorigin' ],
+//			[ 'href' => '//maps.gstatic.com',            'crossorigin' => 'crossorigin' ],
 		] );
 
 		// If not urls set, return default WP hints array.
@@ -567,10 +567,18 @@ class FrontEnd extends Base\Runner
 			return $hints;
 		}
 
-		$urls = array_map( 'esc_url', $urls );
+		$urls = array_map( function( $url ) {
+			if( is_array( $url ) ) {
+				$url['href'] = isset( $url['href'] ) ? esc_url( $url['href'] ) : '';
+			} else {
+				$url = esc_url( $url );
+			}
+			return $url;
+		}, $urls );
 
 		if ( 'dns-prefetch' === $relation_type ) {
 			foreach ( $urls as $url ) {
+
 				$hints[] = $url;
 			}
 		}
@@ -583,7 +591,8 @@ class FrontEnd extends Base\Runner
 	 * @source https://www.freecodecamp.org/news/web-fonts-in-2018-f191a48367e8/
 	 */
 	function preload_scripts() {
-		echo '<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0">';
+		//echo '<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0">';
+		echo '<link href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0" type="font/woff2" rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute(\'media\');">';
 	}
 
 	/**
