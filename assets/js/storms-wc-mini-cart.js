@@ -45,7 +45,9 @@ body.addEventListener( 'click', function( event ) {
 
 	// The click was outside the Mini Cart...
 	var dropdown = document.querySelector( '.storms-cart-contents .shopping_cart_dropdown' );
-	// The Mini Cart was open, so we going to close it
-	dropdown.classList.remove( 'active' );
+	if( dropdown ) {
+		// The Mini Cart was open, so we going to close it
+		dropdown.classList.remove( 'active' );
+	}
 
 } );
