@@ -920,6 +920,25 @@ class Helper extends Base\Manager
 	//</editor-fold>
 
 	/**
+	 * Check if the $cmpDate is between two given dates
+	 *
+	 * @param \DateTime $startDate
+	 * @param \DateTime $endDate
+	 * @param \DateTime|null $cmpDate
+	 * @return bool
+	 * @throws \Exception
+	 */
+	public static function isBetweenDates( \DateTime $startDate, \DateTime $endDate, \DateTime $cmpDate = null ) {
+		// If no date was given, default to today's date
+		$cmpDate = $cmpDate ?? new \DateTime();
+
+		if( is_null( $startDate ) || is_null( $endDate ) ) return false;
+
+		return $startDate->getTimestamp() < $cmpDate->getTimestamp() && $cmpDate->getTimestamp() < $endDate->getTimestamp();
+	}
+
+
+	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!
 	 * ======================================================================================= */
 
