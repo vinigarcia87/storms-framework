@@ -1175,6 +1175,21 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Returns the ID of a page based on the incoming slug
+	 *
+	 * @param $slug
+	 * @return int|null
+	 */
+	public static function get_page_id_by_slug( $slug ) {
+
+		$page = get_page_by_path( $slug, OBJECT, [ 'page' ] );
+		if ($page) {
+			return $page->ID;
+		}
+		return null;
+	}
+
+	/**
 	 * Print HTML with meta information for the current post-date/time and author
 	 * @return void
 	 */

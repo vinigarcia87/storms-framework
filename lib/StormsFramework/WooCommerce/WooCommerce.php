@@ -120,7 +120,8 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_registration_redirect', 'user_redirect_on_login_registration', 10 )
 			->add_filter( 'body_class', 'set_intern_login_body_class' )
 			->add_action( 'template_redirect', 'bypass_logout_confirmation' )
-
+			->add_filter( 'password_change_email', 'password_change_email', 10, 3 )
+			->add_filter( 'email_change_email', 'password_change_email', 10, 3 )
 			->add_action( 'woocommerce_init', 'force_non_logged_user_wc_session' );
 
 		$this->loader
@@ -422,7 +423,36 @@ class WooCommerce extends Base\Runner
 		}
 	}
 
-	//</editor-fold>
+	/**
+	 * Edit Wordpress user's Password/Email Change email to look like WooCommerce email
+	 * This email is sent when admin change/reset a user's password or email on admin panel
+	 *
+	 * @param $email_change_email
+	 * @param $user
+	 * @param $userdata
+	 * @return mixed
+	 */
+	public function password_change_email( $email_change_email, $user, $userdata ) {
+		$blog_name = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+
+		// Load the mailer class
+		$mailer = WC()->mailer();
+
+		// Create a new email
+		$email = new \WC_Email();
+
+		$subject = __( '[%s] Password Changed' );
+		$email_change_email['subject'] = sprintf( $subject, $blog_name );
+
+		$from_name   = ( '' !== get_site_option( 'site_name' ) ) ? esc_html( get_site_option( 'site_name' ) ) : 'WordPress';
+		$admin_email = get_site_option( 'admin_email' );
+		$email_change_email['headers'][] = "From: \"{$from_name}\" <{$admin_email}>\n" . 'Content-Type: text/html; charset="' . get_option( 'blog_charset' ) . "\"\n";
+
+		// Wrap the content with the email template and then add styles
+		$email_change_email['message'] = apply_filters( 'woocommerce_mail_content', $email->style_inline( $mailer->wrap_message( '', $email_change_email['message'] ) ) );
+
+		return $email_change_email;
+	}
 
 	/**
 	 * Initiate Woocommerce User session when it's not logged in
@@ -441,6 +471,8 @@ class WooCommerce extends Base\Runner
 
 		}
 	}
+
+	//</editor-fold>
 
 	//<editor-fold desc="Bootstrap on form fields">
 

@@ -455,6 +455,10 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+			'quadlayers-dashboard-overview' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 		);
 
 		// ual_dashboard_widget -> show only if admin
