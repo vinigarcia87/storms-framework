@@ -446,6 +446,7 @@ class WooCommerce extends Base\Runner
 
 		$from_name   = ( '' !== get_site_option( 'site_name' ) ) ? esc_html( get_site_option( 'site_name' ) ) : 'WordPress';
 		$admin_email = get_site_option( 'admin_email' );
+		$email_change_email['headers'] = [];
 		$email_change_email['headers'][] = "From: \"{$from_name}\" <{$admin_email}>\n" . 'Content-Type: text/html; charset="' . get_option( 'blog_charset' ) . "\"\n";
 
 		// Wrap the content with the email template and then add styles
