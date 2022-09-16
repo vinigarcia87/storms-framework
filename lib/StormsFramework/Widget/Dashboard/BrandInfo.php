@@ -75,9 +75,6 @@ class BrandInfo extends Base\Manager
 							__( 'Wordpress version', 'storms' ) . ': ' . $wp_version . '<br>' .
 							__( 'WooCommerce version', 'storms' ) . ': ' . $wc_version . '</p>';
 
-		// Let the theme add custom info to this widget
-		$theme_custom_info = apply_filters( 'storms_brandinfo_theme_custom_info', '' );
-
 		$content = '<div style="display: table-cell;vertical-align: middle;padding-right: 10px;">' .
 				   '	<img style="height: 70px;" alt="' . $brand_name . '" src="' . $brand_src . '">' .
 				   '</div>' .
@@ -90,9 +87,17 @@ class BrandInfo extends Base\Manager
 
 				   '<div class="brand-extra-content">' . $brand_extra_info . '</div>';
 
+		// Let the theme add custom info to this widget
+		$theme_custom_info = apply_filters( 'storms_brandinfo_theme_custom_info', [] );
+
 		if( ! empty( $theme_custom_info ) ) {
-			$content .= '<hr style="border-color: #fefefe -moz-use-text-color #fafafa;"/>';
-			$content .= '<div class="brand-extra-content" style="margin: 1em 0;">' . $theme_custom_info . '</div>';
+			$content .= '<hr style="border-color: #fefefe;"/>';
+			$content .= '<div class="brand-extra-content" style="margin: 1em 0;">';
+			$content .= '<ul style="display: table-cell;">';
+			foreach( $theme_custom_info as $info ) {
+				$content .= '<li>' . $info . '</li>';
+			}
+			$content .= '</div>';
 		}
 
 		echo $content;
