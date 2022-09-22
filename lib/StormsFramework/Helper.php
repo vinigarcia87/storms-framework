@@ -1273,7 +1273,7 @@ class Helper extends Base\Manager
 			sprintf(
 				wp_kses(
 					/* translators: %s: Name of current post. Only visible to screen readers */
-					__( 'Edit <span class="sr-only">%s</span>', 'storms' ),
+					__( 'Edit <span class="visually-hidden">%s</span>', 'storms' ),
 					array(
 						'span' => array(
 							'class' => array(),
@@ -1283,7 +1283,7 @@ class Helper extends Base\Manager
 				get_the_title()
 			),
 			' <span class="edit-link">',
-			' <i class="fa fa-pencil-square-o"></i></span>'
+			' <i class="bi bi-pencil-square"></i></span>'
 		);
 	}
 
@@ -1418,7 +1418,7 @@ class Helper extends Base\Manager
 					echo '<li>'.$page.'</li>';
 				else
 					// Print current page link
-					echo '<li class="active"><span>' . $key . ' <span class="sr-only">'.__('Current Page', 'storms').'</span></span></li>';
+					echo '<li class="active"><span>' . $key . ' <span class="visually-hidden">'.__('Current Page', 'storms').'</span></span></li>';
 			else
 				// Print previous and next buttons
 				echo $page;

@@ -174,12 +174,12 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 			$atts['rel']    = ! empty( $item->xfn ) ? $item->xfn : '';
 			// If item has_children add atts to <a>.
 			if ( isset( $args->has_children ) && $args->has_children && 0 === $depth && $args->depth > 1 ) {
-				$atts['href']          = '#';
-				$atts['data-toggle']   = 'dropdown';
-				$atts['aria-haspopup'] = 'true';
-				$atts['aria-expanded'] = 'false';
-				$atts['class']         = 'dropdown-toggle nav-link';
-				$atts['id']            = 'menu-item-dropdown-' . $item->ID;
+				$atts['href']           = '#';
+				$atts['data-bs-toggle'] = 'dropdown';
+				$atts['role']  			= 'button';
+				$atts['aria-expanded']  = 'false';
+				$atts['class']          = 'nav-link dropdown-toggle';
+				$atts['id']             = 'menu-item-dropdown-' . $item->ID;
 			} else {
 				$atts['href'] = ! empty( $item->url ) ? $item->url : '#';
 				// Items in dropdowns use .dropdown-item instead of .nav-link.
@@ -245,11 +245,11 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 			 */
 			$title = apply_filters( 'nav_menu_item_title', $title, $item, $args, $depth );
 			/**
-			 * If the .sr-only class was set apply to the nav items text only.
+			 * If the .visually-hidden class was set apply to the nav items text only.
 			 */
-			if ( in_array( 'sr-only', $linkmod_classes, true ) ) {
+			if ( in_array( 'visually-hidden', $linkmod_classes, true ) ) {
 				$title         = self::wrap_for_screen_reader( $title );
-				$keys_to_unset = array_keys( $linkmod_classes, 'sr-only', true );
+				$keys_to_unset = array_keys( $linkmod_classes, 'visually-hidden', true );
 				foreach ( $keys_to_unset as $k ) {
 					unset( $linkmod_classes[ $k ] );
 				}
@@ -356,7 +356,7 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 		 * Find any custom linkmod or icon classes and store in their holder
 		 * arrays then remove them from the main classes array.
 		 *
-		 * Supported linkmods: .disabled, .dropdown-header, .dropdown-divider, .sr-only
+		 * Supported linkmods: .disabled, .dropdown-header, .dropdown-divider, .visually-hidden
 		 * Supported iconsets: Font Awesome 4/5, Glypicons
 		 *
 		 * NOTE: This accepts the linkmod and icon arrays by reference.
@@ -375,8 +375,8 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 			foreach ( $classes as $key => $class ) {
 				// If any special classes are found, store the class in it's
 				// holder array and and unset the item from $classes.
-				if ( preg_match( '/^disabled|^sr-only/i', $class ) ) {
-					// Test for .disabled or .sr-only classes.
+				if ( preg_match( '/^disabled|^visually-hidden/i', $class ) ) {
+					// Test for .disabled or .visually-hidden classes.
 					$linkmod_classes[] = $class;
 					unset( $classes[ $key ] );
 				} elseif ( preg_match( '/^dropdown-header|^dropdown-divider|^dropdown-item-text/i', $class ) && $depth > 0 ) {
@@ -440,8 +440,8 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 				foreach ( $linkmod_classes as $link_class ) {
 					if ( ! empty( $link_class ) ) {
 						// update $atts with a space and the extra classname...
-						// so long as it's not a sr-only class.
-						if ( 'sr-only' !== $link_class ) {
+						// so long as it's not a visually-hidden class.
+						if ( 'visually-hidden' !== $link_class ) {
 							$atts['class'] .= ' ' . esc_attr( $link_class );
 						}
 						// check for special class types we need additional handling for.
@@ -469,7 +469,7 @@ if ( ! class_exists( 'WP_Bootstrap_Navwalker' ) ) {
 		 */
 		private function wrap_for_screen_reader( $text = '' ) {
 			if ( $text ) {
-				$text = '<span class="sr-only">' . $text . '</span>';
+				$text = '<span class="visually-hidden">' . $text . '</span>';
 			}
 			return $text;
 		}

@@ -43,16 +43,16 @@ if ( ! class_exists( 'WP_Bootstrap_Commentwalker' ) ) {
 			$tag = ( 'div' === $args['style'] ) ? 'div' : 'li';
 			?>
 			<<?php echo $tag; ?> id="comment-<?php comment_ID(); ?>" <?php comment_class( $this->has_children ? 'parent media' : 'media' ); ?>>
-			<div class="comment-block media col-12">
+			<div class="comment-block col-12">
 				<?php if ( 0 != $args['avatar_size'] ): ?>
-					<div class="mr-3">
+					<div class="comment-block-avatar">
 						<a href="<?php echo get_comment_author_url(); ?>" class="media-object">
 							<?php echo get_avatar( $comment, $args['avatar_size'] ); ?>
 						</a>
 					</div>
 				<?php endif; ?>
 
-				<div class="media-body" id="div-comment-<?php comment_ID(); ?>">
+				<div class="comment-block-body" id="div-comment-<?php comment_ID(); ?>">
 
 					<div class="comment-header">
 						<?php printf( '<span class="media-heading">%s</span>', get_comment_author_link() ); ?>
@@ -84,7 +84,7 @@ if ( ! class_exists( 'WP_Bootstrap_Commentwalker' ) ) {
 								'max_depth' => $args['max_depth'],
 								'before' => '<li class="reply-link list-inline-item">',
 								'after' => '</li>',
-								'reply_text' => '<i class="fa fa-reply" aria-hidden="true"></i> ' . __('Reply'),
+								'reply_text' => '<i class="bi bi-reply" aria-hidden="true"></i> ' . __('Reply'),
 							)));
 						}
 						edit_comment_link( __( 'Edit' ), '<li class="edit-link list-inline-item">', '</li>' );

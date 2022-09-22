@@ -41,10 +41,16 @@ class WooCommerce extends Base\Runner
             ->add_filter( 'woocommerce_product_tabs', 'remove_product_tabs', 98);
 
 		$this->loader
+			//->add_action( 'woocommerce_checkout_init', 'checkout_confirm_password_add_field', 10, 1 )
 			->add_action( 'woocommerce_register_form', 'registration_confirm_password_add_field' )
 			->add_filter( 'woocommerce_registration_errors', 'registration_confirm_password_validation', 10, 3 )
-			//->add_action( 'woocommerce_checkout_init', 'checkout_confirm_password_add_field', 10, 1 )
 			->add_action( 'woocommerce_after_checkout_validation', 'checkout_confirm_password_validation', 10, 2 );
+
+		$this->loader
+			// wp_list_comments parameters in single-product-reviews.php
+			->add_filter( 'woocommerce_product_review_list_args', 'product_review_list_args' )
+			// Comment Form customization - wp-includes/comment-template.php
+			->add_filter( 'comment_form_fields', 'product_review_comment_form_fields', 15 );
 
 		/**
 		 * Content wrapper before and after
@@ -92,20 +98,7 @@ class WooCommerce extends Base\Runner
 			// @see plugins/woocommerce/includes/wc-template-functions.php - woocommerce_form_field
 			->add_filter( 'woocommerce_form_field_args', 'bootstrap_form_field_args', 10, 3 )
 			->add_filter( 'woocommerce_form_field_checkbox', 'bootstrap_form_field_checkbox', 10, 4 )
-			->add_filter( 'woocommerce_form_field_radio', 'bootstrap_form_field_radio', 10, 4 )
-
-			// Remove conflicting classes from form fields
-			->add_filter( 'woocommerce_form_field_country', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_state', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_textarea', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_checkbox', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_password', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_text', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_email', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_tel', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_number', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_select', 'clean_checkout_fields_class_attribute_values', 20, 4 )
-			->add_filter( 'woocommerce_form_field_radio', 'clean_checkout_fields_class_attribute_values', 20, 4 );
+			->add_filter( 'woocommerce_form_field_radio', 'bootstrap_form_field_radio', 10, 4 );
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
@@ -271,12 +264,13 @@ class WooCommerce extends Base\Runner
 
 	/**
 	 * Redirect not logged in users to my-account, for registration/login
+	 * when woocommerce has guest checkout disable
 	 * @see https://stackoverflow.com/a/39357627/1003020
 	 * @see https://wordpress.stackexchange.com/a/109097/54025
 	 */
 	public function force_login_registration_page_on_checkout() {
 		// Case 1: Non logged user on checkout page
-		if( !is_user_logged_in() && is_checkout() && 'yes' === Helper::get_option( 'storms_force_login_registration_page_on_checkout', 'yes' ) ) {
+		if( !is_user_logged_in() && is_checkout() && 'no' === get_option( 'woocommerce_enable_guest_checkout' ) ) {
 
 			$myaccount = get_permalink( get_option( 'woocommerce_myaccount_page_id' ) );
 			$login_page = esc_url( add_query_arg( 'return_to', 'checkout', $myaccount ) );
@@ -364,8 +358,8 @@ class WooCommerce extends Base\Runner
 	 */
 	public function registration_confirm_password_add_field() {
 		?>
-		<p class="form-row-wide form-group">
-			<label for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
+		<p class="form-row-wide">
+			<label class="form-label" for="reg_password2"><?php _e( 'Confirmar senha', 'storms' ); ?> <span class="required">*</span></label>
 			<input type="password" class="input-text form-control" name="password2" id="reg_password2" value="<?php if ( ! empty( $_POST['password2'] ) ) echo esc_attr( $_POST['password2'] ); ?>" />
 		</p>
 		<?php
@@ -424,6 +418,47 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
+	 * wp_list_comments parameters in single-product-reviews.php
+	 *
+	 * @return array
+	 */
+	public function product_review_list_args() {
+		return array(
+			'style'         => 'ul',
+			'short_ping'    => true,
+			'avatar_size'   => '64',
+			'allow_reply'   => false,
+			'walker'        => new \StormsFramework\Bootstrap\WP_Bootstrap_Commentwalker(),
+		);
+	}
+
+	/**
+	 * @param $comment_form
+	 * @return mixed
+	 */
+	public function product_review_comment_form_fields( $comment_fields ) {
+
+		if ( ! is_woocommerce() ) {
+			return $comment_fields;
+		}
+
+		if ( wc_review_ratings_enabled() ) {
+			$comment_fields['comment'] = '<div class="comment-form-rating"><label for="rating">' . esc_html__( 'Your rating', 'woocommerce' ) . ( wc_review_ratings_required() ? '&nbsp;<span class="required">*</span>' : '' ) . '</label><select name="rating" id="rating" required>
+					<option value="">' . esc_html__( 'Rate&hellip;', 'woocommerce' ) . '</option>
+					<option value="5">' . esc_html__( 'Perfect', 'woocommerce' ) . '</option>
+					<option value="4">' . esc_html__( 'Good', 'woocommerce' ) . '</option>
+					<option value="3">' . esc_html__( 'Average', 'woocommerce' ) . '</option>
+					<option value="2">' . esc_html__( 'Not that bad', 'woocommerce' ) . '</option>
+					<option value="1">' . esc_html__( 'Very poor', 'woocommerce' ) . '</option>
+				</select></div>';
+		}
+
+		$comment_fields['comment'] .= '<p class="comment-form-comment"><label for="comment" class="form-label">' . esc_html__( 'Your review', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label><textarea class="form-control" id="comment" name="comment" cols="45" rows="8" required></textarea></p>';
+
+		return $comment_fields;
+	}
+
+	/**
 	 * Edit Wordpress user's Password/Email Change email to look like WooCommerce email
 	 * This email is sent when admin change/reset a user's password or email on admin panel
 	 *
@@ -479,7 +514,7 @@ class WooCommerce extends Base\Runner
 
 	/**
 	 * WooCommerce - Modify each individual input type $args defaults
-	 * To include Bootstrap classes
+	 * to include Bootstrap classes
 	 * Source: http://stackoverflow.com/a/36724593/1003020
 	 *
 	 * @param $args
@@ -491,51 +526,30 @@ class WooCommerce extends Base\Runner
 
 		// Start field type switch case
 		switch ( $args['type'] ) {
-
-			case "select" :  // Targets all select input type elements, except the country and state select input types
-				$args['class'][] = 'form-group'; // Add a class to the field's html element wrapper - woocommerce input types (fields) are often wrapped within a <p></p> tag
-				$args['input_class'] = array('form-control'); // Add a class to the form input itself
-				$args['label_class'] = array('col-form-label');
-				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  ); // Add custom data attributes to the form input itself
+			case 'select' :
+			case 'state':
+				$args['input_class'][] = 'form-select';
+				$args['label_class'][] = 'form-label';
 				break;
 
-			case 'country' : // By default WooCommerce will populate a select with the country names - $args defined for this specific input type targets only the country select element
-				$args['class'][] = 'form-group single-country';
-				$args['label_class'] = array('col-form-label');
-				break;
+			case 'country':
+				$countries = 'shipping_country' === $key ? WC()->countries->get_shipping_countries() : WC()->countries->get_allowed_countries();
 
-			case "state" : // By default WooCommerce will populate a select with state names - $args defined for this specific input type targets only the country select element
-				$args['class'][] = 'form-group'; // Add class to the field's html element wrapper
-				$args['label_class'] = array('col-form-label');
-				$args['custom_attributes'] = array( 'data-plugin' => 'select2', 'data-allow-clear' => 'true', 'aria-hidden' => 'true',  );
-				break;
-
-
-			case "password" :
-			case "text" :
-			case "email" :
-			case "tel" :
-			case "number" :
-				$args['class'][] = 'form-group';
-				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('col-form-label');
-				break;
-
-			case 'textarea' :
-				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('col-form-label');
-				break;
+				if ( 1 === count( $countries ) ) {
+					$args['class'][] = 'single-country';
+					$args['label_class'][] = 'form-label';
+				} else {
+					$args['input_class'][] = 'form-select';
+					$args['label_class'][] = 'form-label';
+				}
 
 			case 'checkbox' :
-				break;
-
 			case 'radio' :
 				break;
 
 			default :
-				$args['class'][] = 'form-group';
-				$args['input_class'] = array('form-control');
-				$args['label_class'] = array('col-form-label');
+				$args['input_class'][] = 'form-control';
+				$args['label_class'][] = 'form-label';
 				break;
 		}
 
@@ -576,7 +590,7 @@ class WooCommerce extends Base\Runner
 		$field  = '';
 		$field .= '<div class="form-check ' . esc_attr( implode( ' ', $args['class'] ) ) .'" ' . implode( ' ', $custom_attributes ) . '>';
 		$field .= '	<input type="' . esc_attr( $args['type'] ) . '" class="form-check-input ' . esc_attr( implode( ' ', $args['input_class'] ) ) .'" name="' . esc_attr( $key ) . '" id="' . esc_attr( $args['id'] ) . '" value="1" '.checked( $value, 1, false ) .'/> ';
-		$field .= '	<label for="' . esc_attr( $args['id'] ) . '">'. $args['label'] . $required . '</label>';
+		$field .= '	<label class="form-check-label" for="' . esc_attr( $args['id'] ) . '">'. $args['label'] . $required . '</label>';
 		$field .= '</div>';
 
 		return $field;
@@ -622,7 +636,7 @@ class WooCommerce extends Base\Runner
 
 		if ( ! empty( $args['options'] ) ) {
 			$sort            = $args['priority'] ? $args['priority'] : '';
-			$field_container = '<div class="form-row form-group ' . $external_div_class . '" id="%1$s" data-priority="' . esc_attr( $sort ) . '">%2$s</div>';
+			$field_container = '<div class="form-row ' . $external_div_class . '" id="%1$s" data-priority="' . esc_attr( $sort ) . '">%2$s</div>';
 
 			$label_id        = $args['id'];
 			$label_id .= '_' . current( array_keys( $args['options'] ) );
@@ -643,7 +657,7 @@ class WooCommerce extends Base\Runner
 
 				$field .= '<div class="' . esc_attr( $div_class ) . '" ' . $custom_attr . '>';
 				$field .= '<input class="form-check-input ' . esc_attr( $input_class ) . '" type="radio" name="' . esc_attr( $name ) . '" id="' . esc_attr( $id ) . '" value="' . esc_attr( $option_key ) . '" ' . $checked . '>';
-				$field .= '<label class="form-check-label" for="' . esc_attr( $id ) . '">' . esc_html( $option_text ) . '</label>';
+				$field .= '<label class="form-label form-check-label" for="' . esc_attr( $id ) . '">' . esc_html( $option_text ) . '</label>';
 				$field .= '</div>';
 			}
 		}
@@ -652,7 +666,7 @@ class WooCommerce extends Base\Runner
 			$field_html = '';
 
 			if ( $args['label'] && 'checkbox' !== $args['type'] ) {
-				$field_html .= '<label for="' . esc_attr( $label_id ) . '" class="col-form-label ' . esc_attr( implode( ' ', $args['label_class'] ) ) . '">' . $args['label'] . $required . '</label>';
+				$field_html .= '<label for="' . esc_attr( $label_id ) . '" class="form-label ' . esc_attr( implode( ' ', $args['label_class'] ) ) . '">' . $args['label'] . $required . '</label>';
 			}
 
 			$field_html .= $field;
@@ -666,40 +680,6 @@ class WooCommerce extends Base\Runner
 		}
 
 		return $field;
-	}
-
-	/**
-	 * Remove the class "form-row" from all checkout fields
-	 * It conflicts with Bootstrap 4
-	 *
-	 * @param $field
-	 * @param $key
-	 * @param $args
-	 * @param $value
-	 * @return mixed
-	 */
-	public function clean_checkout_fields_class_attribute_values( $field, $key, $args, $value ) {
-		// Remove "form-row"
-		$field = str_replace( array( '<p class="form-row ' ), array( '<p class="' ), $field );
-		$field = str_replace( array( '<div class="form-row ' ), array( '<div class="' ), $field );
-		return $field;
-	}
-
-	/**
-	 * Remove the class "form-row" from all checkout fields
-	 * It conflicts with Bootstrap 4
-	 *
-	 * @param $fields
-	 * @return mixed
-	 */
-	function custom_checkout_fields_class_attribute_value( $fields ) {
-		foreach( $fields as $fields_group_key => $group_fields_values ) {
-			foreach( $group_fields_values as $field_key => $field ) {
-				// Remove other classes (or set yours)
-				$fields[$fields_group_key][$field_key]['class'] = array();
-			}
-		}
-		return $fields;
 	}
 
 	//</editor-fold>

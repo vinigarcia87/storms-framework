@@ -132,8 +132,8 @@ class Storms_WC_Cart_Mini extends \WC_Widget
 		$html  = '';
 		$html .= '<div class="' . $atts['extra_classes'] . '">';
 		$html .= '    <a class="cart-link" href="' . wc_get_cart_url() . '" title="' . __( 'View your shopping cart', 'storms' ) . '" aria-haspopup="true" aria-expanded="false">';
-		//$html .= '        <i class="fa fa-shopping-cart" aria-hidden="true"></i> ';
-		$html .= '        <i class="fa st-ic-shop-cart" aria-hidden="true"></i> ';
+		//$html .= '        <i class="bi bi-cart" aria-hidden="true"></i> ';
+		$html .= '        <i class="st-ic-shop-cart" aria-hidden="true"></i> ';
 		$html .= '        <span class="cart-contents-count">' . esc_html( $cart_contents_count ) . '</span> ';
 		$html .= '        <span class="cart-contents-total">' . strip_tags( $cart_contents_total ) . '</span>';
 		$html .= '    </a>';

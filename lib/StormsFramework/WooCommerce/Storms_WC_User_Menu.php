@@ -95,7 +95,7 @@ class Storms_WC_User_Menu extends Storms_Widget
 		$html  = '';
 		$html .= '<div class="storms-user-menu-content ' . $atts['extra_classes'] . '">';
 		$html .= '    <a class="user-menu-link ' . ( $user_logged_in ? 'storms-usuario-logado' : 'storms-usuario-deslogado' ) . '" href="' . wc_get_account_endpoint_url( 'dashboard' ) . '" title="' . __( 'Acesse sua conta', 'storms' ) . '" aria-haspopup="true" aria-expanded="false">';
-		$html .= '        <i class="fa st-ic-user-circle" aria-hidden="true"></i> ';
+		$html .= '        <i class="st-ic-user-circle" aria-hidden="true"></i> ';
 		$html .= '        <span class="user-menu-text">' . $display_name . '</span> ';
 		$html .= '    </a>';
 

@@ -294,7 +294,8 @@ class BackEnd extends Base\Runner
 		$media .= '		<div class="d-none d-sm-block d-md-none">SM</div>';
 		$media .= '		<div class="d-none d-md-block d-lg-none">MD</div>';
 		$media .= '		<div class="d-none d-lg-block d-xl-none">LG</div>';
-		$media .= '		<div class="d-none d-xl-block">XL</div>';
+		$media .= '		<div class="d-none d-xl-block  d-xxl-none">XL</div>';
+		$media .= '		<div class="d-none d-xxl-block">XXL</div>';
 		$media .= '</div>';
 
 		$args = array(
