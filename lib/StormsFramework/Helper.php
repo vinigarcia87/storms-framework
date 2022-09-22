@@ -136,12 +136,46 @@ class Helper extends Base\Manager
 
 	/**
 	 * Return an array of functions that have been called to get to the current point in code
+	 *
 	 * @param string $title
 	 * @param null $ignore_class
 	 * @param int $skip_frames
 	 */
 	public static function backtrace( $title = '', $ignore_class = null, $skip_frames = 0 ) {
 		Helper::debug( wp_debug_backtrace_summary( $ignore_class, $skip_frames, false ), $title );
+	}
+
+	/**
+	 * Show details of all scripts queued on
+	 * To use it, just call this method on functions.php
+	 */
+	public static function show_all_scripts() {
+		add_action( 'wp_head', function() {
+			if( ! is_admin() ) {
+				$wp_scripts = wp_scripts();
+
+				$scripts = [];
+				foreach( $wp_scripts->queue as $queue_script ) {
+
+					$queue_script_details = $wp_scripts->registered[ $queue_script ];
+					$scripts[ $queue_script ] = [
+						'src'  => $queue_script_details->src,
+						'deps' => $queue_script_details->deps,
+					];
+				}
+				\StormsFramework\Helper::debug( $scripts, 'Storms Inspect Queued Scripts @ ' . Helper::get_current_url() );
+			}
+		}, 999 );
+	}
+
+	/**
+	 * Get the current URL
+	 *
+	 * @return string
+	 */
+	public static function get_current_url() {
+		$protocol = is_ssl() ? 'https://' : 'http://';
+		return ($protocol) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	}
 
 	/**
