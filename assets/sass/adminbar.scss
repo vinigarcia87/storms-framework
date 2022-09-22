@@ -101,7 +101,7 @@
 		}
     }
 
-	/* Bootstrap 4 Media Brekpoints */
+	/* Bootstrap Media Brekpoints */
 	.bootstrap-media-breakpoints {
 		display: block !important;
 
@@ -115,7 +115,8 @@
 			@media screen and (min-width: 783px) {
 				&.d-md-block,
 				&.d-lg-block,
-				&.d-xl-block {
+				&.d-xl-block,
+				&.d-xxl-block {
 					font-size: 13px;
 				}
 			}

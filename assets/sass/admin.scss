@@ -19,6 +19,11 @@
 @import "wp-admin-colorscheme";
 @import "../../../../../wp-admin/css/colors/_admin";
 
+// Conflict with website layout
+input[type=checkbox]:checked::before {
+	content: none !important;
+}
+
 html {
   background: {
     image: url(../img/storms/logo/TheStormsBlue.png);

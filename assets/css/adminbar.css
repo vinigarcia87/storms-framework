@@ -765,6 +765,23 @@ div#wp-responsive-toggle a:before {
   color: #0073aa;
 }
 
+
+.welcome-panel {
+  background-color: #e1ecf0;
+}
+
+.welcome-panel-header-image .about-six {
+  fill: #096484;
+}
+
+.welcome-panel-header-image .about-zero {
+  fill: #52accc;
+}
+
+[class*="welcome-panel-icon"] {
+  background-color: #52accc;
+}
+
 #wpadminbar {
   
   
@@ -856,7 +873,7 @@ div#wp-responsive-toggle a:before {
 }
 
 @media screen and (min-width: 783px) {
-  #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-md-block, #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-lg-block, #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-xl-block {
+  #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-md-block, #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-lg-block, #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-xl-block, #wpadminbar .bootstrap-media-breakpoints #detect-breakpoints div.d-xxl-block {
     font-size: 13px;
   }
 }
