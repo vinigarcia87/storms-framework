@@ -4,7 +4,7 @@
   "author": "Storms Websolutions",
   "license": "ISC",
   "dependencies": {
-    "jquery": "^3.4.1"
+    "jquery": "^3.5.0"
   },
   "devDependencies": {
     "@babel/core": "^7.19.1",
