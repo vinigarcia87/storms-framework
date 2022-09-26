@@ -260,6 +260,22 @@ class Helper extends Base\Manager
 	}
 
 	/**
+	 * Get an array of all woocommerce pages ID's
+	 *
+	 * @return array List of WooCommerce pages ID's
+	 */
+	public static function get_woocommerce_pages_ids() {
+		$woocommerce_pages = [
+			'woocommerce_shop_page_id',
+			'woocommerce_cart_page_id',
+			'woocommerce_checkout_page_id',
+			'woocommerce_myaccount_page_id',
+			'woocommerce_terms_page_id',
+		];
+		return array_filter( array_map( 'get_option', $woocommerce_pages ) );
+	}
+
+	/**
 	 * Display search form.
 	 *
 	 * Will first attempt to locate the searchform.php file in either the child or
@@ -488,10 +504,6 @@ class Helper extends Base\Manager
 	public static function get_shop_others_item( $item ) {
 		return Helper::get_shop_info_item( 'others', $item );
 	}
-
-	//</editor-fold>
-
-	//<editor-fold desc="Data creation functions">
 
 	/**
 	 * Create a new product attribute from a label name

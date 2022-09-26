@@ -38,7 +38,10 @@ body.addEventListener('click', function (event) {
   } // The click was outside the User Menu...
 
 
-  var dropdown = document.querySelector('.storms-user-menu-content .user_menu_dropdown'); // The User Menu was open, so we going to close it
+  var dropdown = document.querySelector('.storms-user-menu-content .user_menu_dropdown');
 
-  dropdown.classList.remove('active');
+  if (dropdown) {
+    // The User Menu was open, so we going to close it
+    dropdown.classList.remove('active');
+  }
 });
