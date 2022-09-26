@@ -390,7 +390,7 @@ class FrontEnd extends Base\Runner
 			if( !is_admin() && 'yes' == Helper::get_option( 'storms_load_external_jquery', 'no' ) ) {
 				wp_register_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/' . $this->jquery_version . '/jquery.min.js', false, $this->jquery_version, false);
 			}
-			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/' . $this->jquery_version . '/jquery.min.js' ), false, $this->jquery_version, false);
+			wp_register_script('jquery', Helper::get_asset_url( '/js/jquery/jquery.min.js' ), false, $this->jquery_version, false);
 
 			wp_enqueue_script('jquery');
 		}

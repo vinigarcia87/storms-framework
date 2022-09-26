@@ -1,17 +1,18 @@
 {
-  "name": "StormsFramework",
+  "name": "storms-framework",
   "version": "4.0.0",
   "author": "Storms Websolutions",
   "license": "ISC",
   "dependencies": {
-    "jquery": "^3.4.1",
-    "jquery.cycle2": "^2.1.7",
-    "block-ui": "^2.70.1"
+    "jquery": "^3.4.1"
   },
   "devDependencies": {
+    "@babel/core": "^7.19.1",
+    "@babel/preset-env": "^7.19.1",
     "gulp": "^4.0.0",
     "gulp-autoprefixer": "^4.0.0",
-    "gulp-clean-css": "^4.2.0",
+    "gulp-babel": "^8.0.0",
+    "gulp-clean-css": "^4.3.0",
     "gulp-concat": "^2.6.1",
     "gulp-debug": "^3.1.0",
     "gulp-filter": "^5.0.0",
@@ -22,13 +23,16 @@
     "gulp-phpcs": "^2.0.0",
     "gulp-pixrem": "^1.0.0",
     "gulp-plumber": "^1.1.0",
+    "gulp-postcss": "^9.0.1",
     "gulp-rename": "^1.2.2",
     "gulp-rimraf": "^0.2.1",
     "gulp-sass": "^3.1.0",
     "gulp-sourcemaps": "^2.6.0",
     "gulp-strip-css-comments": "^1.2.0",
-    "gulp-uglify": "^3.0.0",
+    "gulp-terser": "^2.1.0",
     "gulp-zip": "^4.0.0",
+    "postcss": "^8.4.16",
+    "postcss-merge-rules": "^5.1.2",
     "readable-stream": "^3.6.0"
   },
   "engines": {

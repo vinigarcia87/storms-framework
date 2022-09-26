@@ -136,12 +136,46 @@ class Helper extends Base\Manager
 
 	/**
 	 * Return an array of functions that have been called to get to the current point in code
+	 *
 	 * @param string $title
 	 * @param null $ignore_class
 	 * @param int $skip_frames
 	 */
 	public static function backtrace( $title = '', $ignore_class = null, $skip_frames = 0 ) {
 		Helper::debug( wp_debug_backtrace_summary( $ignore_class, $skip_frames, false ), $title );
+	}
+
+	/**
+	 * Show details of all scripts queued on
+	 * To use it, just call this method on functions.php
+	 */
+	public static function show_all_scripts() {
+		add_action( 'wp_head', function() {
+			if( ! is_admin() ) {
+				$wp_scripts = wp_scripts();
+
+				$scripts = [];
+				foreach( $wp_scripts->queue as $queue_script ) {
+
+					$queue_script_details = $wp_scripts->registered[ $queue_script ];
+					$scripts[ $queue_script ] = [
+						'src'  => $queue_script_details->src,
+						'deps' => $queue_script_details->deps,
+					];
+				}
+				\StormsFramework\Helper::debug( $scripts, 'Storms Inspect Queued Scripts @ ' . Helper::get_current_url() );
+			}
+		}, 999 );
+	}
+
+	/**
+	 * Get the current URL
+	 *
+	 * @return string
+	 */
+	public static function get_current_url() {
+		$protocol = is_ssl() ? 'https://' : 'http://';
+		return ($protocol) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
 	}
 
 	/**
@@ -223,6 +257,22 @@ class Helper extends Base\Manager
 	 */
 	public static function is_plugin_activated( $plugin_name ) {
 		return in_array( $plugin_name, apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) );
+	}
+
+	/**
+	 * Get an array of all woocommerce pages ID's
+	 *
+	 * @return array List of WooCommerce pages ID's
+	 */
+	public static function get_woocommerce_pages_ids() {
+		$woocommerce_pages = [
+			'woocommerce_shop_page_id',
+			'woocommerce_cart_page_id',
+			'woocommerce_checkout_page_id',
+			'woocommerce_myaccount_page_id',
+			'woocommerce_terms_page_id',
+		];
+		return array_filter( array_map( 'get_option', $woocommerce_pages ) );
 	}
 
 	/**
@@ -454,10 +504,6 @@ class Helper extends Base\Manager
 	public static function get_shop_others_item( $item ) {
 		return Helper::get_shop_info_item( 'others', $item );
 	}
-
-	//</editor-fold>
-
-	//<editor-fold desc="Data creation functions">
 
 	/**
 	 * Create a new product attribute from a label name
@@ -721,7 +767,7 @@ class Helper extends Base\Manager
 		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
 
 		// Try to find the item on cache
-		$output = get_transient( $key );
+		$output = apply_filters( 'storms_saved_fragment_cache', get_transient( $key ) );
 		if ( empty( $output ) ) {
 			// Call the function to create the item
 			ob_start();
@@ -1273,7 +1319,7 @@ class Helper extends Base\Manager
 			sprintf(
 				wp_kses(
 					/* translators: %s: Name of current post. Only visible to screen readers */
-					__( 'Edit <span class="sr-only">%s</span>', 'storms' ),
+					__( 'Edit <span class="visually-hidden">%s</span>', 'storms' ),
 					array(
 						'span' => array(
 							'class' => array(),
@@ -1283,7 +1329,7 @@ class Helper extends Base\Manager
 				get_the_title()
 			),
 			' <span class="edit-link">',
-			' <i class="fa fa-pencil-square-o"></i></span>'
+			' <i class="bi bi-pencil-square"></i></span>'
 		);
 	}
 
@@ -1418,7 +1464,7 @@ class Helper extends Base\Manager
 					echo '<li>'.$page.'</li>';
 				else
 					// Print current page link
-					echo '<li class="active"><span>' . $key . ' <span class="sr-only">'.__('Current Page', 'storms').'</span></span></li>';
+					echo '<li class="active"><span>' . $key . ' <span class="visually-hidden">'.__('Current Page', 'storms').'</span></span></li>';
 			else
 				// Print previous and next buttons
 				echo $page;

@@ -95,7 +95,7 @@ class Storms_WC_User_Menu extends Storms_Widget
 		$html  = '';
 		$html .= '<div class="storms-user-menu-content ' . $atts['extra_classes'] . '">';
 		$html .= '    <a class="user-menu-link ' . ( $user_logged_in ? 'storms-usuario-logado' : 'storms-usuario-deslogado' ) . '" href="' . wc_get_account_endpoint_url( 'dashboard' ) . '" title="' . __( 'Acesse sua conta', 'storms' ) . '" aria-haspopup="true" aria-expanded="false">';
-		$html .= '        <i class="fa st-ic-user-circle" aria-hidden="true"></i> ';
+		$html .= '        <i class="st-ic-user-circle" aria-hidden="true"></i> ';
 		$html .= '        <span class="user-menu-text">' . $display_name . '</span> ';
 		$html .= '    </a>';
 
@@ -114,7 +114,7 @@ class Storms_WC_User_Menu extends Storms_Widget
 			$html .= '    </ul>';
 		} else {
 			$html .= '    <div class="storms-menu-usuario-deslogado-container">';
-			$html .= '    	<p><a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="btn btn-primary btn-block">' . __( 'Entrar', 'storms' ) . '</a></p>';
+			$html .= '    	<p><a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="btn btn-primary">' . __( 'Entrar', 'storms' ) . '</a></p>';
 
 			if ( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) {
 				$html .= '    	<p>' . __( 'Ainda não possui cadastro?', 'storms' ) . ' <a href="' . esc_url(wc_get_page_permalink('myaccount')) . '">' . __( 'Cadastre-se', 'storms' ) . '</a></p>';

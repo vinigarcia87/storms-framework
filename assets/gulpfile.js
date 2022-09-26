@@ -19,13 +19,15 @@ var gulp          = require('gulp'),
 	plumber       = require('gulp-plumber'),      // Helps prevent stream crashing on errors
 	sourcemaps    = require('gulp-sourcemaps'),
 	cleanCSS 	  = require('gulp-clean-css'),	  // Used to minify the CSS
+	postcss 	  = require('gulp-postcss'),
 	stripcomments = require('gulp-strip-css-comments'),
 	filter        = require('gulp-filter'),
 	rename        = require('gulp-rename'),
 	sass          = require('gulp-sass'),
 
 	concat        = require('gulp-concat'),
-	uglify        = require('gulp-uglify'),
+	babel 		  = require('gulp-babel'),
+	uglify        = require('gulp-terser'),
 
 	imagemin      = require('gulp-imagemin'),
 	newer         = require('gulp-newer'),		  // Helps to pass through newer files only
@@ -34,14 +36,14 @@ var gulp          = require('gulp'),
 
 // Datestamp for cache busting
 var getStamp = function() {
-    var myDate = new Date();
+	var myDate = new Date();
 
-    var myYear = myDate.getFullYear().toString();
-    var myMonth = ('0' + (myDate.getMonth() + 1)).slice(-2);
-    var myDay = ('0' + myDate.getDate()).slice(-2);
-    var mySeconds = myDate.getSeconds().toString();
+	var myYear = myDate.getFullYear().toString();
+	var myMonth = ('0' + (myDate.getMonth() + 1)).slice(-2);
+	var myDay = ('0' + myDate.getDate()).slice(-2);
+	var mySeconds = myDate.getSeconds().toString();
 
-    return myYear + myMonth + myDay;
+	return myYear + myMonth + myDay;
 };
 
 /**
@@ -51,28 +53,29 @@ var getStamp = function() {
  */
 gulp.task('styles', async function () {
 	gulp.src( './sass/*.scss' )
-	//.pipe( debug() )						 // Debug Vinyl file streams to see what files are run through your Gulp pipeline
-		.pipe( plumber() )
-		.pipe( sourcemaps.init() )
-		.pipe( sass( {
-			errLogToConsole: true,
-			outputStyle: 'expanded', // 'compressed', 'compact', 'nested', 'expanded'
-			precision: 10
-		} ) )
-		.pipe( pixrem() )
-		.pipe( autoprefixer( 'last 2 version', '> 1%', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4' ) )
-		.pipe( stripcomments({ preserve : /^# sourceMappingURL=/ } ) ) // Strip comments from CSS - except for sourceMappingUrl
-		.pipe( sourcemaps.write( './maps' ) )
-		.pipe( gulp.dest( './css/' ) )
+	//.pipe( debug() )			 // Debug Vinyl file streams to see what files are run through your Gulp pipeline
+	.pipe( plumber() )			 // error tracking
+	.pipe( sourcemaps.init() )
+	.pipe( sass( {
+		errLogToConsole: true,
+		outputStyle: 'expanded', // 'compressed', 'compact', 'nested', 'expanded'
+		precision: 10
+	} ) )
+	.pipe( pixrem() )
+	.pipe( autoprefixer( 'last 2 version', '> 1%', 'safari 5', 'ie 8', 'ie 9', 'opera 12.1', 'ios 6', 'android 4' ) )
+	.pipe( stripcomments({ preserve : /^# sourceMappingURL=/ } ) ) // Strip comments from CSS - except for sourceMappingUrl
+	.pipe(postcss([require('postcss-merge-rules')]))
+	.pipe( sourcemaps.write( './maps' ) )
+	.pipe( gulp.dest( './css/' ) )
 
-		.pipe( filter( '**/*.css' ) )       // Filtering stream to only css files
-		//.pipe( debug() )						 	// Debug Vinyl file streams to see what files are run through your Gulp pipeline
-		.pipe( sourcemaps.init() )
-		.pipe( rename({ suffix: '.min' } ) )
-		.pipe( cleanCSS() )
-		.pipe( sourcemaps.write( './maps' ) )
-		.pipe( gulp.dest( './css/' ) )
-		.pipe( notify( { message: 'Styles task complete', onLast: true } ) )
+	.pipe( filter( '**/*.css' ) )       // Filtering stream to only css files
+	//.pipe( debug() )							// Debug Vinyl file streams to see what files are run through your Gulp pipeline
+	.pipe( sourcemaps.init() )
+	.pipe( rename({ suffix: '.min' } ) )
+	.pipe( cleanCSS() )
+	.pipe( sourcemaps.write( './maps' ) )
+	.pipe( gulp.dest( './css/' ) )
+	.pipe( notify( { message: 'Styles task complete', onLast: true } ) )
 });
 
 /**
@@ -80,24 +83,26 @@ gulp.task('styles', async function () {
  * Copy the fonts, js and styles from used libs to the correct public place
  */
 gulp.task('load-assets', async function() {
+
 	gulp.src([
-		'node_modules/jquery/dist/jquery.min.js',				// jQuery
-		'node_modules/jquery.cycle2/src/jquery.cycle2.min.js',	// Cycle2 jQuery plugin
-		'node_modules/block-ui/jquery.blockUI.js'				// BlockUI jQuery plugin
+		'node_modules/jquery/dist/jquery.min.js'					// jQuery
 	])
-		.pipe(gulp.dest('js/jquery'))
-		.pipe(notify({ message: 'Load jQuery scripts task complete', onLast: true }));
+	.pipe(gulp.dest('js/jquery'))
+	.pipe(notify({ message: 'Load jQuery scripts task complete', onLast: true }));
 });
 
 /**
  * Scripts
- * Look at /js/raw files and concatenate those files, send them to /js where we then minimize the concatenated file.
+ * Look at /js/src files and concatenate those files, send them to /js where we then minimize the concatenated file.
  */
 function scripts_source() {
 	return pipeline(
 		gulp.src( [
 			'./js/src/**/*.js' // All our custom scripts
 		] ),
+		babel({
+			presets: ['@babel/env']
+		}),
 		//debug(),
 		gulp.dest( './js/' ),
 		sourcemaps.init(),
@@ -118,11 +123,12 @@ gulp.task('images', async function() {
 	gulp.src([
 		'./img/raw/**/*.{png,jpg,gif,svg}'
 	])
-		.pipe(newer('./img/'))
-		.pipe(rimraf({ force: true }))
-		.pipe(imagemin({ optimizationLevel: 7, progressive: true, interlaced: true }))
-		.pipe(gulp.dest('./img/'))
-		.pipe( notify( { message: 'Images task complete', onLast: true } ) );
+	//.pipe( debug() )
+	.pipe(newer('./img/'))
+	.pipe(rimraf({ force: true }))
+	.pipe(imagemin({ optimizationLevel: 7, progressive: true, interlaced: true }))
+	.pipe(gulp.dest('./img/'))
+	.pipe( notify( { message: 'Images task complete', onLast: true } ) );
 });
 
 /**
@@ -130,15 +136,15 @@ gulp.task('images', async function() {
  * Zip all theme for deploy
  */
 gulp.task('zip', async function() {
-    gulp.src( [
-        plugin_dir + '**/*',
+	gulp.src([
+		plugin_dir + '**/*',
 		plugin_dir + '*.zip',
-        '!' + plugin_dir + 'assets/node_modules',
-        '!' + plugin_dir + 'assets/node_modules/**/*'
-		] )
-        .pipe( zip( getStamp() + '-' + project + '.zip' ) )
-        .pipe( gulp.dest( plugin_dir ) )
-        .pipe( notify( { message: 'Zip task complete', onLast: true } ) );
+		'!' + plugin_dir + 'assets/node_modules',
+		'!' + plugin_dir + 'assets/node_modules/**/*'
+	])
+	.pipe( zip(getStamp() + '-' + project + '.zip' ) )
+	.pipe( gulp.dest( plugin_dir ) )
+	.pipe( notify( { message: 'Zip task complete', onLast: true } ) );
 });
 
 // ==== TASKS ==== //

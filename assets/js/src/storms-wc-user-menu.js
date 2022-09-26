@@ -18,8 +18,9 @@ body.addEventListener( 'click', function( event ) {
 	var is_device_md = body_class_list.contains('sts-media-md');
 	var is_device_lg = body_class_list.contains('sts-media-lg');
 	var is_device_xl = body_class_list.contains('sts-media-xl');
-	// Maybe we couldn't identify the device's size
-	var is_device_unknown = ! is_device_xs && ! is_device_sm && ! is_device_md && ! is_device_lg && ! is_device_xl;
+	const is_device_xxl = body_class_list.contains('sts-media-xxl'); // Maybe we couldn't identify the device's size
+
+	const is_device_unknown = ! is_device_xs && ! is_device_sm && ! is_device_md && ! is_device_lg && ! is_device_xl && ! is_device_xxl;
 
 	// Avoid this behaviour on specific media sizes
 	// TODO Make this filter customizable
@@ -45,8 +46,11 @@ body.addEventListener( 'click', function( event ) {
 
 	// The click was outside the User Menu...
 	var dropdown = document.querySelector( '.storms-user-menu-content .user_menu_dropdown' );
-	// The User Menu was open, so we going to close it
-	dropdown.classList.remove( 'active' );
+
+	if( dropdown ) {
+		// The User Menu was open, so we going to close it
+		dropdown.classList.remove('active');
+	}
 
 } );
 

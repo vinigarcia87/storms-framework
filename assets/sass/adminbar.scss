@@ -19,6 +19,16 @@
 @import "wp-admin-colorscheme";
 @import "../../../../../wp-admin/css/colors/_admin";
 
+// Conflict with website layout
+input[type=checkbox]:checked::before {
+	content: initial;
+}
+.wp-admin {
+	input[type=checkbox]:checked::before {
+		content: url("data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20viewBox%3D%270%200%2020%2020%27%3E%3Cpath%20d%3D%27M14.83%204.89l1.34.94-5.81%208.38H9.02L5.78%209.67l1.34-1.25%202.57%202.4z%27%20fill%3D%27#{url-friendly-colour($form-checked)}%27%2F%3E%3C%2Fsvg%3E");
+	}
+}
+
 #wpadminbar {
 
 	#wp-admin-bar-site-name {
@@ -101,7 +111,7 @@
 		}
     }
 
-	/* Bootstrap 4 Media Brekpoints */
+	/* Bootstrap Media Brekpoints */
 	.bootstrap-media-breakpoints {
 		display: block !important;
 
@@ -115,7 +125,8 @@
 			@media screen and (min-width: 783px) {
 				&.d-md-block,
 				&.d-lg-block,
-				&.d-xl-block {
+				&.d-xl-block,
+				&.d-xxl-block {
 					font-size: 13px;
 				}
 			}
