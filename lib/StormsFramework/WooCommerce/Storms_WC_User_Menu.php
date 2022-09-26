@@ -114,7 +114,7 @@ class Storms_WC_User_Menu extends Storms_Widget
 			$html .= '    </ul>';
 		} else {
 			$html .= '    <div class="storms-menu-usuario-deslogado-container">';
-			$html .= '    	<p><a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="btn btn-primary btn-block">' . __( 'Entrar', 'storms' ) . '</a></p>';
+			$html .= '    	<p><a href="' . esc_url( wc_get_page_permalink( 'myaccount' ) ) . '" class="btn btn-primary">' . __( 'Entrar', 'storms' ) . '</a></p>';
 
 			if ( 'yes' === get_option( 'woocommerce_enable_myaccount_registration' ) ) {
 				$html .= '    	<p>' . __( 'Ainda não possui cadastro?', 'storms' ) . ' <a href="' . esc_url(wc_get_page_permalink('myaccount')) . '">' . __( 'Cadastre-se', 'storms' ) . '</a></p>';

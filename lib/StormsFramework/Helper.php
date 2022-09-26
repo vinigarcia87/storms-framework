@@ -767,7 +767,7 @@ class Helper extends Base\Manager
 		$key = apply_filters( 'storms_fragment_cache_prefix', 'storms_fragment_cache_' ) . $key;
 
 		// Try to find the item on cache
-		$output = get_transient( $key );
+		$output = apply_filters( 'storms_saved_fragment_cache', get_transient( $key ) );
 		if ( empty( $output ) ) {
 			// Call the function to create the item
 			ob_start();
