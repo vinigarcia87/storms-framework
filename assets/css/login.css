@@ -7,43 +7,35 @@ html {
 .login {
   background: none;
 }
-
 .login #login {
   width: 350px;
 }
-
 .login h1 a {
   background: url(../img/storms/logo/storms/logo-storms-branca.png) 0 0 no-repeat !important;
   height: 56px !important;
   width: 217px !important;
 }
-
 .login #nav {
   float: left;
   margin: 15px 0;
   padding: 0;
 }
-
 .login #backtoblog {
   float: right;
   margin: 15px 0;
   padding: 0;
 }
-
 .login #nav a, .login #backtoblog a {
   color: #FFFFFF;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.075);
 }
-
 .login label {
   font-weight: 100 !important;
 }
-
 .login form, .login .message {
   -webkit-box-shadow: 0 0 19px -3px #000000;
           box-shadow: 0 0 19px -3px #000000;
 }
-
 .login #footer {
   color: #fff;
   font-size: 10px;
@@ -52,5 +44,4 @@ html {
   width: 100%;
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 0 30px rgba(0, 0, 0, 0.075);
 }
-
 /*# sourceMappingURL=maps/login.css.map */

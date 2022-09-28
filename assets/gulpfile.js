@@ -23,7 +23,7 @@ var gulp          = require('gulp'),
 	stripcomments = require('gulp-strip-css-comments'),
 	filter        = require('gulp-filter'),
 	rename        = require('gulp-rename'),
-	sass          = require('gulp-sass'),
+	sass          = require('gulp-sass')(require('sass')),
 
 	concat        = require('gulp-concat'),
 	babel 		  = require('gulp-babel'),
