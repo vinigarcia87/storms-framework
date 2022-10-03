@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * Gulpfile setup
  * @link https://ahmadawais.com/my-advanced-gulp-workflow-for-wordpress-themes/
