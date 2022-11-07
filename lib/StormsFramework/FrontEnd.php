@@ -1186,7 +1186,7 @@ class FrontEnd extends Base\Runner
 				'description' => __('Add widgets here to appear in your footer 1 top side.', 'storms'),
 				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
 				'after_title' => '</' . $widget_title_tag . '>',
 			)
 		);
@@ -1196,7 +1196,7 @@ class FrontEnd extends Base\Runner
 				'description' => __('Add widgets here to appear in your footer 1 left side.', 'storms'),
 				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
+				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
 				'after_title' => '</' . $widget_title_tag . '>',
 			)
 		);
@@ -1262,7 +1262,7 @@ class FrontEnd extends Base\Runner
 						'description' => sprintf( __( 'Add widgets here to appear in your footer region %d.', 'storms' ), $i ),
 						'before_widget' => '<aside id="%1$s" class="widget %2$s">',
 						'after_widget' => '</aside>',
-						'before_title' => '<' . $widget_title_tag . '>',
+						'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
 						'after_title' => '</' . $widget_title_tag . '>',
 					)
 				);
