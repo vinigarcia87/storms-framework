@@ -1056,7 +1056,7 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_header() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
 
 		// Header Sidebar
 		if( Helper::get_option( 'storms_add_header_sidebar', 'yes' ) ) {
@@ -1152,7 +1152,7 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_main() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
 
 		// Main Sidebar
 		if( Helper::get_option( 'storms_add_main_sidebar', 'yes' ) ) {
@@ -1178,7 +1178,7 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_footer_1() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
 
 		register_sidebar(array(
 				'name' => __('Footer 1 Sidebar Top', 'storms'),
@@ -1249,7 +1249,7 @@ class FrontEnd extends Base\Runner
 	public function register_widgets_area_footer_2() {
 
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
 
 		// Footer Sidebars
 		if( Helper::get_option( 'storms_add_footer_sidebar', 'yes' ) ) {

@@ -846,7 +846,7 @@ class WooCommerce extends Base\Runner
 	 */
 	public function register_widgets_area() {
 		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'h3' );
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
 
 		register_sidebar( array(
 			'name'          => __( 'Shop Sidebar', 'storms' ),
