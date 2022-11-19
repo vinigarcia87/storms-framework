@@ -774,11 +774,15 @@ class WooCommerce extends Base\Runner
 	 */
 	public function woocommerce_breadcrumb() {
         if( 'yes' == Helper::get_option( 'storms_add_wc_breadcrumb_before_main_content', 'yes' ) ) {
-            echo '<div class="st-grid-row row">';
-            echo '<div class="col-12">';
-            woocommerce_breadcrumb();
-            echo '</div>';
-            echo '</div>';
+        	?>
+			<div class="<?php echo esc_attr( Helper::get_option( 'storms_woo_breadcrumb_container_class' , '' ) ); ?> st-container-breadcrumb">
+				<div class="st-grid-row row">
+					<div class="col-12">
+						<?php woocommerce_breadcrumb(); ?>
+					</div>
+				</div>
+			</div>
+			<?php
         }
 	}
 
@@ -927,6 +931,7 @@ class WooCommerce extends Base\Runner
 		$recent_products = false;
 		$featured_products = false;
 		$sale_products = false;
+		$product_categories = false;
 		switch ( $woocommerce_loop['name'] ) {
 			// Verificamos se este eh um loop de products
 			case '':
@@ -963,6 +968,10 @@ class WooCommerce extends Base\Runner
 				$sale_products = true;
 				break;
 
+			case 'product_categories':
+				$product_categories = true;
+				break;
+
 			default:
 				Helper::debug( 'content_product_class function found not listed wc loop name: ' . $woocommerce_loop['name'] );
 
@@ -970,7 +979,7 @@ class WooCommerce extends Base\Runner
 		$classes[] = $woocommerce_loop['name'];
 
 		// Returns true when on a products list
-		if( $is_products || $is_related || $featured_products || $is_cross_sells || $is_up_sells || $recent_products || $sale_products ) {
+		if( $is_products || $is_related || $featured_products || $is_cross_sells || $is_up_sells || $recent_products || $sale_products || $product_categories ) {
 
 			// How many columns we want to show on shop loop?
 			$columns = $this->shop_loop_number_of_columns();
