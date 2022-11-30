@@ -28,8 +28,8 @@ class BackEnd extends Base\Runner
 
 	public function define_hooks() {
 
-		// Run only if user is logged in
-		if( is_user_logged_in() ) {
+		// Run only at admin panel
+		if( is_admin() ) {
 			// Admin modifications
 			$this->loader
 				->add_action( 'init', 'set_editor_style' )
@@ -44,19 +44,24 @@ class BackEnd extends Base\Runner
 				->add_action( 'init', 'disable_heartbeat_unless_post_edit_screen', 1 )
 				->add_action( 'init', 'stop_heartbeat', 1 );
 
-			$this->remove_admin_color_scheme_picker();
-			$this->disable_wp_update_for_non_admin();
-
-			// Admin bar modifications
 			$this->loader
-				->add_action( 'admin_bar_menu', 'toolbar_bootstrap_media_breakpoints_alert', 9900 )
-                ->add_action( 'admin_bar_menu', 'toolbar_system_environment_alert', 9999 )
-				->add_action( 'wp_before_admin_bar_render', 'remove_adminbar_itens' );
+				->add_action( 'admin_head-profile.php', 'remove_admin_color_scheme_picker' )
+				->add_action( 'admin_head-user-edit.php', 'remove_admin_color_scheme_picker' );
+
+			$this->disable_wp_update_for_non_admin();
 
 			// Dashboard modifications
 			$this->loader
 				->add_action( 'wp_dashboard_setup', 'remove_dashboard_widgets' )
 				->add_action( 'wp_dashboard_setup', 'add_dashboard_widgets' );
+		}
+
+		if( is_admin_bar_showing() ) {
+			// Admin bar modifications
+			$this->loader
+				->add_action( 'admin_bar_menu', 'toolbar_bootstrap_media_breakpoints_alert', 9900 )
+				->add_action( 'admin_bar_menu', 'toolbar_system_environment_alert', 9999 )
+				->add_action( 'wp_before_admin_bar_render', 'remove_adminbar_itens' );
 		}
 
 		// Login modifications
