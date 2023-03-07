@@ -68,7 +68,8 @@ class FrontEnd extends Base\Runner
 		$this->loader
 			->add_filter( 'stylesheet_uri', 'stylesheet_uri', 10, 2 )
 			->add_action( 'wp_enqueue_scripts', 'enqueue_main_style', 10 )
-			->add_action( 'wp_enqueue_scripts', 'remove_unused_styles', 10 );
+			->add_action( 'wp_enqueue_scripts', 'remove_unused_styles', 10 )
+			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_classic_theme_styles', 10 );
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
@@ -370,12 +371,15 @@ class FrontEnd extends Base\Runner
 
 	/**
 	 * We remove some well-know plugin's styles, so you can add them manually only on the pages you need
-	 * Styles that we remove are: contact-form-7, newsletter-subscription, newsletter_enqueue_style
+	 * Styles that we remove are: newsletter-subscription, newsletter_enqueue_style
 	 */
 	public function remove_unused_styles() {
-		//wp_deregister_style( 'contact-form-7' );
 		wp_deregister_style( 'newsletter-subscription' );
 		add_filter( 'newsletter_enqueue_style', '__return_false' );
+	}
+
+	public function dequeue_wp_classic_theme_styles() {
+		wp_dequeue_style('classic-theme-styles');
 	}
 
 	/**
@@ -494,7 +498,7 @@ class FrontEnd extends Base\Runner
 	public function remove_unused_scripts() {
 		// We remove some know plugin's scripts, so you can add them only on the pages you need
 		wp_deregister_script( 'jquery-form' );
-		//wp_deregister_script( 'contact-form-7' );
+
 		wp_deregister_script( 'newsletter-subscription' );
 		wp_deregister_script( 'wp-embed' ); // https://codex.wordpress.org/Embeds
 	}
@@ -524,6 +528,7 @@ class FrontEnd extends Base\Runner
 
 		//wp_deregister_script('wp-api-fetch'); // Need by contact-form-7
 
+		wp_dequeue_style( 'global-styles' );
 		wp_dequeue_style('wp-block-library');
 		wp_dequeue_style('wc-block-style');
 		wp_dequeue_style('wp-block-library-theme');

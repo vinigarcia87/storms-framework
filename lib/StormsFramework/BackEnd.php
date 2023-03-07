@@ -465,6 +465,10 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+			'wp-dashboard-widget-news' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 		);
 
 		// ual_dashboard_widget -> show only if admin
