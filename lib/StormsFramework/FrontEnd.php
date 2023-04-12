@@ -94,7 +94,7 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'use_default_gallery_style', 'remove_default_gallery_style' );
 
         $this->loader
-            ->add_filter( 'the_category', 'add_category_slug', 99, 1 )
+            //->add_filter( 'the_category', 'add_category_slug', 99, 1 )
             ->add_filter( 'the_title', 'menu_title_markup', 10, 2 );
 
 		$this->loader
