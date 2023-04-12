@@ -516,6 +516,10 @@ class Helper extends Base\Manager
 	public static function create_product_attribute( $label_name, $attribute_public = 0 ) {
 		global $wpdb;
 
+		if( ! \StormsFramework\Helper::is_woocommerce_activated() ) {
+			return;
+		}
+		
 		$slug = sanitize_title( $label_name );
 
 		if ( strlen( $slug ) >= 28 ) {
