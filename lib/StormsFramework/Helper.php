@@ -1268,7 +1268,7 @@ class Helper extends Base\Manager
 
 		$posted_on = sprintf(
 			/* translators: %s: post creation date. */
-			esc_html_x( 'Posted on %s', 'post creation date', 'storms' ),
+			esc_html_x( 'Criado em %s', 'post creation date', 'storms' ),
 			'<a href="' . esc_url( get_permalink() ) . '" rel="bookmark">' . $time_string . '</a>'
 		);
 
@@ -1277,18 +1277,22 @@ class Helper extends Base\Manager
             $posted_on .= ' - ';
             $posted_on .= sprintf(
             /* translators: %s: post update date. */
-                esc_html_x('Last updated on %s', 'post update date', 'storms'),
+                esc_html_x('Atualizado em %s', 'post update date', 'storms'),
                 '<a href="' . esc_url(get_permalink()) . '" rel="bookmark">' . $time_string_updated . '</a>'
             );
         }
 
-		$byline = sprintf(
-			/* translators: %s: post author. */
-			esc_html_x( 'by %s', 'post author', 'storms' ),
-			'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
-		);
+		echo '<span class="posted-on">' . $posted_on . '</span>'; // WPCS: XSS OK.
 
-		echo '<span class="posted-on">' . $posted_on . '</span><span class="byline"> ' . $byline . '</span>'; // WPCS: XSS OK.
+		if( '' !== get_the_author() ) {
+			$byline = sprintf(
+			/* translators: %s: post author. */
+				esc_html_x( 'por %s', 'post author', 'storms' ),
+				'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
+			);
+			echo '<span class="byline"> ' . $byline . '</span>'; // WPCS: XSS OK.
+		}
+
 	}
 
 	/**

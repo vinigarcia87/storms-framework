@@ -278,21 +278,6 @@ class Template extends Base\Runner
 			if( is_front_page() ) {
 				$layout = Helper::get_option( 'storms_front_page_layout', '1c' );
 
-			} elseif( is_product() ) {
-				$layout = Helper::get_option( 'storms_product_layout', '1c' );
-
-			} elseif( is_account_page() ) {
-				$layout = Helper::get_option( 'storms_account_layout', '1c' );
-
-			} elseif( is_checkout() || is_cart() ) {
-				$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
-
-			} elseif( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
-				$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
-
-			} elseif( is_woocommerce() ) {
-				$layout = Helper::get_option( 'storms_woocommerce_layout', '1c' );
-
 			} elseif( is_404() ) {
 				$layout = Helper::get_option( 'storms_page_layout', '1c' );
 
@@ -302,9 +287,24 @@ class Template extends Base\Runner
 			} elseif( is_single() ) {
 				$layout = Helper::get_option( 'storms_single_layout', '1c' );
 
+			} elseif( \StormsFramework\Helper::is_woocommerce_activated() ) {
+				if( is_product() ) {
+					$layout = Helper::get_option( 'storms_product_layout', '1c' );
+
+				} elseif( is_account_page() ) {
+					$layout = Helper::get_option( 'storms_account_layout', '1c' );
+
+				} elseif( is_checkout() || is_cart() ) {
+					$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
+
+				} elseif( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
+					$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
+
+				} elseif( is_woocommerce() ) {
+					$layout = Helper::get_option('storms_woocommerce_layout', '1c');
+				}
 			} else {
 				$layout = is_rtl() ? '2c-r' : '2c-l';
-
 			}
 		}
 
