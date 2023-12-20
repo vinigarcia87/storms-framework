@@ -25,6 +25,8 @@ class Manager
 
     protected $version;
 
+	protected $component;
+
     public function get_version() {
         return $this->version;
     }
