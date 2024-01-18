@@ -1283,14 +1283,22 @@ class Helper extends Base\Manager
         }
 
 		echo '<span class="posted-on">' . $posted_on . '</span>'; // WPCS: XSS OK.
+	}
+
+	/**
+	 * Prints HTML with meta information for the current author.
+	 * @return void
+	 */
+	public static function posted_by() {
 
 		if( '' !== get_the_author() ) {
 			$byline = sprintf(
 			/* translators: %s: post author. */
-				esc_html_x( 'por %s', 'post author', 'storms' ),
-				'<span class="author vcard"><a class="url fn n" href="' . esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ) . '">' . esc_html( get_the_author() ) . '</a></span>'
+				esc_html_x('por %s', 'post author', 'storms'),
+				'<span class="author vcard"><a class="url fn n" href="' . esc_url(get_author_posts_url(get_the_author_meta('ID'))) . '">' . esc_html(get_the_author()) . '</a></span>'
 			);
-			echo '<span class="byline"> ' . $byline . '</span>'; // WPCS: XSS OK.
+
+			echo '<span class="byline"> ' . $byline . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		}
 
 	}
@@ -1303,17 +1311,17 @@ class Helper extends Base\Manager
 		// Hide category and tag text for pages.
 		if ( 'post' === get_post_type() ) {
 			/* translators: used between list items, there is a space after the comma */
-			$categories_list = get_the_category_list( esc_html__( ', ', 'Used between list items, there is a space after the comma.', 'storms' ) );
+			$categories_list = get_the_category_list( esc_html__( ', ', 'Used between list items, there is a space after the comma.' ) );
 			if ( $categories_list && Helper::is_categorized_blog() ) {
 				/* translators: 1: list of categories. */
-				printf( '<span class="cat-links">' . esc_html__( 'Posted in %1$s', 'storms' ) . '</span>', $categories_list ); // WPCS: XSS OK.
+				printf( '<span class="cat-links">' . esc_html__( 'Postado em %1$s', 'storms' ) . '</span>', $categories_list ); // WPCS: XSS OK.
 			}
 
 			/* translators: used between list items, there is a space after the comma */
 			$tags_list = get_the_tag_list( '', esc_html_x( ', ', 'list item separator', 'storms' ) );
 			if ( $tags_list ) {
 				/* translators: 1: list of tags. */
-				printf( '<span class="tags-links">' . esc_html__( 'Tagged %1$s', 'storms' ) . '</span>', $tags_list ); // WPCS: XSS OK.
+				printf( '<span class="tags-links">' . esc_html__( 'Tags %1$s', 'storms' ) . '</span>', $tags_list ); // WPCS: XSS OK.
 			}
 		}
 
@@ -1339,6 +1347,45 @@ class Helper extends Base\Manager
 			' <span class="edit-link">',
 			' <i class="bi bi-pencil-square"></i></span>'
 		);
+	}
+
+	/**
+	 * Displays an optional post thumbnail.
+	 *
+	 * Wraps the post thumbnail in an anchor element on index views, or a div
+	 * element when on single views.
+	 */
+	public static function post_thumbnail() {
+		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
+			return;
+		}
+
+		if ( is_singular() ) :
+			?>
+
+			<div class="post-thumbnail">
+				<?php the_post_thumbnail(); ?>
+			</div><!-- .post-thumbnail -->
+
+		<?php else : ?>
+
+			<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true" tabindex="-1">
+				<?php
+				the_post_thumbnail(
+					'post-thumbnail',
+					array(
+						'alt' => the_title_attribute(
+							array(
+								'echo' => false,
+							)
+						),
+					)
+				);
+				?>
+			</a>
+
+		<?php
+		endif; // End is_singular().
 	}
 
 	/**
@@ -1830,16 +1877,16 @@ class Helper extends Base\Manager
 	 *
 	 * @return string         Return the post thumbnail.
 	 */
-	public static function post_thumbnail( $width, $height, $alt, $crop = true, $class = '', $upscale = false ) {
-		$thumb = get_post_thumbnail_id();
-
-		if ( $thumb ) {
-			$image = Helper::get_image_url( $thumb, $width, $height, $crop, $upscale );
-			$html  = '<img class="wp-image-thumb img-fluid ' . sanitize_html_class( $class ) . '" src="' . $image . '" width="' . esc_attr( $width ) . '" height="' . esc_attr( $height ) . '" alt="' . esc_attr( $alt ) . '" />';
-
-			return apply_filters( 'storms_thumbnail_html', $html );
-		}
-	}
+//	public static function post_thumbnail( $width, $height, $alt, $crop = true, $class = '', $upscale = false ) {
+//		$thumb = get_post_thumbnail_id();
+//
+//		if ( $thumb ) {
+//			$image = Helper::get_image_url( $thumb, $width, $height, $crop, $upscale );
+//			$html  = '<img class="wp-image-thumb img-fluid ' . sanitize_html_class( $class ) . '" src="' . $image . '" width="' . esc_attr( $width ) . '" height="' . esc_attr( $height ) . '" alt="' . esc_attr( $alt ) . '" />';
+//
+//			return apply_filters( 'storms_thumbnail_html', $html );
+//		}
+//	}
 
 	/**
 	 * Gets the excerpt of a specific post ID or object

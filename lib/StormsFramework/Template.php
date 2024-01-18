@@ -281,6 +281,9 @@ class Template extends Base\Runner
 			} elseif( is_404() ) {
 				$layout = Helper::get_option( 'storms_page_layout', '1c' );
 
+			} elseif( is_search() ) {
+				$layout = Helper::get_option( 'storms_search_layout', '2c-l' );
+
 			} elseif( is_page() ) {
 				$layout = Helper::get_option( 'storms_page_layout', '1c' );
 

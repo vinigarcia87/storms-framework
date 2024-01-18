@@ -69,7 +69,8 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'stylesheet_uri', 'stylesheet_uri', 10, 2 )
 			->add_action( 'wp_enqueue_scripts', 'enqueue_main_style', 10 )
 			->add_action( 'wp_enqueue_scripts', 'remove_unused_styles', 10 )
-			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_classic_theme_styles', 10 );
+			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_classic_theme_styles', 10 )
+			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_core_block_supports_styles', 10 );
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
@@ -380,6 +381,10 @@ class FrontEnd extends Base\Runner
 
 	public function dequeue_wp_classic_theme_styles() {
 		wp_dequeue_style('classic-theme-styles');
+	}
+
+	public function dequeue_wp_core_block_supports_styles() {
+		wp_dequeue_style('core-block-supports');
 	}
 
 	/**
