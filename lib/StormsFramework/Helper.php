@@ -519,7 +519,7 @@ class Helper extends Base\Manager
 		if( ! \StormsFramework\Helper::is_woocommerce_activated() ) {
 			return;
 		}
-		
+
 		$slug = sanitize_title( $label_name );
 
 		if ( strlen( $slug ) >= 28 ) {
@@ -1184,6 +1184,34 @@ class Helper extends Base\Manager
 		<?php
 	}
 
+	//<editor-fold desc="Post/Page View Counter functions">
+
+	public static function get_post_views( $postID ) {
+		$count_key = 'post_views_count';
+		$count = get_post_meta( $postID, $count_key, true );
+		if( $count == '' ) {
+			delete_post_meta( $postID, $count_key );
+			add_post_meta( $postID, $count_key, '0' );
+			return "0";
+		}
+		return $count;
+	}
+
+	public static function set_post_views( $postID ) {
+		$count_key = 'post_views_count';
+		$count = get_post_meta( $postID, $count_key, true );
+		if( $count == '' ) {
+			$count = 0;
+			delete_post_meta( $postID, $count_key );
+			add_post_meta( $postID, $count_key, '0' );
+		} else {
+			$count++;
+			update_post_meta( $postID, $count_key, $count );
+		}
+	}
+
+	//</editor-fold>
+
 	//<editor-fold desc="Front end helper functions">
 
 	/**
@@ -1310,20 +1338,45 @@ class Helper extends Base\Manager
 	public static function entry_footer() {
 		// Hide category and tag text for pages.
 		if ( 'post' === get_post_type() ) {
+			$categories_separator_text = apply_filters( 'storms_categories_separator_text', esc_html__( ', ', 'Used between list items, there is a space after the comma.' ) );
 			/* translators: used between list items, there is a space after the comma */
-			$categories_list = get_the_category_list( esc_html__( ', ', 'Used between list items, there is a space after the comma.' ) );
+			$categories_list = get_the_category_list( $categories_separator_text );
 			if ( $categories_list && Helper::is_categorized_blog() ) {
 				/* translators: 1: list of categories. */
-				printf( '<span class="cat-links">' . esc_html__( 'Postado em %1$s', 'storms' ) . '</span>', $categories_list ); // WPCS: XSS OK.
+				$category_prefix_text = apply_filters( 'storms_category_prefix_text', esc_html__( 'Postado em', 'storms' ) );
+				printf( '<div class="category-links">' . $category_prefix_text . ' ' . $categories_list . '</div>' ); // WPCS: XSS OK.
 			}
 
 			/* translators: used between list items, there is a space after the comma */
-			$tags_list = get_the_tag_list( '', esc_html_x( ', ', 'list item separator', 'storms' ) );
+			$tags_separator_text = apply_filters( 'storms_tags_separator_text', esc_html_x( ', ', 'list item separator', 'storms' ) );
+			$tags_list = get_the_tag_list( '', $tags_separator_text );
 			if ( $tags_list ) {
 				/* translators: 1: list of tags. */
-				printf( '<span class="tags-links">' . esc_html__( 'Tags %1$s', 'storms' ) . '</span>', $tags_list ); // WPCS: XSS OK.
+				$tag_prefix_text = apply_filters( 'storms_tag_prefix_text', esc_html__( 'Tags', 'storms' ) );
+				printf( '<div class="tag-links">' . $tag_prefix_text . ' ' . $tags_list . '</div>' ); // WPCS: XSS OK.
 			}
 		}
+
+		if ( 'post' == get_post_type() ) : ?>
+
+			<div class="entry-nav">
+				<div class="prev-post">
+					<span class="nav-post-text">
+						<i class="bi bi-chevron-left"></i>
+						<?php _e('Post anterior:', 'storms'); ?>
+					</span>
+					<?php previous_post_link('%link', '%title'); ?>
+				</div>
+				<div class="prev-post">
+					<span class="nav-post-text">
+						<i class="bi bi-chevron-right"></i>
+						<?php _e('Post seguinte:', 'storms'); ?>
+					</span>
+					<?php next_post_link('%link', '%title'); ?>
+				</div>
+			</div>
+
+		<?php endif;
 
 		if ( ( is_single() || is_page() ) && ( comments_open() || get_comments_number() ) && ! post_password_required() ) {
 
@@ -1386,6 +1439,12 @@ class Helper extends Base\Manager
 
 		<?php
 		endif; // End is_singular().
+	}
+
+	public static function get_no_image_placeholder() {
+		?>
+		<img src="<?php echo \StormsFramework\Helper::get_asset_url('/img/no-image.jpg') ?>" alt="Nenhuma imagem" class="img-fluid" />
+		<?php
 	}
 
 	/**
