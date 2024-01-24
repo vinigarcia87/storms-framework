@@ -407,6 +407,11 @@ class BackEnd extends Base\Runner
 	 * Those are not useful for the average user
 	 */
 	public function remove_dashboard_widgets() {
+		global $wp_meta_boxes;
+
+		// Show all registred meta boxes
+		//Helper::debug( $wp_meta_boxes );
+
 		//Remove WordPress Welcome Panel
 		remove_action( 'welcome_panel', 'wp_welcome_panel' );
 
@@ -445,6 +450,10 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+			'wpseo-wincher-dashboard-overview' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 
 			// YITH widgets
 			'yith_dashboard_products_news' => array(
@@ -469,12 +478,16 @@ class BackEnd extends Base\Runner
 				'page'    => 'dashboard',
 				'context' => 'normal'
 			),
+			'easy_wp_smtp_reports_widget_lite' => array(
+				'page'    => 'dashboard',
+				'context' => 'normal'
+			),
 		);
 
-		// ual_dashboard_widget -> show only if admin
+		$remove_defaults_widgets = apply_filters( 'storms_remove_dashboard_widgets', $remove_defaults_widgets );
 
-		foreach ( $remove_defaults_widgets as $widget_id => $options ) {
-			remove_meta_box($widget_id, $options['page'], $options['context']);
+		foreach( $remove_defaults_widgets as $widget_id => $options ) {
+			remove_meta_box( $widget_id, $options['page'], $options['context'] );
 		}
 	}
 

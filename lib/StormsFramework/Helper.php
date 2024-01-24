@@ -248,7 +248,7 @@ class Helper extends Base\Manager
 	 * @return boolean
 	 */
 	public static function is_woocommerce_activated() {
-		return class_exists( 'woocommerce' ) ? true : false;
+		return class_exists( 'woocommerce' );
 	}
 
 	/**
