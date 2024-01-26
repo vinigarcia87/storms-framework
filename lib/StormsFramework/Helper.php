@@ -1443,7 +1443,7 @@ class Helper extends Base\Manager
 
 	public static function get_no_image_placeholder() {
 		?>
-		<img src="<?php echo \StormsFramework\Helper::get_asset_url('/img/no-image.jpg') ?>" alt="Nenhuma imagem" class="img-fluid" />
+		<img src="<?php echo \StormsFramework\Helper::get_asset_url('/img/no-image.jpg') ?>" alt="Nenhuma imagem" class="no-image-placeholder img-fluid" />
 		<?php
 	}
 
