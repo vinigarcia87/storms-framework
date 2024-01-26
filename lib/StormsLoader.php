@@ -29,17 +29,17 @@ function storms_load_extensions() {
 	$support_woocomerce = current_theme_supports( 'use-woocommerce' );
 
 	if ( $support_backend ) {
-		(new \StormsFramework\BackEnd())->run();
+		(\StormsFramework\BackEnd::get_instance())->run();
 
 		if( $support_brand_customization ) {
-			(new \StormsFramework\BrandCustomization())->run();
+			(\StormsFramework\BrandCustomization::get_instance())->run();
 		}
 	}
 	if ( $support_frontend ) {
-		(new \StormsFramework\FrontEnd())->run();
+		(\StormsFramework\FrontEnd::get_instance())->run();
 
 		if ( $support_theme_layouts ) {
-			(new \StormsFramework\Template())->run();
+			(\StormsFramework\Template::get_instance())->run();
 
 			// Enable theme layouts
 			add_theme_support('theme-layouts',
@@ -67,7 +67,7 @@ function storms_load_extensions() {
 		}
 
 		if ( $support_bootstrap ) {
-			(new Bootstrap\Bootstrap())->run();
+			(Bootstrap\Bootstrap::get_instance())->run();
 		}
 	}
 	if ( $support_woocomerce ) {
@@ -76,7 +76,7 @@ function storms_load_extensions() {
 			// Declare WooCommerce support
 			add_theme_support( 'woocommerce' );
 
-			(new WooCommerce\WooCommerce())->run();
+			(WooCommerce\WooCommerce::get_instance())->run();
 
 			// Registering WooCommerce Mini Cart Widget
 			add_action( 'widgets_init', array( new WooCommerce\Storms_WC_Cart_Mini(), 'register_widget' ) );
@@ -86,7 +86,7 @@ function storms_load_extensions() {
 		}
 	}
 
-	(new \StormsFramework\StormsApi())->run();
+	(\StormsFramework\StormsApi::get_instance())->run();
 }
 add_action( 'after_setup_theme', 'storms_load_extensions', 14 );
 

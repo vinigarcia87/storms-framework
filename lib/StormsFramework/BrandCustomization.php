@@ -22,6 +22,8 @@ use StormsFramework\Base,
 
 class BrandCustomization extends Base\Runner
 {
+	use Base\Singleton;
+
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
     }

@@ -19,6 +19,8 @@ namespace StormsFramework;
 
 class StormsApi extends Base\Runner
 {
+	use Base\Singleton;
+
 	private $apiEndpoint;
 
 	public function __construct() {

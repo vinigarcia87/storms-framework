@@ -21,6 +21,8 @@ use StormsFramework\Base;
 
 class FrontEnd extends Base\Runner
 {
+	use Base\Singleton;
+
 	private $jquery_version = '3.4.1';
 
 	public function __construct() {
