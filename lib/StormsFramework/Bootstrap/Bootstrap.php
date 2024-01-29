@@ -47,7 +47,7 @@ class Bootstrap extends Base\Runner
 	 * size attribute in the form input.
 	 *
 	 * @param string  $output The password form HTML output.
-	 * @param WP_Post $post   Post object.
+	 * @param \WP_Post $post   Post object.
 	 * @return string
 	 */
 	public function password_form( $output, $post ) {

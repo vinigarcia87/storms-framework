@@ -279,33 +279,39 @@ class Template extends Base\Runner
 		if( 'default' === $layout ) {
 			if( is_front_page() ) {
 				$layout = Helper::get_option( 'storms_front_page_layout', '1c' );
-
-			} elseif( is_404() ) {
+			}
+			if( is_404() ) {
 				$layout = Helper::get_option( 'storms_page_layout', '1c' );
-
-			} elseif( is_search() ) {
+			}
+			if( is_search() ) {
 				$layout = Helper::get_option( 'storms_search_layout', '2c-l' );
-
-			} elseif( is_page() ) {
+			}
+			if( is_page() ) {
 				$layout = Helper::get_option( 'storms_page_layout', '1c' );
-
-			} elseif( is_single() ) {
+			}
+			if( is_single() ) {
 				$layout = Helper::get_option( 'storms_single_layout', '1c' );
-
-			} elseif( \StormsFramework\Helper::is_woocommerce_activated() ) {
+			}
+			if( \StormsFramework\Helper::is_woocommerce_activated() ) {
 				if( is_product() ) {
 					$layout = Helper::get_option( 'storms_product_layout', '1c' );
-
-				} elseif( is_account_page() ) {
+				}
+				if( is_account_page() ) {
 					$layout = Helper::get_option( 'storms_account_layout', '1c' );
+				}
+				if( is_account_page() && ! is_user_logged_in() ) {
+					$layout = Helper::get_option( 'storms_wc_login_layout', '1c' );
 
-				} elseif( is_checkout() || is_cart() ) {
+				}
+				if( is_checkout() || is_cart() ) {
 					$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
 
-				} elseif( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
+				}
+				if( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
 					$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
 
-				} elseif( is_woocommerce() ) {
+				}
+				if( is_woocommerce() ) {
 					$layout = Helper::get_option('storms_woocommerce_layout', '1c');
 				}
 			} else {

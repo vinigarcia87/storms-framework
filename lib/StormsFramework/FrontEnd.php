@@ -37,8 +37,6 @@ class FrontEnd extends Base\Runner
 			->add_action( 'init', 'head_cleanup' )
 			->add_filter( 'the_generator', 'remove_the_generator' );
 
-		remove_action( 'wp_head', 'rel_canonical' );
-
 		$this->remove_oembed();
 
 		$this->loader->add_action( 'send_headers', 'http_header_security', 10, 0 );
@@ -46,33 +44,32 @@ class FrontEnd extends Base\Runner
 		// Links and tags cleanup
 		$this->loader
 			->add_filter( 'document_title_separator', 'title_separator' )
-			->add_action( 'wp_head', 'rel_canonical' )
-			->add_filter( 'wp_list_categories', 'modify_category_rel' )
-			->add_filter( 'the_category', 'modify_category_rel' )
-			->add_filter( 'wp_tag_cloud', 'modify_tag_rel' )
-			->add_filter( 'the_tags', 'modify_tag_rel' )
+
 			->add_filter( 'style_loader_tag', 'clean_style_tag' )
 			->add_filter( 'script_loader_tag', 'clean_script_tag' )
+
 			->add_filter( 'get_avatar', 'remove_self_closing_tags' )
 			->add_filter( 'comment_id_fields', 'remove_self_closing_tags' )
 			->add_filter( 'post_thumbnail_html', 'remove_self_closing_tags' )
-			->add_filter( 'script_loader_src', 'remove_script_version', 15, 1 )
-			->add_filter( 'style_loader_src', 'remove_script_version', 15, 1 )
-			->add_filter( 'language_attributes', 'language_attributes' )
-			->add_filter( 'body_class', 'body_class' )
-			->add_filter( 'embed_oembed_html', 'oembed_wrap', 10, 4 )
-			->add_filter( 'embed_googlevideo', 'oembed_wrap', 10, 2 )
 
-			->add_filter( 'wp_is_mobile', 'wp_is_mobile_exclude_tablets' );
+			->add_filter( 'language_attributes', 'language_attributes' );
 
 		$this->remove_emojis();
 
 		$this->loader
+			->add_filter( 'script_loader_src', 'remove_script_version', 15, 1 )
+			->add_filter( 'style_loader_src', 'remove_script_version', 15, 1 );
+
+		$this->loader
 			->add_filter( 'stylesheet_uri', 'stylesheet_uri', 10, 2 )
-			->add_action( 'wp_enqueue_scripts', 'enqueue_main_style', 10 )
-			->add_action( 'wp_enqueue_scripts', 'remove_unused_styles', 10 )
+			->add_action( 'wp_enqueue_scripts', 'enqueue_main_style', 10 );
+
+		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_classic_theme_styles', 10 )
-			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_core_block_supports_styles', 10 );
+			->add_action( 'wp_enqueue_scripts', 'dequeue_wp_core_block_supports_styles', 10 )
+			->add_filter( 'wp_head', 'remove_wp_widget_recent_comments_style', 1 )
+			->add_filter( 'wp_head', 'remove_recent_comments_style', 1 )
+			->add_filter( 'use_default_gallery_style', 'remove_default_gallery_style' );
 
 		$this->loader
 			->add_action( 'wp_enqueue_scripts', 'jquery_scripts' )
@@ -87,32 +84,15 @@ class FrontEnd extends Base\Runner
 
 		$this->loader
 			->add_filter( 'wp_resource_hints', 'prefetch_dns', 10, 2 )
-			->add_action( 'wp_head', 'preload_scripts', 2 )
 			->add_filter( 'script_loader_tag', 'defer_async_scripts', 10, 3 )
 			->add_filter( 'style_loader_tag', 'defer_async_styles', 10, 4 );
 
-		$this->loader
-			->add_filter( 'wp_head', 'remove_wp_widget_recent_comments_style', 1 )
-			->add_filter( 'wp_head', 'remove_recent_comments_style', 1 )
-			->add_filter( 'use_default_gallery_style', 'remove_default_gallery_style' );
-
         $this->loader
-            //->add_filter( 'the_category', 'add_category_slug', 99, 1 )
-            ->add_filter( 'the_title', 'menu_title_markup', 10, 2 );
+			->add_filter( 'body_class', 'body_class' )
+            ->add_filter( 'the_category', 'add_category_slug', 99, 1 );
 
 		$this->loader
 			->add_filter( 'the_content', 'content_add_rel_noopener', 10 );
-			//->add_filter( 'the_content', 'content_remove_wrapping_p', 10 );
-
-		$this->loader
-			->add_action( 'init', 'register_menus' )
-			->add_action( 'widgets_init', 'register_widgets_area_header', 1 )
-			->add_action( 'widgets_init', 'register_widgets_area_main', 10 )
-			->add_action( 'widgets_init', 'register_widgets_area_footer_1', 15 )
-			->add_action( 'widgets_init', 'register_widgets_area_footer_2', 20 );
-
-		$this->loader
-			->add_filter( 'wp_nav_menu_items', 'add_widget_area_on_menu_item', 10, 2 );
     }
 
 	//<editor-fold desc="FrontEnd optimizations">
@@ -254,7 +234,7 @@ class FrontEnd extends Base\Runner
 	 * Remove WP version meta tag
 	 */
 	public function remove_the_generator() {
-		return false; // __return_false
+		return false;
 	}
 
 	/**
@@ -370,15 +350,6 @@ class FrontEnd extends Base\Runner
 	public function enqueue_main_style() {
 		// Default Theme Style
 		wp_enqueue_style( 'main-style-theme', get_stylesheet_uri(), array(), STORMS_FRAMEWORK_VERSION, 'all' );
-	}
-
-	/**
-	 * We remove some well-know plugin's styles, so you can add them manually only on the pages you need
-	 * Styles that we remove are: newsletter-subscription, newsletter_enqueue_style
-	 */
-	public function remove_unused_styles() {
-		wp_deregister_style( 'newsletter-subscription' );
-		add_filter( 'newsletter_enqueue_style', '__return_false' );
 	}
 
 	public function dequeue_wp_classic_theme_styles() {
@@ -599,15 +570,6 @@ class FrontEnd extends Base\Runner
 	}
 
 	/**
-	 * Preload de scripts para melhorar desempenho
-	 * @source https://www.freecodecamp.org/news/web-fonts-in-2018-f191a48367e8/
-	 */
-	function preload_scripts() {
-		//echo '<link rel="preload" as="font" type="font/woff2" crossorigin="anonymous" href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0">';
-		echo '<link href="' . \StormsFramework\Helper::get_asset_url( '/fonts/fontawesome-webfont.woff2' ) . '?v=4.7.0" type="font/woff2" rel="stylesheet" media="print" onload="this.onload=null;this.removeAttribute(\'media\');">';
-	}
-
-	/**
 	 * Defer / async on selected scripts
 	 * @see https://stackoverflow.com/a/53884237
 	 * @see https://kinsta.com/pt/blog/adiar-a-analise-de-aviso-do-javascript/
@@ -684,40 +646,6 @@ class FrontEnd extends Base\Runner
 	 */
 	public function title_separator() {
 		return Helper::get_option( 'storms_title_separator', '|' );
-	}
-
-	/**
-	 * Remove self-closing tag and change ''s to "'s on rel_canonical()
-	 */
-	public function rel_canonical() {
-		/** @var \WP_Query $wp_the_query */
-		global $wp_the_query;
-
-		if( !is_singular() )
-			return;
-
-		if (!$id = $wp_the_query->get_queried_object_id())
-			return;
-
-		$link = get_permalink($id);
-		echo "\t<link rel=\"canonical\" href=\"$link\">\n";
-	}
-
-	/**
-	 * Add rel="nofollow" and remove rel="category"
-	 */
-	public function modify_category_rel( $text ) {
-		$search = array( 'rel="category"', 'rel="category tag"' );
-		$text = str_replace( $search, 'rel="nofollow"', $text );
-
-		return $text;
-	}
-
-	/**
-	 * Add rel="nofollow" and remove rel="tag"
-	 */
-	public function modify_tag_rel( $taglink ) {
-		return str_replace( 'rel="tag">', 'rel="nofollow">', $taglink );
 	}
 
 	/**
@@ -825,30 +753,6 @@ class FrontEnd extends Base\Runner
 	}
 
 	/**
-	 * Enclose embedded media in a div.
-	 * Wrapping all flash embeds in a div allows for easier styling with CSS media queries.
-	 * @link https://gist.github.com/965956
-	 */
-	public function oembed_wrap( $cache, $url, $attr = '', $post_ID = '' ) {
-		$classes = apply_filters( 'oembed_wrap_classes', array( 'embed-wrap' ) );
-		return '<div class="' . esc_attr( implode( ' ', $classes ) ) . '">' . $cache . '</div>';
-	}
-
-	/**
-	 * Change wp_is_mobile() function to exclude tablets
-	 *
-	 * @param $is_mobile
-	 * @return bool
-	 */
-	public function wp_is_mobile_exclude_tablets( $is_mobile ) {
-
-		if( $is_mobile && Helper::is_tablet() ) {
-			return false;
-		}
-		return $is_mobile;
-	}
-
-	/**
 	 * Remove Emoji's from Wordpress
 	 * @see https://kinsta.com/pt/base-de-conhecimento/desativar-os-emojis-no-wordpress/
 	 */
@@ -927,15 +831,16 @@ class FrontEnd extends Base\Runner
 	 * @return mixed
 	 */
     public function add_category_slug( $html ) {
-        if ( ! is_admin() ) {
-            if ($html != '') {
-                $a = new \SimpleXMLElement($html);
-                $category = strtolower(basename($a['href']));
-                $replacement = '$1 class="' . $category . '">$3';
-                $html = preg_replace('#(.*)(>)(.*<\/a>)#Uis', $replacement, $html);
-            }
-        }
-        return $html;
+        if( is_admin() ) {
+			return $html;
+		}
+		if($html != '') {
+			$a = new \SimpleXMLElement($html);
+			$category = strtolower(basename($a['href']));
+			$replacement = '$1 class="category-' . $category . '">$3';
+			$html = preg_replace('#(.*)(>)(.*<\/a>)#Uis', $replacement, $html);
+		}
+		return $html;
     }
 
 	/**
@@ -985,302 +890,6 @@ class FrontEnd extends Base\Runner
 			return $html;
 		}
 		return $content;
-	}
-
-	/**
-	 * Removing wrapping paragraphs
-	 * Remove the wrapping paragraph from images and other elements, such as picture, video, audio, and iframe.
-	 * @TODO Test this before using! Not sure if needed or working
-	 * @see https://css-tricks.com/leverage-wordpress-functions-reduce-html-posts/#article-header-id-13
-	 * @see https://www.jitbit.com/alexblog/256-targetblank---the-most-underestimated-vulnerability-ever/
-	 */
-	public function content_remove_wrapping_p( $content ) {
-		if( $content !== '' ) {
-			$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
-			$document = new \DOMDocument();
-			libxml_use_internal_errors( true );
-			$document->loadHTML( utf8_decode( $content ) );
-
-			// Iterating a nodelist while manipulating it is not a good thing, because
-			// the nodelist dynamically updates itself. Get all things that must be
-			// unwrapped and put them in an array.
-			$tagNames = array( 'img', 'picture', 'video', 'audio', 'iframe' );
-			$mediaElements = array();
-			foreach( $tagNames as $tagName ) {
-				$nodes = $document->getElementsByTagName( $tagName );
-				foreach ( $nodes as $node ) {
-					$mediaElements[] = $node;
-				}
-			}
-
-			foreach( $mediaElements as $element ) {
-				// Get a reference to the parent paragraph that may have been added by
-				// WordPress. It might be the direct parent node or the grandparent
-				// (LOL) in case of links
-				$paragraph = null;
-
-				// Get a reference to the image itself or to the link containing the
-				// image, so we can later remove the wrapping paragraph
-				$theElement = null;
-
-				if( $element->parentNode->nodeName == 'p' ) {
-					$paragraph = $element->parentNode;
-					$theElement = $element;
-				} else if( $element->parentNode->nodeName == 'a' &&
-					$element->parentNode->parentNode->nodeName == 'p' ) {
-					$paragraph = $element->parentNode->parentNode;
-					$theElement = $element->parentNode;
-				}
-
-				// Make sure the wrapping paragraph only contains this child
-				if( $paragraph && $paragraph->textContent == '' ) {
-					$paragraph->parentNode->replaceChild( $theElement, $paragraph );
-				}
-			}
-
-			$html = $document->saveHTML();
-			return $html;
-		}
-		return $content;
-	}
-
-	//</editor-fold>
-
-	//<editor-fold desc="Widgets and Menus">
-
-	/**
-	 * Register wp_nav_menu() menus
-	 * Main Menu
-	 * @link http://codex.wordpress.org/Function_Reference/register_nav_menus
-	 */
-	public function register_menus() {
-		if( Helper::get_option( 'storms_add_storms_menu', 'yes' ) ) {
-			register_nav_menus(array(
-				'main_menu' => __( 'Main Menu', 'storms' ),
-			));
-		}
-	}
-
-	/**
-	 * Register widgets area
-	 * Header Sidebar widget area
-	 */
-	public function register_widgets_area_header() {
-
-		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
-
-		// Header Sidebar
-		if( Helper::get_option( 'storms_add_header_sidebar', 'yes' ) ) {
-
-			register_sidebar(array(
-				'name' => __( 'Header Sidebar', 'storms' ),
-				'id' => 'header-sidebar',
-				'description' => __( 'Add widgets here to appear in your header region.', 'storms' ),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			));
-
-		}
-
-		if( \StormsFramework\Helper::get_option( 'storms_add_header_menu_item_sidebar', 'yes' ) ) {
-
-			/**
-			 * Register a new widget area on the menu as a menu item
-			 * @source https://wordpress.org/support/topic/insert-a-plugin-or-a-widget-in-the-top-menu/
-			 */
-			register_sidebar(array(
-				'name' => __( 'Header Menu Item Sidebar', 'storms' ),
-				'id' => 'header-menu-item-sidebar',
-				'description' => __('Add widgets here to appear in your menu item region.', 'storms'),
-				'before_widget' => '<li id="%1$s" class="widget %2$s menu-item nav-item dropdown has-megamenu">',
-				'after_widget' => '</li>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			));
-
-		}
-
-		// Header Menu Right Sidebar
-		if( Helper::get_option( 'storms_add_header_menu_right_sidebar', 'yes' ) ) {
-
-			register_sidebar(array(
-				'name' => __( 'Header Menu Right Sidebar', 'storms' ),
-				'id' => 'header-menu-sidebar-right',
-				'description' => __( 'Add widgets here to appear in your header region.', 'storms' ),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			));
-
-		}
-
-		// Header Bottom Sidebar
-		if( Helper::get_option( 'storms_add_header_bottom_sidebar', 'yes' ) ) {
-
-			register_sidebar(array(
-				'name' => __( 'Header Bottom Sidebar', 'storms' ),
-				'id' => 'header-bottom-sidebar',
-				'description' => __( 'Add widgets here to appear in your header region.', 'storms' ),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			));
-
-		}
-
-	}
-
-	/**
-	 * Add a sidebar on menu to act as a menu item
-	 * Allows to choose which menus will have the sidebar - defaults to 'all' menus
-	 *
-	 * @param $items
-	 * @param $args
-	 * @return string
-	 */
-	public function add_widget_area_on_menu_item( $items, $args ) {
-		if( \StormsFramework\Helper::get_option( 'storms_add_header_menu_item_sidebar', 'yes' ) ) {
-			$menu_slug = ( $args && $args->menu ) ? $args->menu->slug : '';
-			$menu_list = \StormsFramework\Helper::get_option( 'storms_header_menu_item_sidebar_menu_slug_list', 'all' );
-
-			if( empty( $menu_slug ) || 'all' === $menu_list || in_array( $menu_slug, explode( ',', $menu_list ) ) ) {
-				$menu_widget_area = \StormsFramework\Helper::get_dynamic_sidebar( 'header-menu-item-sidebar' );
-				return $menu_widget_area . $items;
-			}
-
-		}
-		return $items;
-	}
-
-	/**
-	 * Register widgets area
-	 * Main Sidebar widget area
-	 */
-	public function register_widgets_area_main() {
-
-		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
-
-		// Main Sidebar
-		if( Helper::get_option( 'storms_add_main_sidebar', 'yes' ) ) {
-
-			register_sidebar(array(
-				'name' => __( 'Main Sidebar', 'storms' ),
-				'id' => 'main-sidebar',
-				'description' => __( 'Add widgets here to appear in your sidebar.', 'storms' ),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			));
-
-		}
-
-	}
-
-	/**
-	 * Register widgets area
-	 * Footer 1 Sidebar widget area
-	 */
-	public function register_widgets_area_footer_1() {
-
-		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
-
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Top', 'storms'),
-				'id' => 'footer-1-sidebar-top',
-				'description' => __('Add widgets here to appear in your footer 1 top side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Left', 'storms'),
-				'id' => 'footer-1-sidebar-left',
-				'description' => __('Add widgets here to appear in your footer 1 left side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Middle 1', 'storms'),
-				'id' => 'footer-1-sidebar-middle-1',
-				'description' => __('Add widgets here to appear in your footer 1 middle 1 side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Middle 2', 'storms'),
-				'id' => 'footer-1-sidebar-middle-2',
-				'description' => __('Add widgets here to appear in your footer 1 middle 2 side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Right', 'storms'),
-				'id' => 'footer-1-sidebar-right',
-				'description' => __('Add widgets here to appear in your footer 1 right side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-		register_sidebar(array(
-				'name' => __('Footer 1 Sidebar Bottom', 'storms'),
-				'id' => 'footer-1-sidebar-bottom',
-				'description' => __('Add widgets here to appear in your footer 1 bottom side.', 'storms'),
-				'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-				'after_widget' => '</aside>',
-				'before_title' => '<' . $widget_title_tag . ' class="widget-title">',
-				'after_title' => '</' . $widget_title_tag . '>',
-			)
-		);
-	}
-
-	/**
-	 * Register widgets area
-	 * Footer 2 Sidebar widget area
-	 */
-	public function register_widgets_area_footer_2() {
-
-		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
-
-		// Footer Sidebars
-		if( Helper::get_option( 'storms_add_footer_sidebar', 'yes' ) ) {
-
-			$numFooterSidebars = Helper::get_option( 'storms_number_of_footer_sidebars', 4 );
-			for ($i = 1; $i <= intval($numFooterSidebars); $i++) {
-				register_sidebar(array(
-						'name' => sprintf( __( 'Footer Sidebar %d', 'storms' ), $i ),
-						'id' => sprintf( 'footer-sidebar-%d', $i ),
-						'description' => sprintf( __( 'Add widgets here to appear in your footer region %d.', 'storms' ), $i ),
-						'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-						'after_widget' => '</aside>',
-						'before_title' => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-						'after_title' => '</' . $widget_title_tag . '>',
-					)
-				);
-			}
-
-		}
 	}
 
 	//</editor-fold>

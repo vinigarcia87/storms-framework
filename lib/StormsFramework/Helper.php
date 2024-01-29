@@ -25,9 +25,6 @@ class Helper extends Base\Manager
 
 	public function __construct() {
 		parent::__construct( __CLASS__, STORMS_FRAMEWORK_VERSION, $this );
-
-		//add_action( 'edit_category', array( $this, 'category_transient_flusher' ) );
-		//add_action( 'save_post', array( $this, 'category_transient_flusher' ) );
 	}
 
 	/**
@@ -993,48 +990,6 @@ class Helper extends Base\Manager
 	 * ======================================================================================= */
 
 	/**
-	 * Returns true if a blog has more than 1 category.
-	 *
-	 * @return bool
-	 */
-	public static function is_categorized_blog() {
-	    $all_the_cool_cats = get_transient( 'storms_categories' );
-	    if ( false === $all_the_cool_cats ) {
-	        // Create an array of all the categories that are attached to posts.
-	        $all_the_cool_cats = get_categories( array(
-	            'fields'     => 'ids',
-	            'hide_empty' => 1,
-	            // We only need to know if there is more than one category.
-	            'number'     => 2,
-	        ) );
-
-	        // Count the number of categories that are attached to the posts.
-	        $all_the_cool_cats = count( $all_the_cool_cats );
-
-	        set_transient( 'storms_categories', $all_the_cool_cats );
-	    }
-
-	    if ( $all_the_cool_cats > 1 || is_preview() ) {
-	        // This blog has more than 1 category so is_categorized_blog should return true.
-	        return true;
-	    } else {
-	        // This blog has only 1 category so is_categorized_blog should return false.
-	        return false;
-	    }
-	}
-
-	/**
-	 * Flush out the transients used in is_categorized_blog.
-	 */
-	public function category_transient_flusher() {
-	    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-	        return;
-	    }
-	    // Like, beat it. Dig?
-	    delete_transient( 'storms_categories' );
-	}
-
-	/**
 	 * Get the product thumbnail, or the placeholder if not set
 	 * Modification that insert bootstrap classes
 	 */
@@ -1341,7 +1296,7 @@ class Helper extends Base\Manager
 			$categories_separator_text = apply_filters( 'storms_categories_separator_text', esc_html__( ', ', 'Used between list items, there is a space after the comma.' ) );
 			/* translators: used between list items, there is a space after the comma */
 			$categories_list = get_the_category_list( $categories_separator_text );
-			if ( $categories_list && Helper::is_categorized_blog() ) {
+			if ( $categories_list ) {
 				/* translators: 1: list of categories. */
 				$category_prefix_text = apply_filters( 'storms_category_prefix_text', esc_html__( 'Postado em', 'storms' ) );
 				printf( '<div class="category-links">' . $category_prefix_text . ' ' . $categories_list . '</div>' ); // WPCS: XSS OK.
@@ -1355,9 +1310,7 @@ class Helper extends Base\Manager
 				$tag_prefix_text = apply_filters( 'storms_tag_prefix_text', esc_html__( 'Tags', 'storms' ) );
 				printf( '<div class="tag-links">' . $tag_prefix_text . ' ' . $tags_list . '</div>' ); // WPCS: XSS OK.
 			}
-		}
-
-		if ( 'post' == get_post_type() ) : ?>
+		?>
 
 			<div class="entry-nav">
 				<div class="prev-post">
@@ -1376,7 +1329,7 @@ class Helper extends Base\Manager
 				</div>
 			</div>
 
-		<?php endif;
+		<?php }
 
 		if ( ( is_single() || is_page() ) && ( comments_open() || get_comments_number() ) && ! post_password_required() ) {
 

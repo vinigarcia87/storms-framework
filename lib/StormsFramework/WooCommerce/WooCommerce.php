@@ -48,36 +48,6 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_registration_errors', 'registration_confirm_password_validation', 10, 3 )
 			->add_action( 'woocommerce_after_checkout_validation', 'checkout_confirm_password_validation', 10, 2 );
 
-		$this->loader
-			// wp_list_comments parameters in single-product-reviews.php
-			->add_filter( 'woocommerce_product_review_list_args', 'product_review_list_args' )
-			// Comment Form customization - wp-includes/comment-template.php
-			->add_filter( 'comment_form_fields', 'product_review_comment_form_fields', 15 );
-
-		/**
-		 * Content wrapper before and after
-		 * Will be needed if you not using woocommerce.php on your theme
-		 * @see  before_content()
-		 * @see  after_content()
-		 */
-		remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
-		remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
-		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
-		$this->loader
-			->add_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 5 )
-			->add_action( 'woocommerce_before_main_content', 'before_content', 10 )
-			->add_action( 'woocommerce_after_main_content', 'after_content', 10 )
-			->add_action( 'woocommerce_before_account_navigation', 'open_row_myaccount_dashboard' )
-			->add_action( 'woocommerce_account_dashboard', 'close_row_myaccount_dashboard' )
-
-			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_open', 1 )
-			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_close', 99 )
-			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_open', 1 )
-			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_close', 99 )
-
-			->add_filter( 'woocommerce_breadcrumb_defaults', 'woocommerce_breadcrumb_args' )
-			->add_action( 'init', 'remove_sidebar' );
-
 		/**
 		 * Filters
 		 * @see  product_thumbnail_columns()
@@ -94,8 +64,43 @@ class WooCommerce extends Base\Runner
 			->add_filter( 'woocommerce_output_related_products_args', 'related_products_on_product_page_args' )
 			->add_filter( 'woocommerce_upsell_display_args', 'upsell_on_product_page_args' )
 
-            ->add_filter( 'woocommerce_cross_sells_total', 'cross_sells_limit' )
-            ->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' );
+			->add_filter( 'woocommerce_cross_sells_total', 'cross_sells_limit' )
+			->add_filter( 'woocommerce_cross_sells_columns', 'cross_sells_columns' );
+
+		$this->loader
+			->add_action( 'init', 'remove_sidebar' );
+
+		//<editor-fold desc="Bootstrap 5 Layout Modifications">
+
+		$this->loader
+			// wp_list_comments parameters in single-product-reviews.php
+			->add_filter( 'woocommerce_product_review_list_args', 'product_review_list_args' )
+			// Comment Form customization - wp-includes/comment-template.php
+			->add_filter( 'comment_form_fields', 'product_review_comment_form_fields', 15 );
+
+		remove_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 20 );
+		$this->loader
+			->add_action( 'woocommerce_before_main_content', 'woocommerce_breadcrumb', 5 )
+			->add_filter( 'woocommerce_breadcrumb_defaults', 'woocommerce_breadcrumb_args' );
+
+		/**
+		 * Content wrapper before and after
+		 * Will be needed if you not using woocommerce.php on your theme
+		 * @see  before_content()
+		 * @see  after_content()
+		 */
+		remove_action( 'woocommerce_before_main_content', 'woocommerce_output_content_wrapper', 10 );
+		remove_action( 'woocommerce_after_main_content', 'woocommerce_output_content_wrapper_end', 10 );
+		$this->loader
+			->add_action( 'woocommerce_before_main_content', 'before_content', 10 )
+			->add_action( 'woocommerce_after_main_content', 'after_content', 10 )
+			->add_action( 'woocommerce_before_account_navigation', 'open_row_myaccount_dashboard' )
+			->add_action( 'woocommerce_account_dashboard', 'close_row_myaccount_dashboard' )
+
+			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_open', 1 )
+			->add_action( 'woocommerce_before_shop_loop', 'woocommerce_before_shop_loop_close', 99 )
+			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_open', 1 )
+			->add_action( 'woocommerce_after_shop_loop', 'woocommerce_after_shop_loop_close', 99 );
 
 		$this->loader
 			// @see plugins/woocommerce/includes/wc-template-functions.php - woocommerce_form_field
@@ -105,9 +110,9 @@ class WooCommerce extends Base\Runner
 
 		$this->loader
 			->add_action( 'post_class', 'content_product_class' )
-			->add_action( 'product_cat_class', 'content_product_class' )
-			//->add_action( 'storms_wc_after_item_loop', 'storms_wc_after_item_loop' )
-		;
+			->add_action( 'product_cat_class', 'content_product_class' );
+
+		//</editor-fold>
 
 		$this->loader
 			->add_action( 'init', 'prevent_wp_login' )
@@ -174,7 +179,7 @@ class WooCommerce extends Base\Runner
 
 		// Check if we should apply this modifications
 		if( 'no' === Helper::get_option( 'storms_manage_woocommerce_scripts', 'yes' ) ) {
-			return false;
+			return;
 		}
 
 		// Remove CSS and/or JS for Select2 used by WooCommerce, see https://gist.github.com/Willem-Siebe/c6d798ccba249d5bf080.
@@ -225,6 +230,141 @@ class WooCommerce extends Base\Runner
 
         return $tabs;
     }
+
+	/**
+	 * Product gallery thumnail columns
+	 * @return integer number of columns
+	 */
+	public function product_thumbnail_columns() {
+		return intval( apply_filters( 'storms_product_thumbnail_columns', 4 ) );
+	}
+
+	/**
+	 * Products per page
+	 * @return integer number of products
+	 */
+	public function products_per_page() {
+		$numberColumns = $this->shop_loop_number_of_columns();
+
+		if( $numberColumns == 3 ) {
+			$default = 9;
+		}
+		elseif( $numberColumns > 2 ) {
+			$default = 12;
+		}
+
+		return Helper::get_option( 'storms_products_per_page', $default );
+	}
+
+	/**
+	 * Default loop columns on product archives
+	 * @return integer products per row
+	 */
+	public function shop_loop_number_of_columns() {
+		global $woocommerce_loop;
+
+		$columns = Helper::get_option( 'storms_shop_loop_number_of_columns', 4 ); // Default is 4 products per row
+
+		// If the number of columns is already setted (like, on a shortcode's parameter), we preserve it here
+		if( isset( $woocommerce_loop['columns'] ) ) {
+			$columns = $woocommerce_loop['columns'];
+		}
+
+		return $columns;
+	}
+
+	/**
+	 * Register widget area on shop pages - create and sidebar-shop.php template to used
+	 */
+	public function register_widgets_area() {
+		// Define what title tag will be use on widgets - h1, h2, h3, ...
+		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
+
+		register_sidebar( array(
+			'name'          => __( 'Shop Sidebar', 'storms' ),
+			'id'            => 'shop-sidebar',
+			'description'   => __( 'Add widgets here to appear in your shop sidebar.', 'storms' ),
+			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</aside>',
+			'before_title'  => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
+			'after_title'   => '</' . $widget_title_tag . '>',
+		) );
+
+		register_sidebar( array(
+			'name'          => __( 'Product Sidebar', 'storms' ),
+			'id'            => 'product-sidebar',
+			'description'   => __( 'Add widgets here to appear in your product sidebar.', 'storms' ),
+			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
+			'after_widget'  => '</aside>',
+			'before_title'  => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
+			'after_title'   => '</' . $widget_title_tag . '>',
+		) );
+	}
+
+	/**
+	 * Change number of related products on product page
+	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
+	 *
+	 * @see woocommerce_output_related_products()
+	 *
+	 * @param $args
+	 * @return mixed
+	 */
+	public function related_products_on_product_page_args( $args ) {
+		$args['posts_per_page'] = Helper::get_option( 'storms_related_products_limit', 4 ); // 4 related products
+		$args['columns'] = Helper::get_option( 'storms_related_products_columns', 4 ); // Default: arranged in 4 columns
+		return $args;
+	}
+
+	/**
+	 * Change number of upsell products on product page
+	 *
+	 * @see woocommerce_upsell_display()
+	 *
+	 * @param $args
+	 * @return mixed
+	 */
+	public function upsell_on_product_page_args( $args ) {
+		$args['posts_per_page'] = Helper::get_option( 'storms_upsells_limit', '-1' ); // no limit upsells
+		$args['columns'] = Helper::get_option( 'storms_upsells_columns', 4 ); // Default: arranged in 3 columns
+		return $args;
+	}
+
+	/**
+	 * Change the number of products to be shown on cross-sells loop
+	 * -- Displayed on cart page --
+	 *
+	 * @see woocommerce_cross_sell_display()
+	 *
+	 * @param $limit
+	 * @return int
+	 */
+	public function cross_sells_limit( $limit ) {
+		return Helper::get_option( 'storms_cross_sells_limit', 2 );
+	}
+
+	/**
+	 * Change the number of columns to be shown on cross-sells loop
+	 * -- Displayed on cart page --
+	 *
+	 * @see woocommerce_cross_sell_display()
+	 *
+	 * @param $columns
+	 * @return int
+	 */
+	public function cross_sells_columns( $columns ) {
+		return Helper::get_option( 'storms_cross_sells_columns', 2 );
+	}
+
+	/**
+	 * Define if the sidebar should be shown or not
+	 * We remove the action every time, because um decide to show or not, on the layout code
+	 */
+	public function remove_sidebar() {
+		if( is_woocommerce() ) {
+			remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar');
+		}
+	}
 
 	//</editor-fold>
 
@@ -421,47 +561,6 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
-	 * wp_list_comments parameters in single-product-reviews.php
-	 *
-	 * @return array
-	 */
-	public function product_review_list_args() {
-		return array(
-			'style'         => 'ul',
-			'short_ping'    => true,
-			'avatar_size'   => '64',
-			'allow_reply'   => false,
-			'walker'        => new \StormsFramework\Bootstrap\WP_Bootstrap_Commentwalker(),
-		);
-	}
-
-	/**
-	 * @param $comment_form
-	 * @return mixed
-	 */
-	public function product_review_comment_form_fields( $comment_fields ) {
-
-		if ( ! is_woocommerce() ) {
-			return $comment_fields;
-		}
-
-		if ( wc_review_ratings_enabled() ) {
-			$comment_fields['comment'] = '<div class="comment-form-rating"><label for="rating">' . esc_html__( 'Your rating', 'woocommerce' ) . ( wc_review_ratings_required() ? '&nbsp;<span class="required">*</span>' : '' ) . '</label><select name="rating" id="rating" required>
-					<option value="">' . esc_html__( 'Rate&hellip;', 'woocommerce' ) . '</option>
-					<option value="5">' . esc_html__( 'Perfect', 'woocommerce' ) . '</option>
-					<option value="4">' . esc_html__( 'Good', 'woocommerce' ) . '</option>
-					<option value="3">' . esc_html__( 'Average', 'woocommerce' ) . '</option>
-					<option value="2">' . esc_html__( 'Not that bad', 'woocommerce' ) . '</option>
-					<option value="1">' . esc_html__( 'Very poor', 'woocommerce' ) . '</option>
-				</select></div>';
-		}
-
-		$comment_fields['comment'] .= '<p class="comment-form-comment"><label for="comment" class="form-label">' . esc_html__( 'Your review', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label><textarea class="form-control" id="comment" name="comment" cols="45" rows="8" required></textarea></p>';
-
-		return $comment_fields;
-	}
-
-	/**
 	 * Edit Wordpress user's Password/Email Change email to look like WooCommerce email
 	 * This email is sent when admin change/reset a user's password or email on admin panel
 	 *
@@ -513,7 +612,48 @@ class WooCommerce extends Base\Runner
 
 	//</editor-fold>
 
-	//<editor-fold desc="Bootstrap on form fields">
+	//<editor-fold desc="Bootstrap 5 Layout Modifications">
+
+	/**
+	 * wp_list_comments parameters in single-product-reviews.php
+	 *
+	 * @return array
+	 */
+	public function product_review_list_args() {
+		return array(
+			'style'         => 'ul',
+			'short_ping'    => true,
+			'avatar_size'   => '64',
+			'allow_reply'   => false,
+			'walker'        => new \StormsFramework\Bootstrap\WP_Bootstrap_Commentwalker(),
+		);
+	}
+
+	/**
+	 * @param $comment_form
+	 * @return mixed
+	 */
+	public function product_review_comment_form_fields( $comment_fields ) {
+
+		if ( ! is_woocommerce() ) {
+			return $comment_fields;
+		}
+
+		if ( wc_review_ratings_enabled() ) {
+			$comment_fields['comment'] = '<div class="comment-form-rating"><label for="rating">' . esc_html__( 'Your rating', 'woocommerce' ) . ( wc_review_ratings_required() ? '&nbsp;<span class="required">*</span>' : '' ) . '</label><select name="rating" id="rating" required>
+					<option value="">' . esc_html__( 'Rate&hellip;', 'woocommerce' ) . '</option>
+					<option value="5">' . esc_html__( 'Perfect', 'woocommerce' ) . '</option>
+					<option value="4">' . esc_html__( 'Good', 'woocommerce' ) . '</option>
+					<option value="3">' . esc_html__( 'Average', 'woocommerce' ) . '</option>
+					<option value="2">' . esc_html__( 'Not that bad', 'woocommerce' ) . '</option>
+					<option value="1">' . esc_html__( 'Very poor', 'woocommerce' ) . '</option>
+				</select></div>';
+		}
+
+		$comment_fields['comment'] .= '<p class="comment-form-comment"><label for="comment" class="form-label">' . esc_html__( 'Your review', 'woocommerce' ) . '&nbsp;<span class="required">*</span></label><textarea class="form-control" id="comment" name="comment" cols="45" rows="8" required></textarea></p>';
+
+		return $comment_fields;
+	}
 
 	/**
 	 * WooCommerce - Modify each individual input type $args defaults
@@ -685,10 +825,6 @@ class WooCommerce extends Base\Runner
 		return $field;
 	}
 
-	//</editor-fold>
-
-	//<editor-fold desc="Layout definitions">
-
 	/**
 	 * Before Content
 	 * Wraps all WooCommerce content in wrappers which match the theme markup
@@ -763,16 +899,6 @@ class WooCommerce extends Base\Runner
 	}
 
 	/**
-	 * Define if the sidebar should be shown or not
-	 * We remove the action every time, because um decide to show or not, on the layout code
-	 */
-	public function remove_sidebar() {
-		if( is_woocommerce() ) {
-			remove_action('woocommerce_sidebar', 'woocommerce_get_sidebar');
-		}
-	}
-
-	/**
 	 * Customization for bootstrap breadcrumbs
 	 */
 	public function woocommerce_breadcrumb() {
@@ -805,131 +931,6 @@ class WooCommerce extends Base\Runner
 		}
 		return $args;
 	}
-
-	/**
-	 * Product gallery thumnail columns
-	 * @return integer number of columns
-	 */
-	public function product_thumbnail_columns() {
-		return intval( apply_filters( 'storms_product_thumbnail_columns', 4 ) );
-	}
-
-	/**
-	 * Products per page
-	 * @return integer number of products
-	 */
-	public function products_per_page() {
-		$numberColumns = $this->shop_loop_number_of_columns();
-
-		if( $numberColumns == 3 ) {
-			$default = 9;
-		}
-		elseif( $numberColumns > 2 ) {
-			$default = 12;
-		}
-
-		return Helper::get_option( 'storms_products_per_page', $default );
-	}
-
-	/**
-	 * Default loop columns on product archives
-	 * @return integer products per row
-	 */
-	public function shop_loop_number_of_columns() {
-		global $woocommerce_loop;
-
-		$columns = Helper::get_option( 'storms_shop_loop_number_of_columns', 4 ); // Default is 4 products per row
-
-		// If the number of columns is already setted (like, on a shortcode's parameter), we preserve it here
-		if( isset( $woocommerce_loop['columns'] ) ) {
-			$columns = $woocommerce_loop['columns'];
-		}
-
-        return $columns;
-	}
-
-	/**
-	 * Register widget area on shop pages - create and sidebar-shop.php template to used
-	 */
-	public function register_widgets_area() {
-		// Define what title tag will be use on widgets - h1, h2, h3, ...
-		$widget_title_tag = Helper::get_option( 'storms_widget_title_tag', 'span' );
-
-		register_sidebar( array(
-			'name'          => __( 'Shop Sidebar', 'storms' ),
-			'id'            => 'shop-sidebar',
-			'description'   => __( 'Add widgets here to appear in your shop sidebar.', 'storms' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-			'after_title'   => '</' . $widget_title_tag . '>',
-		) );
-
-		register_sidebar( array(
-			'name'          => __( 'Product Sidebar', 'storms' ),
-			'id'            => 'product-sidebar',
-			'description'   => __( 'Add widgets here to appear in your product sidebar.', 'storms' ),
-			'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-			'after_widget'  => '</aside>',
-			'before_title'  => '<' . $widget_title_tag . ' class="widgettitle widget-title">',
-			'after_title'   => '</' . $widget_title_tag . '>',
-		) );
-	}
-
-	/**
-	 * Change number of related products on product page
-	 * @see https://docs.woocommerce.com/document/change-number-of-related-products-output/
-	 *
-	 * @see woocommerce_output_related_products()
-	 *
-	 * @param $args
-	 * @return mixed
-	 */
-    public function related_products_on_product_page_args( $args ) {
-		$args['posts_per_page'] = Helper::get_option( 'storms_related_products_limit', 4 ); // 4 related products
-		$args['columns'] = Helper::get_option( 'storms_related_products_columns', 4 ); // Default: arranged in 4 columns
-		return $args;
-	}
-
-	/**
-	 * Change number of upsell products on product page
-	 *
-	 * @see woocommerce_upsell_display()
-	 *
-	 * @param $args
-	 * @return mixed
-	 */
-	public function upsell_on_product_page_args( $args ) {
-		$args['posts_per_page'] = Helper::get_option( 'storms_upsells_limit', '-1' ); // no limit upsells
-		$args['columns'] = Helper::get_option( 'storms_upsells_columns', 4 ); // Default: arranged in 3 columns
-		return $args;
-	}
-
-    /**
-     * Change the number of products to be shown on cross-sells loop
-	 * -- Displayed on cart page --
-	 *
-	 * @see woocommerce_cross_sell_display()
-	 *
-     * @param $limit
-     * @return int
-     */
-    public function cross_sells_limit( $limit ) {
-        return Helper::get_option( 'storms_cross_sells_limit', 2 );
-    }
-
-    /**
-     * Change the number of columns to be shown on cross-sells loop
-	 * -- Displayed on cart page --
-	 *
-	 * @see woocommerce_cross_sell_display()
-	 *
-     * @param $columns
-     * @return int
-     */
-    public function cross_sells_columns( $columns ) {
-        return Helper::get_option( 'storms_cross_sells_columns', 2 );
-    }
 
 	/**
 	 * Get the classes for each product on the shop list, accordingly to the columns number
@@ -1031,78 +1032,6 @@ class WooCommerce extends Base\Runner
 		}
 
 		return $classes;
-	}
-
-	/**
-	 * Generate the necessary clearfixes, breaks, and rows for an responsive shop loop
-	 * TODO Trabalho nao finalizado!
-	 * @link http://www.webdesign101.net/add-bootstrap-rows-woocommerce-loop/
-	 * @param int $woocommerce_loop Index of the current item in the shop loop
-	 */
-	public function storms_wc_after_item_loop( $woocommerce_loop ) {
-        global $woocommerce_loop;
-
-        // Verificamos se este eh um produto no loop de related products
-        $is_related = false;
-        if( isset( $woocommerce_loop['name'] ) &&
-            $woocommerce_loop['name'] == 'related' ) {
-            $is_related = true;
-        }
-
-		// How many columns we want to show on shop loop?
-		$columns = $this->shop_loop_number_of_columns();
-
-        // We show different number of columns if is a related products loop
-        if( $is_related ) {
-            $columns = apply_filters( 'woocommerce_related_products_columns', 2 );
-        }
-
-		/*
-		switch ( $woocommerce_loop ) {
-			case 6:
-				if(0 == ($woocommerce_loop % 6)) {
-					echo '<div class="clearfix visible-md visible-lg"></div>';
-				}
-				if(0 == ($woocommerce_loop % 4)) {
-					echo '<div class="clearfix visible-sm"></div>';
-				}
-				if(0 == ($woocommerce_loop % 2)) {
-					echo '<div class="clearfix visible-xs"></div>';
-				}
-				break;
-			case 4:
-				if(0 == ($woocommerce_loop % 4)) {
-					echo '<div class="clearfix visible-md visible-lg"></div>';
-				}
-				if(0 == ($woocommerce_loop % 2)) {
-					echo '<div class="clearfix visible-sm"></div>';
-				}
-				break;
-			case 3:
-				if(0 == ($woocommerce_loop % 3)) {
-					echo '<div class="clearfix visible-md visible-lg"></div>';
-				}
-				break;
-			case 31:
-				if(0 == ($woocommerce_loop % 3)) {
-					echo '<div class="clearfix visible-md visible-lg"></div>';
-				}
-				if(0 == ($woocommerce_loop % 2)) {
-					echo '<div class="clearfix visible-sm"></div>';
-				}
-				break;
-			case 2:
-				if(0 == ($woocommerce_loop % 2)) {
-					echo '<div class="clearfix invisible-xs"></div>';
-				}
-				break;
-			}
-		*/
-
-		if( $woocommerce_loop % $columns === 0 ) {
-			echo '</div><div class="st-grid-row row">';
-		}
-
 	}
 
 	//</editor-fold>
