@@ -17,6 +17,8 @@
 
 namespace StormsFramework;
 
+use WPForms\Admin\Builder\Help;
+
 class Template extends Base\Runner
 {
 	use Base\Singleton;
@@ -277,48 +279,48 @@ class Template extends Base\Runner
 		}
 
 		if( 'default' === $layout ) {
-			if( is_front_page() ) {
-				$layout = Helper::get_option( 'storms_front_page_layout', '1c' );
-			}
-			if( is_404() ) {
-				$layout = Helper::get_option( 'storms_page_layout', '1c' );
-			}
-			if( is_search() ) {
-				$layout = Helper::get_option( 'storms_search_layout', '2c-l' );
-			}
-			if( is_page() ) {
-				$layout = Helper::get_option( 'storms_page_layout', '1c' );
-			}
-			if( is_single() ) {
-				$layout = Helper::get_option( 'storms_single_layout', '1c' );
-			}
+			$layout = is_rtl() ? '2c-r' : '2c-l';
+
 			if( \StormsFramework\Helper::is_woocommerce_activated() ) {
 				if( is_product() ) {
 					$layout = Helper::get_option( 'storms_product_layout', '1c' );
 				}
-				if( is_account_page() ) {
+				elseif( is_account_page() ) {
 					$layout = Helper::get_option( 'storms_account_layout', '1c' );
 				}
-				if( is_account_page() && ! is_user_logged_in() ) {
+				elseif( is_account_page() && ! is_user_logged_in() ) {
 					$layout = Helper::get_option( 'storms_wc_login_layout', '1c' );
 
 				}
-				if( is_checkout() || is_cart() ) {
+				elseif( is_checkout() || is_cart() ) {
 					$layout = Helper::get_option( 'storms_checkout_layout', '1c' );
 
 				}
-				if( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
+				elseif( is_shop() || is_product_category() || is_product_tag() || is_product_taxonomy() ) {
 					$layout = Helper::get_option( 'storms_shop_layout', '2c-l' );
 
 				}
-				if( is_woocommerce() ) {
+				elseif( is_woocommerce() ) {
 					$layout = Helper::get_option('storms_woocommerce_layout', '1c');
 				}
 			} else {
-				$layout = is_rtl() ? '2c-r' : '2c-l';
+				if( is_404() ) {
+					$layout = Helper::get_option( 'storms_page_layout', '1c' );
+				}
+				elseif( is_search() ) {
+					$layout = Helper::get_option( 'storms_search_layout', '2c-l' );
+				}
+				elseif( is_front_page() ) {
+					$layout = Helper::get_option( 'storms_front_page_layout', '1c' );
+				}
+				elseif( is_page() ) {
+					$layout = Helper::get_option( 'storms_page_layout', '1c' );
+				}
+				elseif( is_single() ) {
+					$layout = Helper::get_option('storms_single_layout', '1c');
+				}
 			}
 		}
-
 		return esc_attr( apply_filters( 'theme_layout_get_layout', $layout ) );
 	}
 

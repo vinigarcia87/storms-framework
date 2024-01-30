@@ -75,7 +75,9 @@ class BackEnd extends Base\Runner
 		// @see https://kinsta.com/pt/blog/xmlrpc-php/
 		add_filter( 'xmlrpc_enabled', '__return_null' );
 		$this->loader
-			->add_filter( 'bloginfo_url', 'remove_pingback_url', 10, 2 );
+			->add_filter( 'bloginfo_url', 'remove_pingback_url', 10, 2 )
+			->add_action( 'pre_ping', 'stop_self_ping' );
+
     }
 
 	//<editor-fold desc="Admin modifications">
@@ -567,5 +569,17 @@ class BackEnd extends Base\Runner
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Disable self-pingbacks
+	 */
+	function stop_self_ping( &$links ) {
+		$home = get_option( 'home' );
+		foreach ( $links as $l => $link ) {
+			if (0 === strpos($link, $home)) {
+				unset($links[$l]);
+			}
+		}
 	}
 }

@@ -88,8 +88,7 @@ class FrontEnd extends Base\Runner
 			->add_filter( 'style_loader_tag', 'defer_async_styles', 10, 4 );
 
         $this->loader
-			->add_filter( 'body_class', 'body_class' )
-            ->add_filter( 'the_category', 'add_category_slug', 99, 1 );
+			->add_filter( 'body_class', 'body_class' );
 
 		$this->loader
 			->add_filter( 'the_content', 'content_add_rel_noopener', 10 );
@@ -823,25 +822,6 @@ class FrontEnd extends Base\Runner
 	public function remove_default_gallery_style() {
 		return false; // __return_false
 	}
-
-	/**
-	 * Add the category slug to the_category()
-	 *
-	 * @param $html
-	 * @return mixed
-	 */
-    public function add_category_slug( $html ) {
-        if( is_admin() ) {
-			return $html;
-		}
-		if($html != '') {
-			$a = new \SimpleXMLElement($html);
-			$category = strtolower(basename($a['href']));
-			$replacement = '$1 class="category-' . $category . '">$3';
-			$html = preg_replace('#(.*)(>)(.*<\/a>)#Uis', $replacement, $html);
-		}
-		return $html;
-    }
 
 	/**
 	 * Allow us to use #BR# on menu items, to add line-break
