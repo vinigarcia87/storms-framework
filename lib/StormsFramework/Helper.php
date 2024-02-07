@@ -1361,9 +1361,13 @@ class Helper extends Base\Manager
 	 * Wraps the post thumbnail in an anchor element on index views, or a div
 	 * element when on single views.
 	 */
-	public static function post_thumbnail() {
+	public static function post_thumbnail( $attrs ) {
 		if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
 			return;
+		}
+
+		if ( ! isset( $attrs['use-post-thumbnail__overlay'] ) ) {
+			$attrs['use-post-thumbnail__overlay'] = 'no';
 		}
 
 		if ( is_singular() ) :
@@ -1371,6 +1375,12 @@ class Helper extends Base\Manager
 
 			<div class="post-thumbnail">
 				<?php the_post_thumbnail(); ?>
+
+				<?php
+				if( 'yes' === $attrs['use-post-thumbnail__overlay'] ) {
+					echo '<div class="post-thumbnail__overlay"></div>';
+				}
+				?>
 			</div><!-- .post-thumbnail -->
 
 		<?php else : ?>
@@ -1394,9 +1404,17 @@ class Helper extends Base\Manager
 		endif; // End is_singular().
 	}
 
-	public static function get_no_image_placeholder() {
+	public static function get_no_image_placeholder( $attrs ) {
 		?>
-		<img src="<?php echo \StormsFramework\Helper::get_asset_url('/img/no-image.jpg') ?>" alt="Nenhuma imagem" class="no-image-placeholder img-fluid" />
+		<div class="post-thumbnail">
+			<img src="<?php echo \StormsFramework\Helper::get_asset_url('/img/no-image.jpg') ?>" alt="Nenhuma imagem" class="no-image-placeholder img-fluid" />
+
+			<?php
+			if( 'yes' === $attrs['use-post-thumbnail__overlay'] ) {
+				echo '<div class="post-thumbnail__overlay"></div>';
+			}
+			?>
+		</div>
 		<?php
 	}
 
