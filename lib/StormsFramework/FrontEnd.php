@@ -498,17 +498,20 @@ class FrontEnd extends Base\Runner
 	 */
 	function remove_gutenberg_scripts_and_styles() {
 
-		wp_dequeue_script('wp-util');
-		wp_dequeue_script('underscore');
+		if( Helper::get_option( 'storms_disable_gutenberg_scripts_and_styles', 'yes' ) ) {
 
-		//wp_deregister_script('hoverintent-js'); // Needed by admin-bar - Only used for users that have admin-bar
+			wp_dequeue_script('wp-util');
+			wp_dequeue_script('underscore');
 
-		//wp_deregister_script('wp-api-fetch'); // Need by contact-form-7
+			//wp_deregister_script('hoverintent-js'); // Needed by admin-bar - Only used for users that have admin-bar
 
-		wp_dequeue_style( 'global-styles' );
-		wp_dequeue_style('wp-block-library');
-		wp_dequeue_style('wc-block-style');
-		wp_dequeue_style('wp-block-library-theme');
+			//wp_deregister_script('wp-api-fetch'); // Need by contact-form-7
+
+			wp_dequeue_style( 'global-styles' );
+			wp_dequeue_style('wp-block-library');
+			wp_dequeue_style('wc-block-style');
+			wp_dequeue_style('wp-block-library-theme');
+		}
 	}
 
 	//</editor-fold>

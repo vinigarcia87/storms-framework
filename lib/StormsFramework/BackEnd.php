@@ -297,14 +297,20 @@ class BackEnd extends Base\Runner
     function toolbar_bootstrap_media_breakpoints_alert( $wp_admin_bar ) {
 		global $wp_admin_bar;
 
+		$mobile = '';
+		$mobile .= Helper::is_mobile() ? '<i title="phone" class="bi bi-phone-fill"></i>' : '';
+		$mobile .= Helper::is_tablet() ? '<i title="tablet" class="bi bi-tablet"></i>' : '';
+
+		$mobile = ! empty( $mobile ) ? ' (' . $mobile . ')' : '';
+
 		$media = '';
 		$media .= '<div id="detect-breakpoints">';
-		$media .= '		<div class="d-block d-sm-none">XS</div>';
-		$media .= '		<div class="d-none d-sm-block d-md-none">SM</div>';
-		$media .= '		<div class="d-none d-md-block d-lg-none">MD</div>';
-		$media .= '		<div class="d-none d-lg-block d-xl-none">LG</div>';
-		$media .= '		<div class="d-none d-xl-block  d-xxl-none">XL</div>';
-		$media .= '		<div class="d-none d-xxl-block">XXL</div>';
+		$media .= '		<div class="d-block d-sm-none">XS' . $mobile . '</div>';
+		$media .= '		<div class="d-none d-sm-block d-md-none">SM' . $mobile . '</div>';
+		$media .= '		<div class="d-none d-md-block d-lg-none">MD' . $mobile . '</div>';
+		$media .= '		<div class="d-none d-lg-block d-xl-none">LG' . $mobile . '</div>';
+		$media .= '		<div class="d-none d-xl-block  d-xxl-none">XL' . $mobile . '</div>';
+		$media .= '		<div class="d-none d-xxl-block">XXL' . $mobile . '</div>';
 		$media .= '</div>';
 
 		$args = array(
@@ -344,15 +350,17 @@ class BackEnd extends Base\Runner
 
 		$this->wp_admin_bar_customize_menu( $wp_admin_bar );
 
-        $wp_admin_bar->remove_menu('_options'); 						// Raymond Theme - JWSThemes
-		$wp_admin_bar->remove_menu('backwpup'); 						// BackWPup
+        $wp_admin_bar->remove_menu('_options'); 							// Raymond Theme - JWSThemes
+		$wp_admin_bar->remove_menu('backwpup'); 							// BackWPup
         $wp_admin_bar->remove_menu('wpseo-menu'); 						// Yoast SEO
+		$wp_admin_bar->remove_menu('aioseo-main'); 						// All In One SEO
         $wp_admin_bar->remove_menu('revslider'); 						// Slider Revolution
-        $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); 		// Visual Composer
-		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); 			// iThemes Security
+        $wp_admin_bar->remove_menu('vc_inline-admin-bar-link'); 			// Visual Composer
+		$wp_admin_bar->remove_menu('itsec_admin_bar_menu'); 				// iThemes Security
         $wp_admin_bar->remove_menu('autoptimize'); 						// Autoptimize
-        $wp_admin_bar->remove_menu('wphb'); 							// Hummingbird
+        $wp_admin_bar->remove_menu('wphb'); 								// Hummingbird
 		$wp_admin_bar->remove_menu('monsterinsights_frontend_button'); 	// Monster Insights
+		$wp_admin_bar->remove_menu('wpforms-menu'); 						// WP Forms
 
 		// wp-admin-bar-top-secondary
 		$wp_admin_bar->remove_menu('search');
