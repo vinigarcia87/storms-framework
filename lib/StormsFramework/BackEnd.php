@@ -68,8 +68,9 @@ class BackEnd extends Base\Runner
 
 		// Login modifications
 		$this->loader
-			->add_filter( 'login_redirect', 'login_redirect', 10, 3 )
-			->add_filter( 'login_errors', 'login_error_msg' );
+			->add_filter( 'login_redirect', 'subscriber_login_redirect', 10, 3 )
+			->add_filter( 'login_errors', 'login_error_msg' )
+			->add_action( 'wp_logout', 'redirect_after_logout' );
 
 		// Disable XML-RPC
 		// @see https://kinsta.com/pt/blog/xmlrpc-php/
@@ -531,21 +532,22 @@ class BackEnd extends Base\Runner
 	//<editor-fold desc="Login modifications">
 
 	/**
-	 * Redirect users to home on login, when they trying to access admin pages
-	 * but let admin and editor users go to wherever they want to
+	 * Redirect subscribers to home on login
+	 *
+	 * @param $redirect_to
+	 * @param $request
+	 * @param $user
+	 * @return string|null
 	 */
-	public function login_redirect( $redirect_to, $request, $user ) {
+	public function subscriber_login_redirect( $redirect_to, $request, $user ) {
 		global $user;
 
 		if ( isset( $user->roles ) ) {
-			if ( in_array( 'administrator', $user->roles ) || in_array( 'editor', $user->roles ) ) {
-				return $redirect_to;
-			}else if ( strpos( $redirect_to, admin_url() ) !== false ) {
+			if ( in_array( 'subscriber', $user->roles ) ) {
 				return home_url();
 			}
-			return $redirect_to;
 		}
-		return home_url();
+		return $redirect_to;
 	}
 
 	/**
@@ -559,6 +561,16 @@ class BackEnd extends Base\Runner
 		$lost_password_link = '<a href="' . esc_url( $lostpassword_url ) . '">' . __( 'Lost your password?' ) .'</a>';
 
 		return __( 'The credentials you provided are invalid', 'storms' ) . '. ' . $lost_password_link;
+	}
+
+	/**
+	 * Redireciona para a home no logout
+	 *
+	 * @return void
+	 */
+	public function redirect_after_logout() {
+		wp_safe_redirect( home_url() );
+		exit;
 	}
 
 	//</editor-fold>
