@@ -984,6 +984,28 @@ class Helper extends Base\Manager
 		return $startDate->getTimestamp() < $cmpDate->getTimestamp() && $cmpDate->getTimestamp() < $endDate->getTimestamp();
 	}
 
+	/**
+	 * Apply mask to a value
+	 * Example:
+	 * $cpf = apllyMask( 12345678909, '###.###.###-##' ); --> 123.456.789-09
+	 * $cnpj = apllyMask( 07872967000102, '##.###.###/####-##' ); 07.872.967/0001-02
+	 *
+	 * @param $val
+	 * @param $mask
+	 * @return string
+	 */
+	public static function apllyMask($val, $mask) {
+		$maskared = '';
+		$k = 0;
+		for($i = 0; $i<=strlen($mask)-1; $i++) {
+			if($mask[$i] == '#') {
+				if(isset($val[$k])) $maskared .= $val[$k++];
+			} else {
+				if(isset($mask[$i])) $maskared .= $mask[$i];
+			}
+		}
+		return $maskared;
+	}
 
 	/**
 	 * TODO MUST REVIEW THE FUNCTIONS BELOW!

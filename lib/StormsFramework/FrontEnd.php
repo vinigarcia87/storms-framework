@@ -854,10 +854,14 @@ class FrontEnd extends Base\Runner
 	 */
 	public function content_add_rel_noopener( $content ) {
 		if( $content !== '' ) {
-			$content = mb_convert_encoding( $content, 'HTML-ENTITIES', 'UTF-8' );
 			$document = new \DOMDocument();
-			libxml_use_internal_errors( true );
-			$document->loadHTML( utf8_decode( $content ) );
+
+			// @see https://stackoverflow.com/a/76753521/1003020
+			$content = htmlentities( $content, ENT_NOQUOTES, 'UTF-8', false );
+			$content = htmlspecialchars_decode($content,ENT_NOQUOTES);
+			$content = mb_encode_numericentity($content, [0x80, 0x10FFFF, 0, ~0], 'UTF-8');
+
+			$document->loadHTML( $content );
 
 			/** @var /DOMNodeList $nodes */
 			$nodes = $document->getElementsByTagName( 'a' );
